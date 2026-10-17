@@ -19,17 +19,29 @@
   <defs>
     <linearGradient id="cut-g" gradientUnits="userSpaceOnUse" x1="700" y1="395" x2="1205" y2="112">
       <stop offset="0" stop-color="#ff2e63" stop-opacity="0"/>
-      <stop offset="0.35" stop-color="#ff2e63" stop-opacity="0.9"/>
-      <stop offset="0.8" stop-color="#ff2e63" stop-opacity="0.9"/>
+      <stop offset="0.3" stop-color="#ff2e63" stop-opacity="0.95"/>
+      <stop offset="0.85" stop-color="#ff2e63" stop-opacity="0.95"/>
       <stop offset="1" stop-color="#ff2e63" stop-opacity="0"/>
     </linearGradient>
-    <filter id="cut-blur" x="-10%" y="-200%" width="120%" height="500%"><feGaussianBlur stdDeviation="4"/></filter>
+    <filter id="cut-blur" x="-10%" y="-300%" width="120%" height="700%"><feGaussianBlur stdDeviation="5"/></filter>
+    <filter id="cut-blur2" x="-10%" y="-300%" width="120%" height="700%"><feGaussianBlur stdDeviation="1.6"/></filter>
   </defs>
-  <line x1="700" y1="395" x2="1205" y2="112" stroke="url(#cut-g)" stroke-width="6" opacity="0.35" filter="url(#cut-blur)"/>
-  <line x1="700" y1="395" x2="1205" y2="112" stroke="url(#cut-g)" stroke-width="1.4"/>
-  <line x1="700" y1="395" x2="1205" y2="112" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity="0.9"
-        stroke-dasharray="70 579">
-    <animate attributeName="stroke-dashoffset" values="649;-70" dur="7s" repeatCount="indefinite"/>
+  <!-- flare: wide glow that flashes when the cut lands, then settles -->
+  <line x1="700" y1="395" x2="1205" y2="112" stroke="url(#cut-g)" stroke-width="7" filter="url(#cut-blur)" stroke-dasharray="579" opacity="0">
+    <animate attributeName="stroke-dashoffset" values="579;0;0;579" keyTimes="0;0.0509;0.9545;1" calcMode="spline" keySplines="0.55 0 0.85 0.4;0 0 1 1;0 0 1 1" dur="5.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;1;0.35;0.35;0;0" keyTimes="0;0.0509;0.1120;0.8364;0.9545;1" dur="5.5s" repeatCount="indefinite"/>
+  </line>
+  <!-- the crimson edge, revealed behind the streak -->
+  <line x1="700" y1="395" x2="1205" y2="112" stroke="url(#cut-g)" stroke-width="1.5" stroke-dasharray="579" opacity="0">
+    <animate attributeName="stroke-dashoffset" values="579;0;0;579" keyTimes="0;0.0509;0.9545;1" calcMode="spline" keySplines="0.55 0 0.85 0.4;0 0 1 1;0 0 1 1" dur="5.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;1;1;0;0" keyTimes="0;0.0509;0.8364;0.9545;1" dur="5.5s" repeatCount="indefinite"/>
+  </line>
+  <!-- the streak: a short white-hot blade tip, accelerating along the cut -->
+  <line x1="700" y1="395" x2="1205" y2="112" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" filter="url(#cut-blur2)" stroke-dasharray="110 579">
+    <animate attributeName="stroke-dashoffset" values="110;-579;-579" keyTimes="0;0.0509;1" calcMode="spline" keySplines="0.55 0 0.85 0.4;0 0 1 1" dur="5.5s" repeatCount="indefinite"/>
+  </line>
+  <line x1="700" y1="395" x2="1205" y2="112" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="110 579">
+    <animate attributeName="stroke-dashoffset" values="110;-579;-579" keyTimes="0;0.0509;1" calcMode="spline" keySplines="0.55 0 0.85 0.4;0 0 1 1" dur="5.5s" repeatCount="indefinite"/>
   </line>
     <!-- rising embers -->
     <g fill="#ff2e63">
