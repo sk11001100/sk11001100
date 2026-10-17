@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320" role="img" aria-label="CODE NINJA — sk11001100, Senior Full-Stack Engineer">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d1117"/>
+      <stop offset="1" stop-color="#1a0b12"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.17" cy="0.5" r="0.35">
+      <stop offset="0" stop-color="#ff2e63" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#ff2e63" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity="0.035"/>
+    </pattern>
+    <linearGradient id="edge" x1="0" x2="1">
+      <stop offset="0" stop-color="#ff2e63" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#ff2e63"/>
+      <stop offset="1" stop-color="#ff2e63" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="blade" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff2e63" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#ff2e63" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="neon" x="-20%" y="-50%" width="140%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="card"><rect width="1200" height="320" rx="18"/></clipPath>
+    <style>
+      .mono { font-family: 'Fira Code', 'JetBrains Mono', Consolas, 'Courier New', monospace; }
+      .spin { transform-box: fill-box; transform-origin: center; animation: spin 5s linear infinite; }
+      .spin-rev { transform-box: fill-box; transform-origin: center; animation: spin 9s linear infinite reverse; }
+      .slash { stroke-dasharray: 520; stroke-dashoffset: 520; animation: slash 4s ease-out infinite; }
+      .kanji { animation: pulse 4s ease-in-out infinite; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      @keyframes slash {
+        0%, 8% { stroke-dashoffset: 520; opacity: 0; }
+        12% { opacity: 1; }
+        22% { stroke-dashoffset: 0; opacity: 1; }
+        40%, 100% { stroke-dashoffset: 0; opacity: 0; }
+      }
+      @keyframes pulse {
+        0%, 8% { opacity: 0.07; }
+        20% { opacity: 0.16; }
+        45%, 100% { opacity: 0.07; }
+      }
+    </style>
+  </defs>
+
+  <g clip-path="url(#card)">
+    <rect width="1200" height="320" fill="url(#bg)"/>
+    <rect width="1200" height="320" fill="url(#grid)"/>
+    <rect width="1200" height="320" fill="url(#glow)"/>
+
+    <!-- kanji 忍 (shinobi) + katana slash -->
+    <text class="kanji" x="1040" y="250" text-anchor="middle" font-size="250" font-weight="700" fill="#ff2e63" opacity="0.07">忍</text>
+    <path class="slash" d="M880 300 L1190 30" stroke="url(#blade)" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+    <!-- embers -->
+    <g fill="#ff2e63">
+      <circle cx="120" cy="330" r="2"><animate attributeName="cy" values="330;-10" dur="7s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;0" dur="7s" repeatCount="indefinite"/></circle>
+      <circle cx="300" cy="330" r="1.5"><animate attributeName="cy" values="330;-10" dur="9s" begin="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;0" dur="9s" begin="2s" repeatCount="indefinite"/></circle>
+      <circle cx="640" cy="330" r="2"><animate attributeName="cy" values="330;-10" dur="8s" begin="1s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0.8;0" dur="8s" begin="1s" repeatCount="indefinite"/></circle>
+      <circle cx="860" cy="330" r="1.5"><animate attributeName="cy" values="330;-10" dur="10s" begin="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;0" dur="10s" begin="3s" repeatCount="indefinite"/></circle>
+      <circle cx="1110" cy="330" r="2"><animate attributeName="cy" values="330;-10" dur="7.5s" begin="4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0.9;0" dur="7.5s" begin="4s" repeatCount="indefinite"/></circle>
+    </g>
+
+    <!-- shuriken -->
+    <g transform="translate(180 160)">
+      <circle r="78" fill="none" stroke="#ff2e63" stroke-opacity="0.25" stroke-dasharray="4 10"/>
+      <g class="spin-rev"><circle r="96" fill="none" stroke="#ff2e63" stroke-opacity="0.12" stroke-dasharray="40 20"/></g>
+      <g class="spin" filter="url(#neon)">
+        <path d="M0-58 L12-12 L58 0 L12 12 L0 58 L-12 12 L-58 0 L-12-12Z" fill="#ff2e63"/>
+        <path d="M0-58 L12-12 L0 0Z M58 0 L12 12 L0 0Z M0 58 L-12 12 L0 0Z M-58 0 L-12-12 L0 0Z" fill="#ffffff" fill-opacity="0.18"/>
+        <circle r="8" fill="#0d1117"/>
+      </g>
+    </g>
+
+    <!-- text -->
+    <g class="mono">
+      <text x="330" y="98" font-size="18" fill="#8b949e">// sk11001100 · the dojo</text>
+      <text x="326" y="168" font-size="74" font-weight="800" letter-spacing="6" fill="#ffffff">CODE <tspan fill="#ff2e63" filter="url(#neon)">NINJA</tspan></text>
+      <text x="330" y="210" font-size="23" fill="#c9d1d9">Senior Full-Stack Engineer</text>
+      <text x="330" y="258" font-size="18" fill="#e6edf3"><tspan fill="#ff2e63">~/dojo</tspan><tspan fill="#8b949e"> $ </tspan>ninja deploy --silent --precision=max <tspan fill="#ff2e63">█<animate attributeName="opacity" values="1;0" dur="1s" calcMode="discrete" repeatCount="indefinite"/></tspan></text>
+    </g>
+
+    <rect y="316" width="1200" height="4" fill="url(#edge)"/>
+  </g>
+</svg>
