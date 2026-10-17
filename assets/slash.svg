@@ -1,18 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 30" width="1200" height="30" role="img" aria-label="divider">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 12" width="1200" height="12" role="img" aria-label="divider">
   <defs>
     <linearGradient id="l" x1="0" x2="1">
       <stop offset="0" stop-color="#ff2e63" stop-opacity="0"/>
-      <stop offset="0.5" stop-color="#ff2e63"/>
+      <stop offset="0.5" stop-color="#ff2e63" stop-opacity="0.7"/>
       <stop offset="1" stop-color="#ff2e63" stop-opacity="0"/>
     </linearGradient>
-    <style>
-      .spin { transform-box: fill-box; transform-origin: center; animation: spin 4s linear infinite; }
-      @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
   </defs>
-  <rect x="0" y="14" width="570" height="2" fill="url(#l)"/>
-  <rect x="630" y="14" width="570" height="2" fill="url(#l)"/>
-  <g transform="translate(600 15)">
-    <path class="spin" d="M0-12 L3-3 L12 0 L3 3 L0 12 L-3 3 L-12 0 L-3-3Z" fill="#ff2e63"/>
-  </g>
+  <rect x="0" y="5" width="1200" height="1.5" fill="url(#l)"/>
 </svg>
