@@ -28,20 +28,20 @@
   </defs>
   <!-- flare: wide glow that flashes when the cut lands, then settles -->
   <line x1="700" y1="395" x2="1205" y2="112" stroke="url(#cut-g)" stroke-width="7" filter="url(#cut-blur)" stroke-dasharray="579" opacity="0">
-    <animate attributeName="stroke-dashoffset" values="579;0;0;579" keyTimes="0;0.0509;0.9545;1" calcMode="spline" keySplines="0.55 0 0.85 0.4;0 0 1 1;0 0 1 1" dur="5.5s" repeatCount="indefinite"/>
-    <animate attributeName="opacity" values="0;1;0.35;0.35;0;0" keyTimes="0;0.0509;0.1120;0.8364;0.9545;1" dur="5.5s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-dashoffset" values="579;0;0;579" keyTimes="0;0.0439;0.9390;1" calcMode="spline" keySplines="0.55 0 0.85 0.4;0 0 1 1;0 0 1 1" dur="4.1s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;1;0.35;0.35;0;0" keyTimes="0;0.0439;0.0966;0.7805;0.9390;1" dur="4.1s" repeatCount="indefinite"/>
   </line>
   <!-- the crimson edge, revealed behind the streak -->
   <line x1="700" y1="395" x2="1205" y2="112" stroke="url(#cut-g)" stroke-width="1.5" stroke-dasharray="579" opacity="0">
-    <animate attributeName="stroke-dashoffset" values="579;0;0;579" keyTimes="0;0.0509;0.9545;1" calcMode="spline" keySplines="0.55 0 0.85 0.4;0 0 1 1;0 0 1 1" dur="5.5s" repeatCount="indefinite"/>
-    <animate attributeName="opacity" values="1;1;1;0;0" keyTimes="0;0.0509;0.8364;0.9545;1" dur="5.5s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-dashoffset" values="579;0;0;579" keyTimes="0;0.0439;0.9390;1" calcMode="spline" keySplines="0.55 0 0.85 0.4;0 0 1 1;0 0 1 1" dur="4.1s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;1;1;0;0" keyTimes="0;0.0439;0.7805;0.9390;1" dur="4.1s" repeatCount="indefinite"/>
   </line>
   <!-- the streak: a short white-hot blade tip, accelerating along the cut -->
   <line x1="700" y1="395" x2="1205" y2="112" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" filter="url(#cut-blur2)" stroke-dasharray="110 579">
-    <animate attributeName="stroke-dashoffset" values="110;-579;-579" keyTimes="0;0.0509;1" calcMode="spline" keySplines="0.55 0 0.85 0.4;0 0 1 1" dur="5.5s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-dashoffset" values="110;-579;-579" keyTimes="0;0.0439;1" calcMode="spline" keySplines="0.55 0 0.85 0.4;0 0 1 1" dur="4.1s" repeatCount="indefinite"/>
   </line>
   <line x1="700" y1="395" x2="1205" y2="112" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="110 579">
-    <animate attributeName="stroke-dashoffset" values="110;-579;-579" keyTimes="0;0.0509;1" calcMode="spline" keySplines="0.55 0 0.85 0.4;0 0 1 1" dur="5.5s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-dashoffset" values="110;-579;-579" keyTimes="0;0.0439;1" calcMode="spline" keySplines="0.55 0 0.85 0.4;0 0 1 1" dur="4.1s" repeatCount="indefinite"/>
   </line>
     <!-- rising embers -->
     <g fill="#ff2e63">
