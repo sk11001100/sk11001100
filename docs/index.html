@@ -38,7 +38,7 @@ a,button{cursor:none;color:inherit}
 #hint{left:0;right:0;bottom:26px;text-align:center;opacity:0;transition:opacity 1.6s;pointer-events:none}
 #hint.on{opacity:.8}
 main section{height:100vh;scroll-snap-align:start}
-.cap{position:fixed;left:50%;bottom:62px;transform:translate(-50%,8px);width:min(660px,calc(100% - 32px));text-align:center;z-index:4;
+.cap{position:fixed;left:50%;bottom:34px;transform:translate(-50%,8px);width:min(660px,calc(100% - 32px));text-align:center;z-index:4;
   opacity:0;visibility:hidden;transition:opacity .9s,transform .9s,visibility 0s .9s;text-shadow:0 0 18px #000,0 0 6px #000}
 .cap.on{opacity:1;visibility:visible;transform:translate(-50%,0);transition:opacity 1.2s .35s,transform 1.2s .35s,visibility 0s}
 .cap .b{display:none}
@@ -768,7 +768,7 @@ function camera() {
   const asp = canvas.width / canvas.height, fov = 40 * Math.PI / 180;
   const hfov = 2 * Math.atan(Math.tan(fov / 2) * asp);
   const dist = Math.max(6.95, 3.5 / Math.tan(hfov / 2)), pitch = .135;
-  const tgt = [0, asp < 1 ? .6 : 1.86, 0];   // on a tall screen the curtain sits higher, above the words
+  const tgt = [0, asp < 1 ? .6 : 1.95, 0];   // on a tall screen the curtain sits higher, above the words
   const e = [tgt[0] + dist * Math.sin(S.yaw) * Math.cos(pitch), tgt[1] + dist * Math.sin(pitch), tgt[2] + dist * Math.cos(S.yaw) * Math.cos(pitch)];
   const VP = mm(persp(fov, asp, .1, 80), look(e, tgt));
   CAM.e = e; CAM.VP = VP; CAM.inv = inv(VP);
