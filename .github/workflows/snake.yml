@@ -21,14 +21,14 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      # generates a snake game from the contribution graph, in light and crimson-dark variants
+      # generates a snake game from the contribution graph, in light and starlight-dark variants
       - name: generate snake svg
         uses: Platane/snk/svg-only@v3
         with:
           github_user_name: ${{ github.repository_owner }}
           outputs: |
-            dist/snake.svg?color_snake=#ff2e63
-            dist/snake-dark.svg?palette=github-dark&color_snake=#ff2e63&color_dots=#161b22,#4a1524,#7d1f37,#c2264c,#ff2e63
+            dist/snake.svg?color_snake=#2f6fa8&color_dots=#ebedf0,#cfe3f5,#9cc7ea,#5e9fd4,#2f6fa8
+            dist/snake-dark.svg?palette=github-dark&color_snake=#a9d9ff&color_dots=#161b22,#0e2a47,#1f4f7a,#4b8cc2,#a9d9ff
 
       # push the content of dist/ to the `output` branch
       # files are served at https://raw.githubusercontent.com/<user>/<user>/output/<file>

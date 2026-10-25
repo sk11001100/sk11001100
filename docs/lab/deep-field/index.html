@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lei Kai · Deep Field</title>
+<meta name="description" content="Lei Kai, senior full-stack engineer since 2017. The further you look, the earlier the light.">
+<meta name="theme-color" content="#060912">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--sky:#060912;--star:#eef1f7;--dim:rgba(238,241,247,.62);--faint:rgba(238,241,247,.38);--line:rgba(238,241,247,.14);--acc:#9ad4ff;--warm:#ffd9a6;
+  --fd:'Instrument Serif',Georgia,'Times New Roman',serif;--fb:'Inter',system-ui,-apple-system,sans-serif;--fm:'JetBrains Mono',ui-monospace,Menlo,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--sky);color:var(--star);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{font-family:var(--fb);font-weight:300;overflow-x:hidden;background:var(--sky)}
+::selection{background:rgba(154,212,255,.25)}
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+#track{position:relative;width:1px;visibility:hidden;pointer-events:none}
+#labels{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.txt{position:absolute;left:0;top:0;opacity:0;visibility:hidden;width:min(700px,88vw);text-align:center;transform:translate(-50%,-50%);will-change:transform,opacity;pointer-events:none;text-shadow:0 1px 16px rgba(6,9,18,.9),0 0 3px rgba(6,9,18,.7)}
+.chips span{background:rgba(6,9,18,.45)}
+.txt.on a,.txt.on button{pointer-events:auto}
+.k{font-family:var(--fm);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-bottom:22px}
+h1{font-family:var(--fd);font-weight:400;font-size:clamp(42px,6.4vw,100px);line-height:1;letter-spacing:-.012em;color:var(--star)}
+h1 em{font-style:italic;color:#d9e6f5}
+.tag{font-family:var(--fd);font-style:italic;font-size:clamp(20px,2.3vw,32px);color:var(--dim);margin-top:14px}
+.p{font-size:clamp(15px,1.2vw,18px);line-height:1.72;color:var(--dim);max-width:560px;margin:26px auto 0}
+.role{font-family:var(--fm);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-top:18px}
+.n{font-family:var(--fm);font-size:10px;letter-spacing:.3em;color:var(--faint);margin-bottom:12px}
+.rule{font-family:var(--fd);font-size:clamp(26px,3.6vw,56px);line-height:1.1;color:var(--star)}
+.rule em{font-style:italic;color:var(--dim)}
+.stat b{display:block;font-family:var(--fd);font-weight:400;font-size:clamp(54px,7vw,104px);line-height:1;color:var(--star)}
+.stat span{display:block;font-family:var(--fm);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint);margin-top:10px}
+.cmd{font-family:var(--fm);font-size:12px;letter-spacing:.06em;color:var(--faint)}
+.cmd span{display:block;color:var(--dim);margin-top:8px}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:26px}
+.chips span{font-family:var(--fm);font-size:10px;letter-spacing:.1em;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:6px 11px}
+.links{margin-top:22px;display:flex;justify-content:center;gap:26px}
+.links a,.contacts a,.contacts button{color:var(--star);text-decoration:none;font-family:var(--fm);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.links a{border-bottom:1px solid var(--line);padding-bottom:3px;transition:border-color .3s}
+.links a:hover{border-color:var(--acc)}
+.disc{font-family:var(--fd);font-size:clamp(40px,5vw,78px);line-height:1;color:var(--star)}
+.tools{font-family:var(--fm);font-size:10.5px;letter-spacing:.12em;color:var(--dim);line-height:2;margin-top:14px;max-width:420px;margin-left:auto;margin-right:auto}
+.contacts{display:grid;gap:4px;margin:30px auto 0;max-width:460px}
+.contacts a,.contacts button{display:grid;grid-template-columns:72px 1fr auto;align-items:center;gap:14px;background:none;border:0;border-top:1px solid var(--line);padding:14px 2px;text-align:left;cursor:pointer;letter-spacing:.08em;text-transform:none;transition:color .3s}
+.contacts span{color:var(--faint);font-size:10px;letter-spacing:.2em;text-transform:uppercase}
+.contacts b{font-family:var(--fb);font-weight:400;font-size:15px;letter-spacing:0;color:var(--star)}
+.contacts i{font-style:normal;color:var(--acc);font-size:10px;letter-spacing:.18em;text-transform:uppercase;opacity:.75;transition:opacity .3s}
+.contacts a:hover i,.contacts button:hover i{opacity:1}
+.end{font-size:clamp(36px,5vw,80px)}
+#hud{position:fixed;inset:0;z-index:3;pointer-events:none;font-family:var(--fm);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint)}
+#hud>div{position:absolute;padding:0;white-space:nowrap}
+#hud .tl{left:28px;top:26px;color:var(--dim)}
+#hud .tr{right:28px;top:26px;text-align:right}
+#hud .bl{left:28px;bottom:26px}
+#hud .br{right:28px;bottom:26px;text-align:right}
+#hud .tl b{font-weight:400;color:var(--star)}
+#hud .st{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--acc);box-shadow:0 0 10px var(--acc);margin-right:9px;vertical-align:1px;animation:br 3.6s ease-in-out infinite}
+@keyframes br{0%,100%{opacity:.35}50%{opacity:1}}
+#prog{position:absolute;left:0;bottom:0;height:1px;width:100%;background:rgba(238,241,247,.5);transform-origin:0 50%;transform:scaleX(0)}
+#hud .bl,#hud .br,#prog{transition:color 1.2s,background-color 1.2s}
+body.dawn #hud .bl,body.dawn #hud .br{color:rgba(6,9,18,.6)}
+body.dawn #prog{background:rgba(6,9,18,.5)}
+#hint{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);color:var(--faint);transition:opacity 1s}
+#hint i{display:block;width:1px;height:26px;margin:10px auto 0;background:linear-gradient(var(--faint),transparent);animation:dr 2.4s ease-in-out infinite}
+@keyframes dr{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+#pre{position:fixed;inset:0;z-index:9;background:var(--sky);display:grid;place-items:center;transition:opacity 1.6s ease}
+#pre.off{opacity:0;pointer-events:none}
+#pre i{display:block;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 18px 4px rgba(154,212,255,.6);animation:pl 2.2s ease-in-out infinite}
+@keyframes pl{0%,100%{transform:scale(.6);opacity:.4}50%{transform:scale(1.4);opacity:1}}
+#pre p{position:absolute;left:50%;top:calc(50% + 42px);transform:translateX(-50%);font-family:var(--fm);font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--faint)}
+#cur{position:fixed;left:0;top:0;width:6px;height:6px;border-radius:50%;background:var(--star);pointer-events:none;z-index:8;transform:translate(-50%,-50%);transition:width .25s,height .25s,opacity .4s;opacity:0;mix-blend-mode:difference}
+#cur.big{width:34px;height:34px;background:rgba(238,241,247,.5)}
+@media(pointer:fine){body{cursor:none}a,button{cursor:none}#cur{opacity:1}}
+@media(max-width:760px){
+  #hud .tl,#hud .bl{left:18px}#hud .tr,#hud .br{right:18px}#hud .tl,#hud .tr{top:18px}#hud .bl,#hud .br{bottom:18px}
+  #hud .tr{display:none}#hint{bottom:18px}
+  .k{font-size:9.5px;letter-spacing:.2em;margin-bottom:16px}
+  .p{font-size:14px;line-height:1.65;margin-top:18px}
+  .contacts{max-width:330px}.contacts a,.contacts button{grid-template-columns:62px 1fr auto;padding:12px 0}.contacts b{font-size:13.5px}
+  .chips span{font-size:9px;padding:5px 9px}
+}
+html.nogl #gl,html.nogl #track,html.nogl #hint,html.nogl #cur{display:none}
+html.nogl body{cursor:auto;background:radial-gradient(ellipse at 50% 0%,#0d1526,var(--sky) 60%)}
+html.nogl #labels{position:static;overflow:visible;padding:30vh 0 20vh}
+html.nogl .txt{position:relative;left:auto;top:auto;transform:none!important;opacity:1!important;visibility:visible!important;filter:none!important;margin:16vh auto;pointer-events:auto}
+@media(prefers-reduced-motion:reduce){#hint i,#pre i,#hud .st{animation:none}}
+</style>
+</head>
+<body>
+<div id="pre" aria-hidden="true"><i></i><p>Lei Kai</p></div>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div id="track"></div>
+<main id="labels"></main>
+<div id="hud" aria-hidden="true">
+  <div class="tl"><b>Lei Kai</b> &nbsp;·&nbsp; Deep field</div>
+  <div class="tr"><span class="st"></span>Open to lead roles &nbsp;·&nbsp; Xianyang <span id="clk">--:--</span></div>
+  <div class="bl"><span id="idx">01</span> &nbsp;—&nbsp; <span id="sec">Arrival</span></div>
+  <div class="br">Light from <span id="yr">2026</span></div>
+  <div id="hint">Scroll<i></i></div>
+  <div id="prog"></div>
+</div>
+<div id="cur"></div>
+
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}
+</script>
+<script type="module">
+/* ============================================================
+   DEEP FIELD — Lei Kai
+   One continuous dive through a star field. The further you
+   look, the earlier the light: every station is older work.
+   ============================================================ */
+const $ = s => document.querySelector(s);
+const Q = new URLSearchParams(location.search);
+const mobile = matchMedia('(max-width:760px)').matches || matchMedia('(pointer:coarse)').matches;
+const low = mobile || (navigator.hardwareConcurrency || 8) <= 4;
+const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* ---------- journey ---------- */
+const NAMES = ['Arrival','How I work','Identity','Camelot','Evidence Locker','Midinote','Shinetech','Tools','Signal','Dawn'];
+const YEARS = [2026,2026,2026,2025,2022,2020,2018,2017,2017,2026];
+const LEN   = [70, 160, 120, 80, 80, 80, 80, 160, 80];          // length of each station's stretch of sky
+const N = NAMES.length;
+const Z = [0]; LEN.forEach(l => Z.push(Z[Z.length - 1] - l));   // world z of each station
+const L = -Z[N - 1];
+const S = i => Z[i];
+
+const PROJECTS = [
+  {k:'01 / 04 · 2024 – 2026 · Camelot Technology · Beijing', h:'Money in the pot.', r:'Senior Full-Stack Developer &amp; Team Lead',
+   p:'Social wagers between friends: challenge someone to put their money where their mouth is. I led the team building moneyinthepot.com and camelot.fm, from product and web to the services underneath.',
+   c:['TypeScript','Next.js','PHP · Laravel · CI','Python','C#'], l:[['moneyinthepot.com','https://moneyinthepot.com'],['camelot.fm','https://camelot.fm']]},
+  {k:'02 / 04 · 2021 – 2024 · Evidence Locker · Beijing', h:'Proof that can\'t be touched.', r:'Full-Stack Developer',
+   p:'Built with digital-forensics experts for law enforcement and legal teams. Data is acquired from the cloud and preserved in a forensically sound way. Every byte has to hold up in court.',
+   c:['React','React Native','Node · Express','Python · Django','PHP','Jest · Cypress','AWS'], l:[['evidencelocker.com','https://evidencelocker.com']]},
+  {k:'03 / 04 · 2019 – 2021 · Midinote · Hong Kong', h:'Notes that think in threads.', r:'Full-Stack Software Engineer · Solo',
+   p:'A tag-based note-taking app where notes grow into a living mind map. I built the whole product alone: offline sync, data model, visualisation and the servers underneath.',
+   c:['React · Redux','Angular','Node · Express','CouchDB · PouchDB','Nginx','AWS'], l:[['midinote.me','https://midinote.me']]},
+  {k:'04 / 04 · 2017 – 2019 · Shinetech Software · Beijing', h:'A bridge across time zones.', r:'Front-End Developer · Remote Team Lead',
+   p:'Led a remote front-end team building custom software for international clients, including New York startups. Set the coding standards and the review process, and delivered on time across isolated teams.',
+   c:['JavaScript','Responsive UI','Code review','Remote leadership'], l:[['shinetechsoftware.com','https://shinetechsoftware.com']]}
+];
+const RULES = [
+  ['Change little.', 'Land it right.'],
+  ['Leave nothing behind.', 'No dead code, no mystery config.'],
+  ['See in the dark.', 'Logs, metrics and alerts before launch day.'],
+  ['Earn every tool.', 'Learn it deeply. Use it where it pays.'],
+  ['Teach what I know.', 'Reviews that teach, standards that outlive me.']
+];
+const TOOLS = [
+  ['Frontend', 'TypeScript · JavaScript · React · Next.js · Redux · React Native · Angular'],
+  ['Backend',  'Python · Node.js · PHP · Django · Laravel · Express · C#'],
+  ['AI',       'LLMs · RAG pipelines · Inference APIs · ML integration'],
+  ['Data',     'PostgreSQL · MySQL · Redis · MongoDB · CouchDB'],
+  ['Cloud',    'AWS · Docker · Kubernetes · CI/CD · Nginx · Kafka'],
+  ['Quality',  'Code review · Jest · Cypress · Flow']
+];
+const STATS = [['2017','first release in production'],['4','companies, one mission each'],['2','teams led'],['1','product built solo']];
+
+/* ---------- labels (text that lives in the sky) ---------- */
+const LAB = [];
+const add = (z, x, y, html, far = 44, near = 10) => LAB.push({z, x, y, html, far, near});
+add(S(0) - 40, 0, -7.6, `<p class="k">Senior Full-Stack Engineer · since 2017</p><p class="tag">Everything you see here already happened.</p>`, 90, 6);
+add(S(1) + 6, 0, 0, `<p class="k">01 · How I work</p><h1>Five rules.<br><em>No exceptions.</em></h1>`, 40, 9);
+RULES.forEach((r, i) => add(S(1) - 20 - i * 23, [-6, 6, -5, 6, -6][i], [2, -3, 3, -2, 2][i], `<p class="n">0${i + 1}</p><p class="rule">${r[0]} <em>${r[1]}</em></p>`, 40, 9));
+add(S(2) + 2, 0, 1, `<p class="k">02 · Identity</p><h1>Judge me by what<br><em>runs in production.</em></h1><p class="p">Full-stack developer, engineer and architect. I've led teams in Beijing, built a product alone in Hong Kong, and shipped forensic-grade software for law enforcement. TypeScript and Python by default; PHP, C#, cloud and LLMs when the work asks for them.</p>`, 50, 8);
+STATS.forEach((s, i) => add(S(2) - 30 - i * 18, [-9, 8, -8, 9][i], [4, 3, -3, -4][i], `<p class="stat"><b>${s[0]}</b><span>${s[1]}</span></p>`, 36, 9));
+PROJECTS.forEach((p, i) => add(S(3 + i) + 2, 0, 0,
+  `<p class="k">${p.k}</p><h1>${p.h}</h1><p class="role">${p.r}</p><p class="p">${p.p}</p><p class="chips">${p.c.map(c => `<span>${c}</span>`).join('')}</p><p class="links">${p.l.map(l => `<a href="${l[1]}" target="_blank" rel="noopener">${l[0]} ↗</a>`).join('')}</p>`, 48, 8));
+add(S(7) + 2, 0, 0, `<p class="k">07 · Tools</p><h1>Six disciplines,<br><em>one hand.</em></h1><p class="p">Every tool here has been used in production. Nothing is collected for show. Fly through the clusters.</p>`, 48, 8);
+TOOLS.forEach((t, i) => add(S(7) - 26 - i * 22, [-8, 8, -7, 8, -8, 7][i], [3, -3, 4, -2, 3, -4][i], `<p class="disc">${t[0]}</p><p class="tools">${t[1]}</p>`, 40, 9));
+add(S(8) + 2, 0, 0, `<p class="k">08 · Signal</p><h1>Send a signal.</h1><p class="p">Hiring for a senior or lead role, or holding a problem nobody else wants to touch? I answer quietly, and quickly.</p>
+<div class="contacts">
+<button id="copy" type="button"><span>Email</span><b>coblerpeach354@gmail.com</b><i>Copy</i></button>
+<a href="https://t.me/kailei0325" target="_blank" rel="noopener"><span>Telegram</span><b>@kailei0325</b><i>Open ↗</i></a>
+<a href="https://github.com/sk11001100" target="_blank" rel="noopener"><span>GitHub</span><b>sk11001100</b><i>Open ↗</i></a>
+<a href="../../assets/Lei-Kai-CV.pdf" target="_blank" rel="noopener"><span>Résumé</span><b>Lei-Kai-CV.pdf</b><i>PDF ↓</i></a>
+</div>`, 50, 8);
+add(S(9) - 18, 0, 0, `<h1 class="end">All of it is <em>still running.</em></h1><p class="k" style="margin:26px 0 0">© 2026 Lei Kai · Xianyang, China</p>`, 70, 0);
+
+const labels = $('#labels');
+LAB.forEach(l => { const e = document.createElement('div'); e.className = 'txt'; e.innerHTML = l.html; labels.appendChild(e); l.el = e; });
+
+$('#copy').addEventListener('click', async e => {
+  const b = e.currentTarget, i = b.querySelector('i');
+  try { await navigator.clipboard.writeText('coblerpeach354@gmail.com'); i.textContent = 'Copied'; setTimeout(() => i.textContent = 'Copy', 1800); }
+  catch { location.href = 'mailto:coblerpeach354@gmail.com'; }
+});
+
+/* ---------- scroll ---------- */
+const track = $('#track');
+let W = innerWidth, H = innerHeight, maxScroll = 1, tprog = 0, prog = 0, vel = 0, scrolled = false;
+function measure() {
+  W = innerWidth; H = innerHeight;
+  track.style.height = Math.round(H * (1 + L / 46)) + 'px';
+  maxScroll = Math.max(1, track.offsetHeight - H);
+}
+measure();
+addEventListener('resize', () => { const p = scrollY / maxScroll; measure(); scrollTo(0, p * maxScroll); G && G.resize(); });
+addEventListener('scroll', () => { tprog = Math.min(1, Math.max(0, scrollY / maxScroll)); if (!scrolled && scrollY > 40) { scrolled = true; $('#hint').style.opacity = 0; } }, {passive: true});
+
+/* ---------- clock ---------- */
+const clk = $('#clk'), fmt = new Intl.DateTimeFormat('en-GB', {timeZone: 'Asia/Shanghai', hour: '2-digit', minute: '2-digit', hour12: false});
+const tick = () => clk.textContent = fmt.format(new Date()); tick(); setInterval(tick, 15000);
+
+/* ---------- cursor ---------- */
+const cur = $('#cur'); let mx = 0, my = 0, smx = 0, smy = 0;
+addEventListener('pointermove', e => {
+  mx = e.clientX / W * 2 - 1; my = -(e.clientY / H * 2 - 1);
+  cur.style.transform = `translate(${e.clientX}px,${e.clientY}px) translate(-50%,-50%)`;
+  cur.classList.toggle('big', !!e.target.closest('a,button'));
+}, {passive: true});
+
+/* ---------- WebGL ---------- */
+let G = null;
+async function boot() {
+  let THREE, EffectComposer, RenderPass, UnrealBloomPass, ShaderPass;
+  try {
+    THREE = await import('three');
+    ({EffectComposer} = await import('three/addons/postprocessing/EffectComposer.js'));
+    ({RenderPass} = await import('three/addons/postprocessing/RenderPass.js'));
+    ({UnrealBloomPass} = await import('three/addons/postprocessing/UnrealBloomPass.js'));
+    ({ShaderPass} = await import('three/addons/postprocessing/ShaderPass.js'));
+    G = build(THREE, {EffectComposer, RenderPass, UnrealBloomPass, ShaderPass});
+  } catch (e) { console.warn('no webgl', e); document.documentElement.classList.add('nogl'); }
+  await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 2500))]);
+  G && G.name();
+  const at = +Q.get('at');
+  if (Q.has('at') && at >= 0) {   // test hook: ?at=<station index, fractional>
+    const a = Math.min(N - 2, Math.floor(at)), z = Z[a] + (Z[a + 1] - Z[a]) * (at - a);
+    void document.body.offsetHeight; scrollTo(0, -z / L * maxScroll); tprog = prog = Math.min(1, scrollY / maxScroll); if (G) G.skipIntro();
+  }
+  $('#pre').classList.add('off');
+  if (!G) return;
+  let last = performance.now();
+  const loop = now => {
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    const k = 1 - Math.exp(-dt * (reduce ? 10 : 3.2));
+    const pp = prog; prog += (tprog - prog) * k; vel = (prog - pp) / Math.max(dt, 1e-3);
+    smx += (mx - smx) * (1 - Math.exp(-dt * 2.5)); smy += (my - smy) * (1 - Math.exp(-dt * 2.5));
+    G.frame(dt, now / 1000);
+    hud();
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+}
+
+/* ---------- HUD ---------- */
+const idxEl = $('#idx'), secEl = $('#sec'), yrEl = $('#yr'), progEl = $('#prog');
+let curIdx = -1;
+function hud() {
+  const cz = -prog * L;
+  let a = 0; while (a < N - 2 && Z[a + 1] > cz) a++;          // station behind us
+  const f = (Z[a] - cz) / (Z[a] - Z[a + 1]), i = f > .5 ? a + 1 : a;
+  if (i !== curIdx) { curIdx = i; idxEl.textContent = String(i + 1).padStart(2, '0'); secEl.textContent = NAMES[i]; }
+  const y = Math.round(YEARS[a] + (YEARS[a + 1] - YEARS[a]) * f);
+  yrEl.textContent = i === N - 1 ? 'now' : y;
+  progEl.style.transform = `scaleX(${prog})`;
+  document.body.classList.toggle('dawn', prog > .94);
+}
+
+/* ============================================================ scene */
+function build(THREE, P) {
+  const canvas = $('#gl');
+  const renderer = new THREE.WebGLRenderer({canvas, antialias: false, alpha: false, powerPreference: 'high-performance'});
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5));
+  renderer.setSize(W, H);
+  renderer.setClearColor(0x000000, 1);
+  const scene = new THREE.Scene();
+  const FOV = mobile ? 74 : 62;
+  const camera = new THREE.PerspectiveCamera(FOV, W / H, .1, 420);
+  camera.rotation.order = 'YXZ';
+  const tanHalf = () => Math.tan(camera.fov * Math.PI / 360);
+  const rnd = Math.random;
+  const gauss = () => { let u = 0, v = 0; while (!u) u = rnd(); while (!v) v = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(6.283185 * v); };
+
+  /* ---- shared star shader ---- */
+  const starVS = `
+    uniform float uTime,uPx,uCamZ,uL,uM,uFade,uWrap,uFar,uBoost,uAspect,uMouseR;
+    uniform vec2 uMouse;
+    attribute float aSize,aTint,aPhase;
+    varying vec3 vCol; varying float vA;
+    vec3 tint(float t){ vec3 b=vec3(.60,.74,1.),w=vec3(1.),o=vec3(1.,.80,.55); return t<.5?mix(b,w,t*2.):mix(w,o,(t-.5)*2.); }
+    void main(){
+      vec3 p=position;
+      if(uWrap>.5){ p.z=mod(p.z-uCamZ+uM,uL)-uL+uM+uCamZ; }
+      vec4 mv=modelViewMatrix*vec4(p,1.);
+      float d=max(.001,-mv.z);
+      float tw=.78+.22*sin(uTime*(1.2+aPhase*2.6)+aPhase*61.);
+      float far=smoothstep(uFar,uFar*.4,d);
+      float near=smoothstep(2.,16.,d);
+      vA=far*near*uFade*tw*uBoost;
+      vCol=tint(aTint);
+      vec4 cp=projectionMatrix*mv;
+      vec2 ndc=cp.xy/cp.w;
+      vec2 dm=ndc-uMouse; dm.x*=uAspect; float l=length(dm);
+      float push=exp(-l*l/(uMouseR*uMouseR))*.028*smoothstep(400.,30.,d);
+      ndc+=dm/(l+1e-4)*push*vec2(1./uAspect,1.);
+      cp.xy=ndc*cp.w;
+      gl_Position=cp;
+      gl_PointSize=clamp(aSize*uPx/d*uBoost,1.,11.);
+    }`;
+  const starFS = `
+    varying vec3 vCol; varying float vA;
+    void main(){
+      vec2 c=gl_PointCoord-.5; float r=length(c)*2.; if(r>1.) discard;
+      float a=pow(1.-r,2.4); float core=smoothstep(.34,0.,r);
+      gl_FragColor=vec4(vCol*(a+core*.9),(a*.85+core)*vA);
+    }`;
+  const mats = [];
+  const starMat = (o = {}) => {
+    const m = new THREE.ShaderMaterial({vertexShader: starVS, fragmentShader: starFS, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending,
+      uniforms: {uTime: {value: 0}, uPx: {value: 1}, uCamZ: {value: 0}, uL: {value: L + 40}, uM: {value: 12}, uFade: {value: 1}, uWrap: {value: o.wrap ? 1 : 0}, uFar: {value: o.far || 190}, uBoost: {value: 1}, uAspect: {value: W / H}, uMouse: {value: new THREE.Vector2(0, 0)}, uMouseR: {value: .22}}});
+    mats.push(m); return m;
+  };
+  const geo = (n, fill) => {
+    const pos = new Float32Array(n * 3), size = new Float32Array(n), tint = new Float32Array(n), ph = new Float32Array(n);
+    let k = 0; const put = (x, y, z, s, t) => { if (k >= n) return; pos[k * 3] = x; pos[k * 3 + 1] = y; pos[k * 3 + 2] = z; size[k] = s; tint[k] = t; ph[k] = rnd(); k++; };
+    fill(put);
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('aSize', new THREE.BufferAttribute(size, 1));
+    g.setAttribute('aTint', new THREE.BufferAttribute(tint, 1));
+    g.setAttribute('aPhase', new THREE.BufferAttribute(ph, 1));
+    g.setDrawRange(0, k);
+    return g;
+  };
+  const points = (g, m) => { const p = new THREE.Points(g, m); p.frustumCulled = false; scene.add(p); return p; };
+
+  /* ---- 1. the endless field: three box layers so the sky is even in every direction ---- */
+  [[low ? 50000 : 150000, 240, 240], [low ? 18000 : 55000, 110, 120], [low ? 8000 : 26000, 42, 60]].forEach(([n, half, far]) => {
+    points(geo(n, put => {
+      for (let i = 0; i < n; i++) put((rnd() * 2 - 1) * half, (rnd() * 2 - 1) * half, -rnd() * (L + 40), .035 + Math.pow(rnd(), 7) * .5, Math.pow(rnd(), 1.4));
+    }), starMat({wrap: true, far}));
+  });
+
+  /* ---- 2. the name, aligned from the origin ---- */
+  let nameObj = null;
+  function makeName() {
+    if (nameObj) { scene.remove(nameObj); nameObj.geometry.dispose(); }
+    const d0 = 42, hh = d0 * tanHalf(), hw = hh * W / H;
+    const cv = document.createElement('canvas'); cv.width = 1600; cv.height = 420;
+    const c = cv.getContext('2d'); c.fillStyle = '#fff'; c.textBaseline = 'middle'; c.textAlign = 'center';
+    c.font = '400 300px "Instrument Serif", Georgia, serif'; c.letterSpacing = '24px';
+    c.fillText('LEI KAI', 800, 215);
+    const img = c.getImageData(0, 0, 1600, 420).data;
+    const textW = c.measureText('LEI KAI').width || 1100;
+    const tw = Math.min(hw * 2 * (mobile ? .84 : .58), hh * 2 * 1.4), sc = tw / textW;   // world units per canvas px
+    const step = mobile ? 3 : 2, pts = [];
+    for (let y = 0; y < 420; y += step) for (let x = 0; x < 1600; x += step) if (img[(y * 1600 + x) * 4 + 3] > 128 && rnd() < (mobile ? .5 : .45)) pts.push([(x - 800 + (rnd() - .5) * step * 1.6) * sc, -(y - 215 + (rnd() - .5) * step * 1.6) * sc + 2.2]);
+    const g = geo(pts.length, put => {
+      for (const [x, y] of pts) { const d = d0 + (rnd() - .35) * 44; put(x * d / d0, y * d / d0, -d, .1 + rnd() * .22, .25 + rnd() * .5); }
+    });
+    nameObj = points(g, starMat({far: 160}));
+  }
+
+  /* ---- 3. galaxies for each mission ---- */
+  const GN = low ? 7000 : 26000;
+  const spiral = (put, cx, cy, arms, twist, count, R, rot = 0, scatter = .22) => {
+    for (let i = 0; i < count; i++) {
+      const r = R * Math.pow(rnd(), .55), a = i % arms, core = 1 - r / R;
+      const th = rot + a * 6.283185 / arms + r / R * twist + gauss() * scatter * (1 + .6 * core);
+      put(cx + r * Math.cos(th) + gauss() * .25, cy + r * Math.sin(th) + gauss() * .25, gauss() * (R * .025 + core * core * R * .09),
+        .04 + rnd() * .08 + core * core * core * .1 * rnd(), core > .72 ? .5 + core * .5 : .12 + rnd() * .42);
+    }
+  };
+  const halo = (put, count, R) => { for (let i = 0; i < count; i++) { const r = R * Math.pow(rnd(), .4); const t = rnd() * 6.283185, p = Math.acos(2 * rnd() - 1); put(r * Math.sin(p) * Math.cos(t), r * Math.sin(p) * Math.sin(t), r * Math.cos(p) * .35, .04 + rnd() * .07, .1 + rnd() * .5); } };
+  const GAL = [
+    {kind: 'spiral',  at: [10, -4, S(3) - 12],  rot: [1.05, .35, 0]},
+    {kind: 'ring',    at: [-10, 5, S(4) - 12],  rot: [.95, -.4, 0]},
+    {kind: 'threads', at: [9, 6, S(5) - 12],    rot: [1.2, .5, .3]},
+    {kind: 'merge',   at: [-9, -5, S(6) - 12],  rot: [.9, -.3, .2]}
+  ];
+  for (const gdef of GAL) {
+    const R = 17;
+    const g = geo(GN, put => {
+      if (gdef.kind === 'spiral') { spiral(put, 0, 0, 2, 2.7, GN * .9, R); halo(put, GN * .1, R * 1.2); }
+      if (gdef.kind === 'threads') { spiral(put, 0, 0, 3, 3.6, GN * .88, R, 0, .14); halo(put, GN * .12, R * 1.3); }
+      if (gdef.kind === 'ring') {
+        for (let i = 0; i < GN * .68; i++) { const r = R * (.8 + gauss() * .05), t = rnd() * 6.283185; put(r * Math.cos(t), r * Math.sin(t), gauss() * R * .03, .05 + rnd() * .12, .1 + rnd() * .4); }
+        for (let i = 0; i < GN * .2; i++) { const r = R * .24 * Math.pow(rnd(), .5), t = rnd() * 6.283185, c = 1 - r / (R * .24); put(r * Math.cos(t), r * Math.sin(t), gauss() * R * .05 * (1 + c), .04 + rnd() * .08 + c * c * .08, .55 + rnd() * .45); }
+        halo(put, GN * .12, R * 1.1);
+      }
+      if (gdef.kind === 'merge') {
+        spiral(put, -R * .55, -R * .15, 2, 3.4, GN * .4, R * .72, .4);
+        spiral(put, R * .55, R * .2, 2, 3.4, GN * .34, R * .62, 2.3);
+        for (let i = 0; i < GN * .14; i++) { const t = rnd(), x = -R * .55 + t * R * 1.1 + gauss() * .8, y = -R * .15 + t * R * .35 + Math.sin(t * 3.14159) * R * .45 + gauss() * .8; put(x, y, gauss() * R * .04, .04 + rnd() * .08, .2 + rnd() * .4); }
+        for (let i = 0; i < GN * .12; i++) { const t = rnd(), s = i % 2 ? 1 : -1, a = t * 2.2, r = R * (.5 + t * 1.3); put(s * R * .55 + r * Math.cos(a + (s > 0 ? 1.2 : 3.9)), s * R * .18 + r * Math.sin(a + (s > 0 ? 1.2 : 3.9)), gauss() * R * .05, .035 + rnd() * .06, .15 + rnd() * .4); }
+      }
+    });
+    const p = points(g, starMat({far: 200}));
+    p.position.set(...gdef.at); p.rotation.set(...gdef.rot);
+  }
+  /* tool clusters sit around each discipline label */
+  const CN = low ? 600 : 1800;
+  LAB.filter(l => l.html.startsWith('<p class="disc">')).forEach(l => {
+    const g = geo(CN, put => { for (let i = 0; i < CN; i++) { const r = 7 * Math.pow(rnd(), .6) + Math.abs(gauss()) * 2, t = rnd() * 6.283185, p = Math.acos(2 * rnd() - 1); put(r * Math.sin(p) * Math.cos(t), r * Math.sin(p) * Math.sin(t) * .7, r * Math.cos(p) * 1.6, .06 + rnd() * .14 + (r < 2 ? .15 : 0), .3 + rnd() * .5); } });
+    const p = points(g, starMat({far: 150})); p.position.set(l.x * (mobile ? .12 : .7), l.y * (mobile ? .8 : 1), l.z - 2);
+  });
+
+  /* ---- 4. constellations that draw themselves ---- */
+  const FIG = {
+    cup:    {p: [[-.55, -.95], [.55, -.95], [0, -.62], [0, -.1], [-.9, .15], [.9, .15], [-.72, .95], [.72, .95]], e: [[0, 2], [1, 2], [2, 3], [3, 4], [3, 5], [4, 6], [5, 7], [6, 7]]},
+    lock:   {p: [[-.6, -.95], [.6, -.95], [.6, 0], [-.6, 0], [-.36, 0], [-.36, .5], [0, .9], [.36, .5], [.36, 0], [0, -.45]], e: [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 8]]},
+    tree:   {p: [[0, -.95], [0, -.3], [-.5, .1], [.45, .15], [-.88, .55], [-.3, .62], [.2, .7], [.82, .65], [.05, .98]], e: [[0, 1], [1, 2], [1, 3], [2, 4], [2, 5], [3, 6], [3, 7], [6, 8]]},
+    bridge: {p: [[-1, -.3], [-.5, -.3], [0, -.3], [.5, -.3], [1, -.3], [-.5, .62], [.5, .62]], e: [[0, 1], [1, 2], [2, 3], [3, 4], [1, 5], [3, 6], [5, 0], [5, 2], [6, 2], [6, 4]]}
+  };
+  const lineVS = `attribute float aT; varying float vT; void main(){ vT=aT; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }`;
+  const lineFS = `uniform float uDraw,uA; uniform vec3 uCol; varying float vT; void main(){ float a=smoothstep(uDraw,uDraw-.06,vT)*uA; gl_FragColor=vec4(uCol*a,a); }`;
+  const CONS = [];
+  [['cup', 3], ['lock', 4], ['tree', 5], ['bridge', 6]].forEach(([k, s]) => {
+    const f = FIG[k], vz = S(s) + 30, dep = 34, sc = 11.5, cx = 0, cy = 2.5;
+    const stars = f.p.map(([x, y]) => { const d = dep + (rnd() - .5) * 14; return [(cx + x * sc) * d / dep, (cy + y * sc) * d / dep, vz - d]; });
+    const lp = [], lt = [], E = f.e.length;
+    f.e.forEach(([a, b], i) => { lp.push(...stars[a], ...stars[b]); lt.push(i / E, (i + 1) / E); });
+    const lg = new THREE.BufferGeometry();
+    lg.setAttribute('position', new THREE.Float32BufferAttribute(lp, 3));
+    lg.setAttribute('aT', new THREE.Float32BufferAttribute(lt, 1));
+    const lm = new THREE.ShaderMaterial({vertexShader: lineVS, fragmentShader: lineFS, transparent: true, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending,
+      uniforms: {uDraw: {value: 0}, uA: {value: 0}, uCol: {value: new THREE.Color(.55, .78, 1)}}});
+    const lines = new THREE.LineSegments(lg, lm); lines.frustumCulled = false; scene.add(lines);
+    const sm = starMat({far: 150});
+    points(geo(stars.length, put => stars.forEach(p => put(p[0], p[1], p[2], .5, .3))), sm);
+    CONS.push({vz, lm, sm});
+  });
+
+  /* ---- 5. meteors ---- */
+  const MET = 7, mPos = new Float32Array(MET * 6), mA = new Float32Array(MET * 2);
+  const mets = Array.from({length: MET}, () => ({on: false, p: new THREE.Vector3(), v: new THREE.Vector3(), t: 0, life: 1, len: 1}));
+  const mg = new THREE.BufferGeometry();
+  mg.setAttribute('position', new THREE.BufferAttribute(mPos, 3)); mg.setAttribute('aA', new THREE.BufferAttribute(mA, 1));
+  const mm = new THREE.ShaderMaterial({vertexShader: `attribute float aA; varying float vA; void main(){ vA=aA; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
+    fragmentShader: `varying float vA; void main(){ gl_FragColor=vec4(vec3(.85,.92,1.)*vA,vA); }`, transparent: true, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending});
+  const meteors = new THREE.LineSegments(mg, mm); meteors.frustumCulled = false; scene.add(meteors);
+  let nextMet = 1.5;
+  function updMeteors(dt, cz) {
+    nextMet -= dt;
+    if (nextMet < 0 && !reduce) {
+      nextMet = 1.2 + rnd() * 4.5;
+      const m = mets.find(m => !m.on);
+      if (m) {
+        const d = 60 + rnd() * 100, hh = d * tanHalf() * 1.15, hw = hh * W / H;
+        m.p.set((rnd() * 2 - 1) * hw, (rnd() * 1.2 - .2) * hh, cz - d);
+        const sx = m.p.x > 0 ? -1 : 1;
+        m.v.set(sx * (.45 + rnd() * .7), -(.55 + rnd() * .5), 0).normalize().multiplyScalar(d * (.8 + rnd() * .5));
+        m.life = .45 + rnd() * .55; m.t = 0; m.len = d * .085; m.on = true;
+      }
+    }
+    mets.forEach((m, i) => {
+      if (!m.on) { mA[i * 2] = mA[i * 2 + 1] = 0; return; }
+      m.t += dt; if (m.t > m.life) { m.on = false; mA[i * 2] = mA[i * 2 + 1] = 0; return; }
+      m.p.addScaledVector(m.v, dt);
+      const a = Math.sin(Math.PI * m.t / m.life) * .95, dir = m.v.clone().normalize();
+      mPos.set([m.p.x, m.p.y, m.p.z, m.p.x - dir.x * m.len, m.p.y - dir.y * m.len, m.p.z], i * 6);
+      mA[i * 2] = a; mA[i * 2 + 1] = 0;
+    });
+    mg.attributes.position.needsUpdate = true; mg.attributes.aA.needsUpdate = true;
+  }
+
+  /* ---- 6. the pulsar (signal) ---- */
+  const PZ = S(8) - 30;
+  const pulsarMat = starMat({far: 240});
+  points(geo(1, put => put(0, 1.5, PZ, 1.6, .35)), pulsarMat);
+  const rings = [];
+  for (let i = 0; i < 3; i++) {
+    const r = new THREE.Mesh(new THREE.RingGeometry(.985, 1, 128), new THREE.MeshBasicMaterial({color: 0x9ad4ff, transparent: true, opacity: 0, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending}));
+    r.position.set(0, 1.5, PZ); r.frustumCulled = false; scene.add(r); rings.push(r);
+  }
+
+  /* ---- 7. sky: dusk → deep → dawn, Milky Way, nebulae, aurora ---- */
+  const skyMat = new THREE.ShaderMaterial({depthTest: false, depthWrite: false,
+    uniforms: {uT: {value: 0}, uP: {value: 0}, uRes: {value: new THREE.Vector2(W, H)}, uTilt: {value: new THREE.Vector2(0, 0)}, uOct: {value: low ? 3 : 4}},
+    vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position.xy,0.,1.); }`,
+    fragmentShader: `
+      precision highp float; varying vec2 vUv; uniform float uT,uP; uniform vec2 uRes,uTilt; uniform float uOct;
+      float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+      float noise(vec2 p){ vec2 i=floor(p),f=fract(p); f=f*f*(3.-2.*f); return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y); }
+      float fbm(vec2 p){ float v=0.,a=.5; for(int i=0;i<4;i++){ if(float(i)>=uOct) break; v+=a*noise(p); p=p*2.03+17.1; a*=.5; } return v; }
+      void main(){
+        vec2 uv=vUv; float asp=uRes.x/uRes.y; vec2 q=(uv-.5)*vec2(asp,1.)+uTilt*.08;
+        vec3 col=vec3(.022,.030,.055);
+        col+=vec3(.015,.02,.035)*(1.-smoothstep(0.,.9,length(q)));
+        float ang=.55; vec2 r=vec2(q.x*cos(ang)-q.y*sin(ang), q.x*sin(ang)+q.y*cos(ang));
+        float off=uP*2.4-.9+sin(uP*6.)*.1;
+        float band=exp(-pow((r.y+off)*2.6,2.));
+        float cloud=fbm(r*vec2(2.2,7.)+vec2(uP*3.,uP*9.)+uT*.004);
+        col+=vec3(.42,.5,.66)*band*cloud*cloud*.42;
+        col-=vec3(.08,.07,.06)*band*fbm(r*vec2(4.,14.)+vec2(uP*4.,uP*12.))*.4*band;
+        vec2 nq=q*1.3+vec2(uP*1.8,-uP*5.5);
+        float n1=fbm(nq+uT*.006), n2=fbm(nq*1.7+5.3-uT*.004);
+        col+=vec3(.06,.16,.22)*pow(n1,3.)*.5+vec3(.18,.08,.22)*pow(n2,3.2)*.4;
+        float au=max(1.-smoothstep(0.,.13,uP), smoothstep(.86,.97,uP));
+        if(au>0.){
+          float x=uv.x*asp*1.4+uT*.02+uP*3.;
+          float body=pow(noise(vec2(x*1.6,uT*.04)),2.2)*(.6+.4*noise(vec2(x*5.,uT*.07)));
+          float rays=.45+.55*pow(noise(vec2(x*38.,uv.y*1.5+uT*.12)),1.5);
+          float base=.38+.12*noise(vec2(x*1.1,uT*.03));
+          float band=smoothstep(base-.05,base+.08,uv.y)*smoothstep(base+.45,base+.12,uv.y);
+          col+=mix(vec3(.10,.50,.36),vec3(.30,.18,.50),smoothstep(base+.05,base+.4,uv.y))*body*rays*band*au*.22;
+        }
+        float dusk=1.-smoothstep(0.,.1,uP);
+        float hz=pow(1.-uv.y,6.);
+        col+=vec3(.30,.14,.07)*hz*dusk*.5+vec3(.05,.07,.16)*pow(1.-uv.y,2.)*dusk*.5;
+        float dawn=smoothstep(.9,1.,uP);
+        vec3 dc=mix(vec3(.40,.47,.60),vec3(.72,.56,.42),pow(1.-uv.y,2.5)*.9);
+        col=mix(col,dc,dawn*pow(1.-uv.y,1.5)*.85+dawn*.15);
+        gl_FragColor=vec4(col,1.);
+      }`});
+  const sky = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), skyMat); sky.frustumCulled = false; sky.renderOrder = -1; scene.add(sky);
+
+  /* ---- post ---- */
+  const composer = new P.EffectComposer(renderer);
+  composer.addPass(new P.RenderPass(scene, camera));
+  const bloom = new P.UnrealBloomPass(new THREE.Vector2(W * .5, H * .5), low ? .5 : .6, .62, .5);
+  composer.addPass(bloom);
+  const fin = new P.ShaderPass({
+    uniforms: {tDiffuse: {value: null}, uT: {value: 0}, uRes: {value: new THREE.Vector2(W, H)}, uDawn: {value: 0}},
+    vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
+    fragmentShader: `uniform sampler2D tDiffuse; uniform float uT,uDawn; uniform vec2 uRes; varying vec2 vUv;
+      void main(){ vec2 uv=vUv, c=uv-.5; float r=dot(c,c); float ca=.006*r;
+        vec3 col=vec3(texture2D(tDiffuse,uv+c*ca).r,texture2D(tDiffuse,uv).g,texture2D(tDiffuse,uv-c*ca).b);
+        col*=1.-(.5-uDawn*.3)*smoothstep(.1,.72,r);
+        float g=fract(sin(dot(floor(uv*uRes*.5)+fract(uT)*113.,vec2(12.9898,78.233)))*43758.5453);
+        col+=(g-.5)*.04;
+        gl_FragColor=vec4(col,1.); }`
+  });
+  composer.addPass(fin);
+
+  /* ---- label projection ---- */
+  const v3 = new THREE.Vector3();
+  const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  function placeLabels(cz) {
+    for (const l of LAB) {
+      const dist = cz - l.z, e = l.el;
+      if (dist > l.far + 4 || dist < Math.min(-1, l.near - 3)) { if (e.style.visibility !== 'hidden') { e.style.visibility = 'hidden'; e.classList.remove('on'); } continue; }
+      v3.set(l.x * (mobile ? .12 : .7), l.y * (mobile ? .8 : 1), l.z).project(camera);
+      if (v3.z > 1) { e.style.visibility = 'hidden'; continue; }
+      const o = Math.pow(smooth(l.far, l.far * .72, dist), 1.6) * (l.near > 0 ? smooth(l.near, l.near + 7, dist) : 1);
+      const s = Math.min(mobile ? 1.08 : 1.16, Math.max(.4, Math.pow(34 / Math.max(dist, 1), .3)));
+      e.style.visibility = 'visible';
+      e.style.opacity = o.toFixed(3);
+      e.style.filter = o > .97 ? 'none' : `blur(${((1 - o) * 7).toFixed(1)}px)`;
+      e.style.transform = `translate3d(${((v3.x * .5 + .5) * W).toFixed(1)}px,${((-v3.y * .5 + .5) * H).toFixed(1)}px,0) translate(-50%,-50%) scale(${s.toFixed(3)})`;
+      e.classList.toggle('on', o > .5);
+    }
+  }
+
+  /* ---- frame ---- */
+  let introT = 0, skip = false;
+  const api = {
+    name: makeName,
+    skipIntro() { skip = true; },
+    resize() {
+      renderer.setSize(W, H); camera.aspect = W / H; camera.updateProjectionMatrix(); composer.setSize(W, H);
+      skyMat.uniforms.uRes.value.set(W, H); fin.uniforms.uRes.value.set(W, H);
+      mats.forEach(m => m.uniforms.uAspect.value = W / H);
+      clearTimeout(api._rt); api._rt = setTimeout(makeName, 200);
+    },
+    frame(dt, t) {
+      introT += dt;
+      const ie = skip || reduce ? 1 : 1 - Math.pow(1 - Math.min(1, introT / 3.2), 3);
+      const cz = -prog * L + (1 - ie) * 16;
+      camera.position.set(0, 0, cz);
+      const sp = Math.min(1, Math.abs(vel) * L / 90);
+      camera.fov = FOV + sp * 5; camera.updateProjectionMatrix();
+      camera.rotation.set(smy * .045 + Math.sin(t * .13) * .006, -smx * .06 + Math.cos(t * .09) * .006, Math.sin(t * .05) * .008);
+      const px = H / 2 / tanHalf() * (renderer.getPixelRatio() / (devicePixelRatio || 1));
+      const dawn = smooth(.9, 1, prog), fade = 1 - dawn * .88;
+      for (const m of mats) { const u = m.uniforms; u.uTime.value = t; u.uPx.value = px * 0.9; u.uCamZ.value = cz; u.uFade.value = fade; u.uMouse.value.set(smx, smy); }
+      for (const c of CONS) {
+        const d = cz - c.vz;                      // >0 before the viewpoint
+        c.lm.uniforms.uDraw.value = smooth(14, -6, d);
+        const a = smooth(22, 6, d) * smooth(-26, -12, d);
+        c.lm.uniforms.uA.value = a * .9;
+        c.sm.uniforms.uBoost.value = 1 + a * 1.4;
+      }
+      const pd = Math.abs(cz - PZ), pv = smooth(150, 36, pd);
+      pulsarMat.uniforms.uBoost.value = 1 + smooth(300, 40, pd) * (1.2 + .9 * Math.pow(.5 + .5 * Math.sin(t * 6.5), 8));
+      rings.forEach((r, i) => { const s = (t * .32 + i / 3) % 1; r.scale.setScalar(1 + s * 28); r.material.opacity = Math.pow(1 - s, 2.2) * .5 * pv; });
+      updMeteors(dt, cz);
+      skyMat.uniforms.uT.value = t; skyMat.uniforms.uP.value = prog; skyMat.uniforms.uTilt.value.set(smx, smy);
+      fin.uniforms.uT.value = t; fin.uniforms.uDawn.value = dawn;
+      bloom.strength = (low ? .5 : .6) * (1 - dawn * .5);
+      composer.render();
+      placeLabels(cz);
+    }
+  };
+  return api;
+}
+boot();
+</script>
+</body>
+</html>

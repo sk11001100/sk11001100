@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lei Kai · Imagined Worlds</title>
+<meta name="description" content="Lei Kai, senior full-stack engineer. A career told as one flight through a real sky full of imagined worlds.">
+<meta name="theme-color" content="#000000">
+<meta property="og:title" content="Lei Kai · Imagined Worlds">
+<meta property="og:description" content="Senior full-stack engineer. Real sky, imagined worlds, software that keeps running.">
+<meta property="og:image" content="https://sk11001100.github.io/sk11001100/assets/projects/og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@200;300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="importmap">{"imports":{"three":"./assets/vendor/three/three.module.min.js","three/addons/":"./assets/vendor/three/addons/"}}</script>
+<style>
+:root{--ink:#f4f6fa;--dim:rgba(226,232,243,.78);--faint:rgba(200,210,228,.54);--line:rgba(214,226,242,.2);--acc:#a9d9ff;--glow:169,217,255;--fd:'Inter Tight',system-ui,-apple-system,'Segoe UI',sans-serif;--fm:'IBM Plex Mono',ui-monospace,Consolas,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:#000;scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+body{background:#000;color:var(--ink);font-family:var(--fd);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:rgba(169,217,255,.3);color:#fff}
+img{display:block;max-width:100%}
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;background:#000}
+#track{position:relative;width:1px;visibility:hidden;pointer-events:none}
+
+/* ---- text that lives in the scene ---- */
+#labels{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.lab{position:absolute;left:50%;top:50%;width:min(780px,90vw);text-align:center;opacity:0;visibility:hidden;will-change:transform,opacity,filter;pointer-events:none;text-shadow:0 0 28px rgba(0,0,0,.95),0 0 8px rgba(0,0,0,.7)}
+.lab.on{pointer-events:auto}
+.lab::before{content:'';position:absolute;inset:-12% -18%;z-index:-1;background:radial-gradient(closest-side,rgba(0,0,0,.5),rgba(0,0,0,.22) 55%,transparent);pointer-events:none}
+.lab.wide{width:min(900px,92vw)}
+.kick{font-family:var(--fm);font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--faint);margin-bottom:20px}
+.kick b{font-weight:500;color:var(--acc)}
+.lab.hero{width:min(1320px,96vw)}
+.lab.hero .sci{max-width:560px}
+.name{white-space:nowrap;font-weight:200;font-size:clamp(52px,10.4vw,172px);letter-spacing:.34em;margin-right:-.34em;line-height:.92;color:#fff}
+.role{font-family:var(--fm);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);margin-top:26px}
+h2{font-weight:300;font-size:clamp(34px,4.6vw,72px);line-height:1.03;letter-spacing:-.026em;color:#fff}
+h2 em{font-style:normal;color:var(--dim)}
+.sub{font-family:var(--fm);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-top:18px}
+.p{font-size:clamp(15px,1.12vw,17px);line-height:1.72;color:var(--dim);max-width:560px;margin:20px auto 0}
+.sci{font-family:var(--fm);font-size:10.5px;line-height:1.75;letter-spacing:.06em;color:var(--faint);margin:24px auto 0;max-width:540px}
+.sci::before{content:'';display:inline-block;width:18px;height:1px;background:currentColor;vertical-align:middle;margin-right:10px;opacity:.8}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:20px}
+.chips span{font-family:var(--fm);font-size:10px;letter-spacing:.08em;color:var(--dim);border:1px solid var(--line);border-radius:2px;padding:5px 9px;background:rgba(0,0,0,.42)}
+.links{display:flex;flex-wrap:wrap;justify-content:center;gap:26px;margin-top:20px}
+.links a{font-family:var(--fm);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#fff;text-decoration:none;border-bottom:1px solid var(--line);padding:5px 0;transition:border-color .3s}
+.links a:hover{border-color:var(--acc)}
+.n{font-family:var(--fm);font-size:10px;letter-spacing:.3em;color:var(--acc);margin-bottom:14px}
+.rule{font-weight:300;font-size:clamp(30px,3.6vw,56px);line-height:1.1;letter-spacing:-.02em;color:#fff}
+.rule em{display:block;font-style:normal;font-size:.4em;letter-spacing:0;color:var(--dim);margin-top:12px;font-weight:400}
+.disc{font-weight:200;font-size:clamp(42px,5vw,80px);line-height:1;letter-spacing:-.02em;color:#fff}
+.tools{font-family:var(--fm);font-size:11px;letter-spacing:.1em;line-height:2;color:var(--dim);max-width:460px;margin:14px auto 0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin:34px auto 0;max-width:720px}
+.stats b{display:block;font-weight:200;font-size:clamp(42px,4.8vw,74px);line-height:1;letter-spacing:-.03em;color:#fff}
+.stats span{display:block;font-family:var(--fm);font-size:9.5px;line-height:1.55;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-top:10px}
+.contacts{display:grid;max-width:480px;margin:28px auto 0;background:rgba(2,4,10,.55);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid var(--line);padding:2px 20px;text-shadow:none}
+.contacts a,.contacts button{display:grid;grid-template-columns:84px 1fr auto;align-items:center;gap:14px;padding:15px 0;border:0;border-top:1px solid var(--line);background:none;color:#fff;font:inherit;text-align:left;text-decoration:none}
+.contacts>:first-child{border-top:0}
+.contacts span{font-family:var(--fm);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+.contacts b{font-weight:400;font-size:15px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.contacts i{font-family:var(--fm);font-style:normal;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--acc)}
+.end{font-size:clamp(40px,5.6vw,92px)}
+.foot{font-family:var(--fm);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-top:40px;line-height:2.1}
+.foot button{font:inherit;letter-spacing:inherit;text-transform:inherit;color:#fff;background:rgba(0,0,0,.35);border:1px solid var(--line);padding:9px 16px;margin-bottom:22px}
+.foot small{display:block;font-size:9px;letter-spacing:.12em;opacity:.8}
+
+/* ---- project screens: glass panels floating in front of each world ---- */
+.screen{position:relative;display:block;width:min(620px,82vw);margin:0 auto;aspect-ratio:16/10;border-radius:10px;overflow:hidden;text-decoration:none;color:#fff;background:#05070c;
+  border:1px solid rgba(var(--glow),.34);box-shadow:0 0 0 1px rgba(0,0,0,.6),0 30px 80px -20px rgba(0,0,0,.9),0 0 70px -10px rgba(var(--glow),.32);
+  transform:perspective(1200px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:box-shadow .4s,border-color .4s;text-shadow:none}
+.screen .bar{position:absolute;left:0;right:0;top:0;height:28px;display:flex;align-items:center;gap:6px;padding:0 12px;background:rgba(8,11,18,.92);border-bottom:1px solid rgba(255,255,255,.07);z-index:1}
+.screen .bar i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18)}
+.screen .bar span{flex:1;text-align:center;font-family:var(--fm);font-size:10px;letter-spacing:.12em;color:var(--faint);margin-right:33px}
+.screen img{position:absolute;left:0;top:28px;width:100%;height:calc(100% - 28px);object-fit:cover;object-position:top center}
+.screen::after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.13),rgba(255,255,255,0) 32%,rgba(255,255,255,0) 70%,rgba(var(--glow),.08));mix-blend-mode:screen}
+.screen:hover{border-color:rgba(var(--glow),.7);box-shadow:0 0 0 1px rgba(0,0,0,.6),0 30px 80px -20px rgba(0,0,0,.9),0 0 90px -6px rgba(var(--glow),.5)}
+.cap{font-family:var(--fm);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin:18px 0 0}
+.cap b{font-weight:500;color:#fff}
+.twin{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:620px;margin:26px auto 0;text-shadow:none}
+.twin a{display:block;text-align:left;padding:22px 22px 20px;border:1px solid rgba(var(--glow),.3);border-radius:10px;background:linear-gradient(160deg,rgba(var(--glow),.1),rgba(4,6,12,.62) 60%);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);text-decoration:none;color:#fff;transition:border-color .3s}
+.twin a:hover{border-color:rgba(var(--glow),.75)}
+.twin b{display:block;font-weight:300;font-size:22px;letter-spacing:-.01em}
+.twin span{display:block;font-size:13.5px;line-height:1.6;color:var(--dim);margin-top:8px}
+.twin i{display:block;font-family:var(--fm);font-style:normal;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--acc);margin-top:14px}
+
+/* ---- side missions: screens orbiting a point in space ---- */
+#orbit{position:fixed;left:50%;top:56%;width:0;height:0;z-index:2;perspective:1600px;opacity:0;visibility:hidden;pointer-events:none}
+#orbit.on{pointer-events:auto}
+#orbit .ring{position:absolute;left:0;top:0;transform-style:preserve-3d}
+#orbit .shot{position:absolute;left:0;top:0;width:min(470px,70vw);--glow:200,190,255;backface-visibility:hidden;-webkit-backface-visibility:hidden;will-change:transform,opacity}
+#orbit .shot .screen{width:100%}
+#orbit .shot .cap{text-align:center;text-shadow:0 0 14px #000}
+#orbit .shot:not(.front){pointer-events:none}
+
+/* ---- telemetry ---- */
+#hud{position:fixed;inset:0;z-index:3;pointer-events:none;font-family:var(--fm);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);transition:opacity 1.2s}
+#hud>div{position:absolute;white-space:nowrap}
+.tl{left:28px;top:24px;display:flex;align-items:center;gap:14px;color:var(--dim)}
+.tl .patch{display:inline-grid;place-items:center;width:34px;height:34px;border:1px solid var(--line);border-radius:50%;font-size:9px;letter-spacing:.1em;color:#fff}
+.tl b{font-weight:400;color:#fff}
+.tr{right:28px;top:24px;text-align:right;line-height:2}
+.st{display:inline-block;width:5px;height:5px;border-radius:50%;background:#7ef0b0;box-shadow:0 0 10px #7ef0b0;margin-right:10px;vertical-align:1px;animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+.bl{left:28px;bottom:26px;line-height:2}
+.bl #tgt{color:#fff;letter-spacing:.16em}
+.br{right:28px;bottom:26px;text-align:right;line-height:2}
+.br b{display:block;font-weight:400;font-size:13px;letter-spacing:.12em;color:#fff;font-variant-numeric:tabular-nums}
+#bar{left:0;right:0;bottom:0;height:1px;background:rgba(255,255,255,.06)}
+#bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,rgba(169,217,255,.2),var(--acc))}
+#hint{left:50%;bottom:44px;transform:translateX(-50%);text-align:center;color:var(--dim);transition:opacity .8s;opacity:0}
+#hint i{display:block;width:1px;height:38px;margin:12px auto 0;background:linear-gradient(var(--acc),transparent);animation:drop 2.4s ease-in-out infinite}
+@keyframes drop{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ---- route map ---- */
+#route{position:fixed;right:30px;top:50%;transform:translateY(-50%);z-index:4;display:grid;gap:5px}
+#route button{position:relative;display:block;width:16px;height:16px;background:none;border:0;padding:0}
+#route button::before{content:'';position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;background:var(--faint);transition:transform .35s,background .35s}
+#route button.on::before{background:var(--acc);transform:scale(1.9);box-shadow:0 0 8px var(--acc)}
+#route button.past::before{background:rgba(255,255,255,.75)}
+#route span{position:absolute;right:24px;top:50%;transform:translate(6px,-50%);font-family:var(--fm);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:#fff;white-space:nowrap;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;text-shadow:0 0 10px #000}
+#route button:hover span,#route button.on span{opacity:1;transform:translate(0,-50%)}
+#route button.on span{color:var(--acc)}
+
+/* ---- cursor: solid, never blended, re-tested every frame ---- */
+#cur{position:fixed;left:0;top:0;width:0;height:0;z-index:9;pointer-events:none;opacity:0;transition:opacity .3s}
+#cur .pt{position:absolute;left:0;top:0;will-change:transform}
+#cur .dot{position:absolute;left:-2px;top:-2px;width:4px;height:4px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.55)}
+#cur .ring{position:absolute;left:-17px;top:-17px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.55);box-shadow:0 0 0 1px rgba(0,0,0,.25);transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .3s,border-color .3s}
+#cur .lock{position:absolute;left:0;top:0;width:0;height:0;opacity:0;will-change:transform,width,height;transition:opacity .25s;--c:var(--acc);background:
+linear-gradient(var(--c),var(--c)) 0 0/12px 1px no-repeat,linear-gradient(var(--c),var(--c)) 0 0/1px 12px no-repeat,
+linear-gradient(var(--c),var(--c)) 100% 0/12px 1px no-repeat,linear-gradient(var(--c),var(--c)) 100% 0/1px 12px no-repeat,
+linear-gradient(var(--c),var(--c)) 0 100%/12px 1px no-repeat,linear-gradient(var(--c),var(--c)) 0 100%/1px 12px no-repeat,
+linear-gradient(var(--c),var(--c)) 100% 100%/12px 1px no-repeat,linear-gradient(var(--c),var(--c)) 100% 100%/1px 12px no-repeat}
+#cur .lock::after{content:attr(data-tag);position:absolute;right:0;top:-18px;font-family:var(--fm);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--acc);text-shadow:0 0 8px #000}
+#cur.link .ring{transform:scale(.3);opacity:0}
+#cur.link .lock{opacity:1}
+#cur.text .ring{transform:scale(.55);border-color:rgba(169,217,255,.9)}
+#cur.down .ring{transform:scale(.7)}
+html.cursor,html.cursor *{cursor:none!important}
+html.cursor #cur.live{opacity:1}
+
+/* ---- preloader ---- */
+#pre{position:fixed;inset:0;z-index:20;background:#000;display:grid;place-items:center;transition:opacity 1.4s ease,visibility 1.4s}
+#pre.off{opacity:0;visibility:hidden}
+#pre div{font-family:var(--fm);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--faint);text-align:center}
+#pre b{display:block;font-weight:400;font-size:12px;color:#fff;margin-top:14px;letter-spacing:.2em}
+#pre i{display:block;width:180px;height:1px;background:rgba(255,255,255,.1);margin:18px auto 0;overflow:hidden}
+#pre i::after{content:'';display:block;height:100%;width:var(--p,0%);background:var(--acc);transition:width .3s}
+
+/* ---- no WebGL: plain readable page ---- */
+html.nogl #gl,html.nogl #hud,html.nogl #route,html.nogl #track,html.nogl #cur{display:none}
+html.nogl #labels{position:static;overflow:visible;padding:12vh 0}
+html.nogl .lab{position:relative;left:auto;top:auto;opacity:1!important;visibility:visible!important;transform:none!important;filter:none!important;margin:0 auto 16vh;pointer-events:auto}
+html.nogl #orbit{position:static;width:auto;height:auto;opacity:1;visibility:visible;perspective:none;pointer-events:auto;padding:0 0 16vh}
+html.nogl #orbit .ring{position:static;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,420px));justify-content:center;gap:40px}
+html.nogl #orbit .shot{position:static;transform:none!important;opacity:1!important;width:auto}
+html.nogl #orbit .shot:not(.front){pointer-events:auto}
+html.nogl body{background:radial-gradient(ellipse at 50% 0,#0b1424,#000 70%) fixed}
+
+@media (max-width:760px){
+  .tl{left:18px;top:18px}.tl .patch{width:30px;height:30px}.tl>span:last-child{display:none}
+  .tr,#route{display:none}
+  .bl{left:18px;bottom:18px}.br{right:18px;bottom:18px}
+  .stats{grid-template-columns:repeat(2,1fr);gap:26px 14px}
+  .contacts{padding:2px 14px}.contacts a,.contacts button{grid-template-columns:64px 1fr auto;gap:10px}
+  .contacts b{font-size:13.5px}
+  .name{letter-spacing:.22em;margin-right:-.22em}
+  .lab{width:88vw}
+  .p{font-size:14.5px;line-height:1.65}
+  .twin{grid-template-columns:1fr}
+  .twin a{padding:16px}
+  #hint{bottom:64px}
+}
+@media (prefers-reduced-motion:reduce){#hint i,.st{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div id="labels"></div>
+<div id="orbit"><div class="ring"></div></div>
+
+<div id="hud" aria-hidden="true">
+  <div class="tl"><span class="patch">LK</span><span><b>Lei Kai</b> · Real sky, imagined worlds</span></div>
+  <div class="tr"><span class="st"></span>Open to lead roles<br><span id="clk">--:--</span> · Xianyang</div>
+  <div class="bl"><div>World <span id="phn">01</span> / <span id="pht">10</span></div><div id="tgt">Earth · Home</div></div>
+  <div class="br">Year<b id="yr">2017.00</b></div>
+  <div id="hint">Scroll to fly<i></i></div>
+  <div id="bar"><i></i></div>
+</div>
+<nav id="route" aria-label="Worlds"></nav>
+<div id="cur" aria-hidden="true"><i class="lock"></i><div class="pt"><i class="ring"></i><i class="dot"></i></div></div>
+<div id="pre"><div>Opening the sky<b id="pct">0%</b><i></i></div></div>
+<div id="track"></div>
+
+<script type="module">
+const $ = s => document.querySelector(s);
+const Q = new URLSearchParams(location.search);
+const mobile = matchMedia('(max-width:760px)').matches || matchMedia('(pointer:coarse)').matches;
+const low = mobile || (navigator.hardwareConcurrency || 8) <= 4;
+const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+const finePointer = matchMedia('(pointer:fine)').matches && !mobile;
+let W = innerWidth, H = innerHeight;
+
+if (Q.has('debug')) {
+  const box = document.createElement('pre');
+  box.style.cssText = 'position:fixed;left:0;top:0;z-index:99;max-width:100vw;max-height:60vh;overflow:auto;font:11px monospace;color:#f88;background:rgba(0,0,0,.85);white-space:pre-wrap';
+  document.body.appendChild(box);
+  const log = (...a) => { box.textContent += a.map(String).join(' ').slice(0, 3000) + '\n'; };
+  const ce = console.error.bind(console); console.error = (...a) => { log(...a); ce(...a); };
+  addEventListener('error', e => log('ERR', e.message, e.filename, e.lineno));
+  addEventListener('unhandledrejection', e => log('REJ', e.reason && (e.reason.stack || e.reason)));
+}
+
+/* =========================================================
+   The flight. Each world: dwell (dw) and the glide to the next (tr),
+   in screens of scroll. The camera never stops and never cuts.
+   ========================================================= */
+const ST = [
+  {id:'earth',   nav:'Earth · Home',          yr:[2017.0, 2017.2], dw:2.4, tr:1.3},
+  {id:'lumen',   nav:'Lumen · Shinetech',     yr:[2017.4, 2019.3], dw:2.1, tr:1.3},
+  {id:'mnemos',  nav:'Mnemos · Midinote',     yr:[2019.4, 2021.6], dw:2.1, tr:1.3},
+  {id:'custos',  nav:'Custos · Evidence Locker', yr:[2021.7, 2024.0], dw:2.1, tr:1.3},
+  {id:'camelot', nav:'Camelot',               yr:[2024.0, 2026.0], dw:2.1, tr:1.3},
+  {id:'pillars', nav:'The Pillars · Rules',   yr:[2026.0, 2026.1], dw:3.3, tr:1.0},
+  {id:'tools',   nav:'Nebula · Tools',        yr:[2026.1, 2026.2], dw:3.0, tr:1.2},
+  {id:'lab',     nav:'Side missions',         yr:[2026.2, 2026.3], dw:2.7, tr:1.3},
+  {id:'pulsar',  nav:'Pulsar · Signal',       yr:[2026.3, 2026.4], dw:3.1, tr:1.4},
+  {id:'galaxy',  nav:'The galaxy',            yr:[2026.4, 2026.4], dw:1.8, tr:0}
+];
+{ let a = 0; ST.forEach(s => { s.a = a; s.b = a + s.dw; a += s.dw + s.tr; }); }
+const NS = ST.length, TT = ST[NS - 1].b;
+const IX = Object.fromEntries(ST.map((s, i) => [s.id, i]));
+const stAt = T => { let i = NS - 1; while (i > 0 && T < ST[i].a) i--; return i; };
+const coord = T => { const i = stAt(T), s = ST[i], e = i < NS - 1 ? ST[i + 1].a : s.b; return i + Math.min(1, (T - s.a) / Math.max(1e-6, e - s.a)); };
+const fromCoord = c => { const i = Math.min(NS - 1, Math.floor(c)), s = ST[i], e = i < NS - 1 ? ST[i + 1].a : s.b; return s.a + (c - i) * (e - s.a); };
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+const lerp = (a, b, t) => a + (b - a) * t;
+const fAt = (i, f) => ST[i].a + ST[i].dw * f;
+
+/* ---------- content ---------- */
+const WORLDS = {
+  lumen: {glow:'150,240,200', k:'<b>01</b> · World Lumen · 2017 – 2019 · Shinetech Software, Beijing', h:'A bridge across<br><em>time zones.</em>', r:'Front-End Developer · Remote Team Lead',
+    p:'Led a remote front-end team building custom software for international clients, including New York startups. I set the coding standards and the review process, and we delivered on time across isolated teams.',
+    c:['JavaScript','Responsive UI','Code review','Remote leadership'], shot:['shinetech.webp','shinetechsoftware.com','https://shinetechsoftware.com','Company site'],
+    s:'Real auroras: the solar wind strikes a magnetic field and oxygen glows green 100–250 km up. Lumen\'s reach a thousand times higher'},
+  mnemos: {glow:'255,200,130', k:'<b>02</b> · World Mnemos · 2019 – 2021 · Midinote, Hong Kong', h:'Notes that think<br><em>in threads.</em>', r:'Full-Stack Software Engineer · Built solo',
+    p:'A tag-based note-taking app where notes grow into a living mind map. I built the whole product alone: offline sync, data model, visualisation and the servers underneath.',
+    c:['React · Redux','Angular','Node · Express','CouchDB · PouchDB','Nginx','AWS'], shot:['midinote.webp','midinote.me','https://midinote.me','Live product'],
+    s:'Real minds: a human brain wires about 86 billion neurons together. Mnemos keeps its memory in light'},
+  custos: {glow:'140,215,255', k:'<b>03</b> · World Custos · 2021 – 2024 · Evidence Locker, Beijing', h:'Proof that<br><em>can\'t be touched.</em>', r:'Full-Stack Developer',
+    p:'Built with digital-forensics experts for law enforcement and legal teams. Cloud data is acquired and preserved in a forensically sound way, so every byte holds up in court.',
+    c:['React','React Native','Node · Express','Python · Django','PHP','Jest · Cypress','AWS'], shot:['evidencelocker.webp','evidencelocker.com','https://evidencelocker.com','Live product'],
+    s:'Real ice keeps records too: Antarctic cores still hold air bubbles sealed 800,000 years ago'},
+  camelot: {glow:'255,190,120', k:'<b>04</b> · World Camelot · 2024 – 2026 · Camelot Technology, Beijing', h:'Money<br><em>in the pot.</em>', r:'Senior Full-Stack Developer · Team Lead',
+    p:'Social wagers between friends: challenge someone to put their money where their mouth is. I led the team building moneyinthepot.com and camelot.fm, from product and web to the services underneath.',
+    c:['TypeScript','Next.js','PHP · Laravel · CodeIgniter','Python','C#'],
+    twin:[['moneyinthepot.com','https://moneyinthepot.com','Challenge your friends and put money on it.'],['camelot.fm','https://camelot.fm','The platform underneath the pot.']],
+    s:'Real rings: Saturn\'s span 273,000 km, yet in most places they are about 10 m thick'}
+};
+const RULES = [
+  ['Change little.', 'Land it right.'],
+  ['Leave nothing behind.', 'No dead code, no mystery config.'],
+  ['See in the dark.', 'Logs, metrics and alerts before launch day.'],
+  ['Earn every tool.', 'Learn it deeply. Use it where it pays.'],
+  ['Teach what I know.', 'Reviews that teach, standards that outlive me.']
+];
+const TOOLS = [
+  ['Frontend', 'TypeScript · JavaScript · React · Next.js · Redux · React Native · Angular · Vue'],
+  ['Backend',  'Node.js · Python · Django · FastAPI · PHP · Laravel · C# · ASP.NET'],
+  ['AI',       'LLMs · RAG pipelines · Inference services · ML integration'],
+  ['Data',     'PostgreSQL · MySQL · SQL Server · MongoDB · Redis · CouchDB'],
+  ['Cloud',    'AWS · Docker · Kubernetes · Kafka · CI/CD · Prometheus'],
+  ['Quality',  'Code review · Jest · Cypress · Observability']
+];
+const STATS = [['2017','first release in production'],['4','companies, one world each'],['2','teams led'],['1','product built solo']];
+const SIDE = [
+  ['readme.webp', 'github.com/sk11001100', 'https://github.com/sk11001100', 'GitHub profile', 'Rebuilt for this universe'],
+  ['lab-mission-log.webp', 'Mission Log', 'lab/mission-log/', 'Portfolio v6', 'A real space mission, Earth to a black hole'],
+  ['lab-deep-field.webp', 'Deep Field', 'lab/deep-field/', 'Portfolio v5', 'A name written in starlight'],
+  ['lab-kage.webp', 'Kage', 'lab/kage/', 'Portfolio v3', 'A senior engineer who works like a ninja']
+];
+
+/* labels: station i, visible window in dwell fractions [f0,f1,f2,f3], vertical offset y (half-heights, + is up) */
+const LAB = [];
+const lab = (i, f, y, html, cls = '') => LAB.push({i, f, y, html, cls, t: f.map(x => fAt(i, x))});
+const screen = (s, glow) => `<a class="screen" href="${s[2]}" target="_blank" rel="noopener" data-tag="Open ↗" style="--glow:${glow}"><span class="bar"><i></i><i></i><i></i><span>${s[1]}</span></span><img src="assets/projects/${s[0]}" alt="${s[1]}, screenshot" loading="lazy" decoding="async"></a>`;
+const worldA = w => `<p class="kick">${w.k}</p><h2>${w.h}</h2><p class="sub">${w.r}</p><p class="p">${w.p}</p>`;
+const worldB = w => (w.shot
+  ? `${screen(w.shot, w.glow)}<p class="cap"><b>${w.shot[1]}</b> · ${w.shot[3]}</p>`
+  : `<p class="kick">Two products, one team</p><div class="twin" style="--glow:${w.glow}">${w.twin.map(t => `<a href="${t[1]}" target="_blank" rel="noopener" data-tag="Open ↗"><b>${t[0]}</b><span>${t[2]}</span><i>Open ↗</i></a>`).join('')}</div>`)
+  + `<p class="chips">${w.c.map(c => `<span>${c}</span>`).join('')}</p><p class="sci">${w.s}</p>`;
+
+lab(IX.earth, [-1, -1, .3, .44], .34,
+  `<p class="kick">Senior Full-Stack Engineer · Xianyang, China · <b>Since 2017</b></p><h1 class="name">LEI KAI</h1><p class="role">Real sky · Imagined worlds</p><p class="sci">Home · Xianyang glows on the night side, 34.3°N 108.7°E. The ring of light is imagined. The city lights are real</p>`, 'hero');
+lab(IX.earth, [.5, .64, 1.02, 1.16], .2,
+  `<p class="kick">Identity</p><h2>Judge me by what<br><em>runs in production.</em></h2><p class="p">Full-stack developer, engineer and architect. I've led teams in Beijing, built a product alone in Hong Kong, and shipped forensic-grade software for law enforcement. TypeScript and Python by default; PHP, C#, cloud and LLMs when the work asks for them.</p><p class="sci">Each world ahead is one chapter. The worlds are imagined; the 140,000 stars behind them are real, from NASA's Deep Star Maps</p>`);
+for (const id of ['lumen', 'mnemos', 'custos', 'camelot']) {
+  const w = WORLDS[id], i = IX[id];
+  lab(i, [-.12, .06, .44, .56], {lumen: -.05, mnemos: -.08, custos: -.3, camelot: .36}[id], worldA(w));
+  lab(i, [.5, .64, 1.0, 1.14], {lumen: 0, mnemos: 0, custos: -.12, camelot: .16}[id], worldB(w), 'wide');
+}
+lab(IX.pillars, [-.1, .05, .18, .26], .1,
+  `<p class="kick"><b>05</b> · The Pillars · How I work</p><h2>Five rules,<br><em>carved in light.</em></h2><p class="sci">Inspired by the Pillars of Creation in M16: real, about 6,500 light-years away, the tallest roughly 4 light-years high</p>`);
+RULES.forEach((r, k) => { const c = .27 + k * .15; lab(IX.pillars, [c, c + .045, c + .11, c + .15], .28, `<p class="n">RULE 0${k + 1}</p><p class="rule">${r[0]}<em>${r[1]}</em></p>`); });
+lab(IX.tools, [-.1, .05, .17, .25], 0,
+  `<p class="kick"><b>06</b> · Inside the nebula · Tools</p><h2>Six disciplines,<br><em>one hand.</em></h2><p class="p">Every tool here has run in production. Nothing is collected for show.</p><p class="sci">Stars are born in clouds like this one: gas collapses until its core reaches about 10 million °C and fusion begins</p>`);
+TOOLS.forEach((t, k) => { const c = .25 + k * .125; lab(IX.tools, [c, c + .035, c + .09, c + .125], 0, `<p class="disc">${t[0]}</p><p class="tools">${t[1]}</p>`); });
+lab(IX.lab, [-.1, .06, 1.0, 1.12], .66,
+  `<p class="kick"><b>07</b> · Side missions</p><h2 style="font-size:clamp(28px,3.2vw,48px)">Worlds I built<br><em>before this one.</em></h2>`);
+lab(IX.pulsar, [-.1, .06, .4, .5], -.28,
+  `<p class="kick"><b>08</b> · Pulsar · Summary</p><h2>Nine years,<br><em>one steady pulse.</em></h2><div class="stats">${STATS.map(s => `<p><b>${s[0]}</b><span>${s[1]}</span></p>`).join('')}</div><p class="sci">Real pulsars: neutron stars about 20 km wide that spin up to 716 times a second, keeping time that rivals atomic clocks</p>`);
+lab(IX.pulsar, [.5, .62, 1.04, 1.16], -.2,
+  `<p class="kick"><b>09</b> · Signal</p><h2>Send a signal.</h2><p class="p">Hiring for a senior or lead role, or holding a problem nobody else wants to touch? I answer quietly, and quickly.</p>
+<div class="contacts">
+<button id="copy" type="button" data-tag="Copy"><span>Email</span><b>coblerpeach354@gmail.com</b><i>Copy</i></button>
+<a href="https://t.me/kailei0325" target="_blank" rel="noopener" data-tag="Open ↗"><span>Telegram</span><b>@kailei0325</b><i>Open ↗</i></a>
+<a href="https://github.com/sk11001100" target="_blank" rel="noopener" data-tag="Open ↗"><span>GitHub</span><b>sk11001100</b><i>Open ↗</i></a>
+<a href="assets/Lei-Kai-CV.pdf" target="_blank" rel="noopener" data-tag="PDF ↓"><span>Résumé</span><b>Lei-Kai-CV.pdf</b><i>PDF ↓</i></a>
+</div>`);
+lab(IX.galaxy, [.12, .4, 9, 9], -.5,
+  `<h2 class="end">All of it is<br><em>still running.</em></h2><p class="sci">A barred spiral like our own Milky Way: about 100,000 light-years across, turning once every 230 million years</p><div class="foot"><button id="home" type="button" data-tag="Return">Back to Earth ↺</button><br>© 2026 Lei Kai · Xianyang, China<small>Worlds imagined by Lei Kai · Stars: NASA SVS Deep Star Maps 2020</small></div>`);
+
+/* ---------- DOM ---------- */
+const labels = $('#labels');
+LAB.forEach(l => { const e = document.createElement('div'); e.className = 'lab ' + l.cls; e.innerHTML = l.html; labels.appendChild(e); l.el = e; });
+const orbit = $('#orbit'), ringEl = orbit.querySelector('.ring');
+const SHOTS = SIDE.map((s, k) => { const e = document.createElement('div'); e.className = 'shot';
+  e.innerHTML = `${screen(s, '200,190,255')}<p class="cap"><b>${s[3]}</b> · ${s[4]}</p>`; ringEl.appendChild(e); return e; });
+const route = $('#route');
+ST.forEach((s, i) => { const b = document.createElement('button'); b.type = 'button'; b.dataset.tag = 'Jump'; b.setAttribute('aria-label', s.nav); b.innerHTML = `<span>${s.nav}</span>`; b.onclick = () => go(i); route.appendChild(b); });
+$('#pht').textContent = String(NS).padStart(2, '0');
+const screens = [...document.querySelectorAll('.screen')];
+
+/* ---------- scroll ---------- */
+const SPU = mobile ? .8 : .78;          // screens of scroll per timeline unit
+const track = $('#track');
+let maxScroll = 1, tT = 0, T = 0, scrolled = false;
+function measure() { W = innerWidth; H = innerHeight; track.style.height = Math.round(H + TT * H * SPU) + 'px'; maxScroll = Math.max(1, document.documentElement.scrollHeight - H); }
+measure();
+const readScroll = () => { tT = clamp(scrollY / maxScroll) * TT; if (!scrolled && scrollY > 30) { scrolled = true; $('#hint').style.opacity = 0; } };
+addEventListener('scroll', readScroll, {passive: true});
+addEventListener('resize', () => { const f = scrollY / maxScroll; measure(); scrollTo(0, f * maxScroll); G && G.resize(); });
+function go(i) { const s = ST[i]; scrollTo({top: (i === 0 ? 0 : s.a + s.dw * .3) / TT * maxScroll, behavior: 'smooth'}); }
+$('#home').onclick = () => go(0);
+const copyBtn = $('#copy');
+copyBtn.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText('coblerpeach354@gmail.com'); } catch (e) {}
+  const i = copyBtn.querySelector('i'); i.textContent = 'Copied'; copyBtn.dataset.tag = 'Copied'; setTimeout(() => { i.textContent = 'Copy'; copyBtn.dataset.tag = 'Copy'; }, 1800);
+});
+
+/* ---------- clock ---------- */
+const fmtClock = new Intl.DateTimeFormat('en-GB', {timeZone: 'Asia/Shanghai', hour: '2-digit', minute: '2-digit', hour12: false});
+const tick = () => $('#clk').textContent = fmtClock.format(new Date()); tick(); setInterval(tick, 15000);
+
+/* ---------- cursor: hover is re-tested every frame, so moving text never leaves it stale ---------- */
+const cur = $('#cur'), lock = cur.querySelector('.lock'), pt = cur.querySelector('.pt');
+let px = W / 2, py = H / 2, mx = 0, my = 0, smx = 0, smy = 0, cursorOn = false;
+const lk = {x: 0, y: 0, w: 0, h: 0};
+if (finePointer && !Q.has('nocursor')) document.documentElement.classList.add('cursor');
+if (Q.has('clean')) document.head.insertAdjacentHTML('beforeend', '<style>#hud,#route,#cur{display:none!important}</style>');   // for stills
+addEventListener('pointermove', e => { px = e.clientX; py = e.clientY; mx = px / W * 2 - 1; my = -(py / H * 2 - 1); if (!cursorOn) cur.classList.add('live'); cursorOn = true; pt.style.transform = `translate(${px}px,${py}px)`; }, {passive: true});
+addEventListener('pointerdown', () => cur.classList.add('down'));
+addEventListener('pointerup', () => cur.classList.remove('down'));
+if (Q.has('hover')) { const [hx, hy] = Q.get('hover').split(',').map(Number); px = hx; py = hy; cursorOn = true; cur.classList.add('live'); pt.style.transform = `translate(${px}px,${py}px)`; }
+addEventListener('mouseout', e => { if (!e.relatedTarget) cur.classList.remove('live'); });
+addEventListener('mouseover', () => cursorOn && cur.classList.add('live'));
+function cursorFrame(dt) {
+  if (!cursorOn || !document.documentElement.classList.contains('cursor')) return;
+  const el = document.elementFromPoint(px, py);
+  const hit = el && el.closest('a,button');
+  const txt = !hit && el && el.closest('.lab p,.lab h1,.lab h2,.lab b');
+  cur.classList.toggle('link', !!hit); cur.classList.toggle('text', !!txt);
+  if (hit) {
+    const r = hit.getBoundingClientRect(), pad = 8, k = 1 - Math.exp(-dt * 22);
+    const tx = r.left - pad, ty = r.top - pad, tw = r.width + pad * 2, th = r.height + pad * 2;
+    if (lk.w === 0) { lk.x = px - 10; lk.y = py - 10; lk.w = 20; lk.h = 20; }
+    lk.x += (tx - lk.x) * k; lk.y += (ty - lk.y) * k; lk.w += (tw - lk.w) * k; lk.h += (th - lk.h) * k;
+    lock.style.transform = `translate(${lk.x}px,${lk.y}px)`; lock.style.width = lk.w + 'px'; lock.style.height = lk.h + 'px';
+    lock.dataset.tag = hit.dataset.tag || (hit.target === '_blank' ? 'Open ↗' : 'Go');
+  } else lk.w = 0;
+}
+
+/* =========================================================
+   WebGL
+   ========================================================= */
+let G = null;
+async function boot() {
+  let THREE, X = {};
+  try {
+    THREE = await import('three');
+    [{EffectComposer: X.EffectComposer}, {RenderPass: X.RenderPass}, {UnrealBloomPass: X.UnrealBloomPass}, {ShaderPass: X.ShaderPass}] = await Promise.all([
+      import('three/addons/postprocessing/EffectComposer.js'), import('three/addons/postprocessing/RenderPass.js'),
+      import('three/addons/postprocessing/UnrealBloomPass.js'), import('three/addons/postprocessing/ShaderPass.js')]);
+    const c = document.createElement('canvas');
+    if (Q.has('nogl') || !c.getContext('webgl2')) throw new Error('webgl2 unavailable');
+    G = await build(THREE, X);
+  } catch (e) { console.error('WebGL off:', e && (e.stack || e)); document.documentElement.classList.add('nogl'); SHOTS.forEach(s => s.classList.add('front')); $('#pre').classList.add('off'); return; }
+  await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 2500))]);
+  if (Q.has('at')) { const t = fromCoord(+Q.get('at')); scrollTo(0, t / TT * maxScroll); tT = T = t; G.skipIntro(); }
+  G.start();
+  $('#pre').classList.add('off');
+  setTimeout(() => { if (!scrolled) $('#hint').style.opacity = 1; }, Q.has('at') ? 0 : 5200);
+}
+boot();
+
+async function build(THREE, X) {
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
+  const canvas = $('#gl');
+  const renderer = new THREE.WebGLRenderer({canvas, antialias: false, powerPreference: 'high-performance'});
+  const DPR = Math.min(devicePixelRatio || 1, low ? 1.25 : 1.6);
+  renderer.setPixelRatio(DPR); renderer.setSize(W, H, false);
+  renderer.toneMapping = THREE.NoToneMapping;
+  const scene = new THREE.Scene();
+  const FOV = mobile ? 62 : 50;
+  const camera = new THREE.PerspectiveCamera(FOV, W / H, .5, 2e4);
+  const maxAniso = renderer.capabilities.getMaxAnisotropy();
+
+  /* ---------- assets ---------- */
+  const mgr = new THREE.LoadingManager();
+  let loaded = 0, total = 1;
+  const pct = () => { const p = Math.round(loaded / total * 100); $('#pct').textContent = p + '%'; $('#pre i').style.setProperty('--p', p + '%'); };
+  mgr.onProgress = (u, l, t) => { loaded = l; total = t + 1; pct(); };
+  const texLoader = new THREE.TextureLoader(mgr);
+  const TX = {};
+  const tex = (f, path = 'assets/worlds/') => {
+    if (TX[f]) return TX[f];
+    const t = texLoader.load(path + f); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = maxAniso;
+    t.minFilter = THREE.LinearMipmapLinearFilter; t.magFilter = THREE.LinearFilter;
+    return TX[f] = t;
+  };
+  ['earth', 'world-aurora', 'world-mnemos', 'world-vault', 'world-camelot', 'nebula-pillars', 'veil-teal', 'veil-rose', 'pulsar', 'galaxy'].forEach(n => tex(n + '.webp'));
+  const mw = tex('milkyway.webp', 'assets/space/'); mw.wrapS = THREE.RepeatWrapping; mw.generateMipmaps = false; mw.minFilter = THREE.LinearFilter;
+  const starsBuf = fetch('assets/space/stars.bin').then(r => { if (!r.ok) throw new Error('stars'); return r.arrayBuffer(); });
+  const texReady = new Promise(r => { mgr.onLoad = r; });
+  const [sb] = await Promise.all([starsBuf, texReady]);
+  loaded = total; pct();
+
+  const NOISE = /* glsl */`
+  float hash12(vec2 p){ vec3 p3=fract(vec3(p.xyx)*.1031); p3+=dot(p3,p3.yzx+33.33); return fract((p3.x+p3.y)*p3.z); }
+  float vn(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.-2.*f);
+    return mix(mix(hash12(i),hash12(i+vec2(1,0)),f.x),mix(hash12(i+vec2(0,1)),hash12(i+vec2(1,1)),f.x),f.y); }
+  float fbm(vec2 p){ float a=.5, s=0.; for(int i=0;i<4;i++){ s+=a*vn(p); p=p*2.03+vec2(1.7,9.2); a*=.5; } return s; }`;
+
+  /* ---------- the real sky: Milky Way glow + 140k real stars, slowly turning as we fly ---------- */
+  const skyBase = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(-.5, 2.35, .62));
+  const skyRot = new THREE.Matrix3(), skyRotInv = new THREE.Matrix3(), skyM4 = new THREE.Matrix4(), turn = new THREE.Matrix4();
+  const skyMat = new THREE.ShaderMaterial({
+    depthTest: false, depthWrite: false,
+    uniforms: {uInvProj: {value: new THREE.Matrix4()}, uCamWorld: {value: new THREE.Matrix4()}, uMW: {value: mw}, uSkyRot: {value: skyRot}, uGain: {value: .5}},
+    vertexShader: `varying vec2 vUv; void main(){ vUv=position.xy*.5+.5; gl_Position=vec4(position.xy,1.,1.); }`,
+    fragmentShader: /* glsl */`
+    uniform mat4 uInvProj, uCamWorld; uniform sampler2D uMW; uniform mat3 uSkyRot; uniform float uGain; varying vec2 vUv;
+    vec2 equi(vec3 d){ return vec2(atan(d.z,d.x)*.15915494+.5, asin(clamp(d.y,-1.,1.))*.31830989+.5); }
+    void main(){
+      vec4 c = uInvProj*vec4(vUv*2.-1.,1.,1.);
+      vec3 d = normalize(mat3(uCamWorld)*(c.xyz/c.w));
+      vec3 col = texture2D(uMW, equi(uSkyRot*d)).rgb*uGain;
+      gl_FragColor = vec4(col*col*1.5,1.);
+    }`
+  });
+  const sky = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), skyMat);
+  sky.frustumCulled = false; sky.renderOrder = -10;
+  sky.onBeforeRender = (r, s, cam) => { skyMat.uniforms.uInvProj.value.copy(cam.projectionMatrixInverse); skyMat.uniforms.uCamWorld.value.copy(cam.matrixWorld); };
+  scene.add(sky);
+
+  const raw = new Uint8Array(sb), NSTAR = Math.min(raw.length / 6, low ? 60000 : 140000);
+  const sPos = new Float32Array(NSTAR * 3), sMag = new Float32Array(NSTAR), sCol = new Float32Array(NSTAR);
+  for (let i = 0; i < NSTAR; i++) {
+    const o = i * 6, u = (raw[o] | raw[o + 1] << 8) / 65535, v = (raw[o + 2] | raw[o + 3] << 8) / 65535;
+    const lon = (u - .5) * Math.PI * 2, lat = (.5 - v) * Math.PI;
+    sPos[i * 3] = Math.cos(lat) * Math.cos(lon); sPos[i * 3 + 1] = Math.sin(lat); sPos[i * 3 + 2] = Math.cos(lat) * Math.sin(lon);
+    sMag[i] = raw[o + 4] / 255; sCol[i] = raw[o + 5] / 127.5 - 1;
+  }
+  const sg = new THREE.BufferGeometry();
+  sg.setAttribute('position', new THREE.BufferAttribute(sPos, 3)); sg.setAttribute('aMag', new THREE.BufferAttribute(sMag, 1)); sg.setAttribute('aCol', new THREE.BufferAttribute(sCol, 1));
+  const starMat = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending,
+    uniforms: {uSkyRotInv: {value: skyRotInv}, uDpr: {value: DPR}, uTime: {value: 0}},
+    vertexShader: /* glsl */`
+    attribute float aMag; attribute float aCol; uniform mat3 uSkyRotInv; uniform float uDpr, uTime; varying vec3 vC;
+    void main(){
+      vec3 n = uSkyRotInv*position;
+      vec4 p = projectionMatrix*vec4(mat3(viewMatrix)*n, 1.); p.z = p.w*.99999; gl_Position = p;
+      float flux = pow(10., (aMag-1.)*2.);
+      float tw = 1. + .18*sin(uTime*(1.3+fract(aCol*91.7)*2.) + aMag*80.);
+      float I = 1.6*pow(flux,.78)*tw;
+      gl_PointSize = clamp((1. + 2.2*sqrt(min(flux,3.)))*uDpr, 1., 7.*uDpr);
+      vec3 tint = mix(vec3(.66,.78,1.), vec3(1.,.8,.58), aCol*.5+.5);
+      vC = min(mix(vec3(1.), tint, .6)*I, vec3(2.));
+    }`,
+    fragmentShader: `varying vec3 vC; void main(){ vec2 q=gl_PointCoord*2.-1.; float r=dot(q,q); if(r>1.) discard; gl_FragColor=vec4(vC*exp(-r*4.2),1.); }`
+  });
+  const stars = new THREE.Points(sg, starMat); stars.frustumCulled = false; stars.renderOrder = -9; scene.add(stars);
+
+  /* ---------- the flight path: one straight glide, speed eased around each world ---------- */
+  const VEL = 100, SLOW = .2, Z0 = -2, ZS = .01, ZN = Math.ceil((TT + 4) / ZS);
+  const ZT = new Float32Array(ZN + 1);
+  { let z = 0; for (let k = 0; k <= ZN; k++) { const t = Z0 + k * ZS; ZT[k] = z;
+      let w = 0; for (const s of ST) w = Math.max(w, smooth(s.a - .5, s.a + .35, t) * (1 - smooth(s.b - .35, s.b + .5, t)));
+      z -= VEL * (1 - (1 - SLOW) * w) * ZS; } }
+  const camZ = t => { const x = (clamp(t, Z0, Z0 + ZN * ZS) - Z0) / ZS, k = Math.min(ZN - 1, Math.floor(x)); return lerp(ZT[k], ZT[k + 1], x - k); };
+
+  /* ---------- sprites: the ChatGPT worlds, nebulae and light ---------- */
+  const SPRITE_VS = `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }`;
+  const SPRITE_FS = /* glsl */`
+  uniform sampler2D map; uniform float uOp, uTime, uSeed, uAmt; uniform vec2 uFlow;
+  varying vec2 vUv;
+  ${NOISE}
+  void main(){
+    vec2 uv = vUv;
+  #ifdef FLOW
+    uv += (vec2(fbm(vUv*2.6+vec2(uTime*.018,uSeed)), fbm(vUv*2.6+vec2(uSeed,-uTime*.015)))-.5)*.045;
+  #endif
+    vec4 t = texture2D(map, uv);
+    vec3 c = t.rgb; float a = t.a;
+    float L = dot(c, vec3(.2126,.7152,.0722));
+  #ifdef LIGHTS
+    // warm lights twinkle and signals run along the network
+    float warm = smoothstep(.0,.12, c.r-c.b);
+    float m = smoothstep(.12,.55,L)*warm;
+    float tw = vn(vUv*160.+uSeed+uTime*.7);
+    float run = pow(.5+.5*sin(dot(vUv,vec2(26.,19.))*1.3 - uTime*1.1 + fbm(vUv*8.)*6.), 8.);
+    c += c*m*(tw*.5 + run*1.3)*uAmt;
+  #endif
+  #ifdef AURORA
+    float sat = max(c.g-max(c.r,c.b), max(c.b,c.r)-c.g*1.15);
+    float m = smoothstep(.02,.2,sat)*smoothstep(.02,.2,L);
+    float band = fbm(vec2(vUv.x*9.+uSeed, vUv.y*2.2 - uTime*.12));
+    c *= 1. + (band-.45)*1.6*m*uAmt;
+  #endif
+  #ifdef GLINT
+    float ph = fract(uTime*.055)*2.4-.7;
+    float sweep = exp(-pow((dot(vUv-.5, normalize(vec2(1.,-.7))) - ph)*9., 2.));
+    float spark = pow(vn(vUv*220.+uTime*.9), 10.)*6.;
+    c += c*smoothstep(.2,.6,L)*(sweep*1.4 + spark)*uAmt;
+  #endif
+  #ifdef SPARKLE
+    c += c*smoothstep(.25,.6,L)*pow(vn(vUv*300.+uSeed+uTime*1.3), 9.)*5.*uAmt;
+  #endif
+  #ifdef PULSE
+    float r = length(vUv-.5);
+    float beat = pow(.5+.5*sin(uTime*4.6), 16.);
+    c += c*(smoothstep(.1,0.,r)*beat*2.2 + smoothstep(.5,.0,r)*beat*.25)*uAmt;
+  #endif
+  #ifdef ADD
+    vec2 e = smoothstep(vec2(0.), vec2(.16), uv)*smoothstep(vec2(0.), vec2(.16), 1.-uv);
+    gl_FragColor = vec4(c*e.x*e.y, uOp);
+  #else
+    gl_FragColor = vec4(c, a*uOp);
+  #endif
+  }`;
+  const HALO_FS = /* glsl */`
+  uniform vec3 uCol; uniform float uOp; varying vec2 vUv;
+  void main(){ float r = length(vUv-.5)*2.; float g = exp(-max(0.,r-.6)*7.5)*(1.-smoothstep(.86,1.,r))*smoothstep(.3,.62,r); gl_FragColor = vec4(uCol*g, uOp); }`;
+
+  const plane = new THREE.PlaneGeometry(1, 1);
+  const OBJ = [];
+  // st: station, f: dwell fraction where it sits at distance D, offset (ox, oy) in half-heights at that distance, w: width in half-heights
+  function sprite(o) {
+    const t = TX[o.tex + '.webp'], asp = t.image ? t.image.width / t.image.height : 1;
+    const defines = {}; (o.fx || []).forEach(f => defines[f] = 1); if (o.add) defines.ADD = 1;
+    const mat = new THREE.ShaderMaterial({defines, transparent: true, depthWrite: false, depthTest: false,
+      blending: o.add ? THREE.AdditiveBlending : THREE.NormalBlending,
+      uniforms: {map: {value: t}, uOp: {value: 0}, uTime: {value: 0}, uSeed: {value: Math.random() * 50}, uAmt: {value: o.amt ?? 1}, uFlow: {value: new THREE.Vector2()}},
+      vertexShader: SPRITE_VS, fragmentShader: SPRITE_FS});
+    const m = new THREE.Mesh(plane, mat); m.frustumCulled = false; scene.add(m);
+    const rec = {...o, m, mat, asp, op: o.op ?? 1, far: o.far ?? 300, near: o.near ?? 34, rot: o.rot || 0, spin: o.spin || 0};
+    if (o.halo) {
+      const hm = new THREE.ShaderMaterial({transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending,
+        uniforms: {uCol: {value: new THREE.Color(...o.halo[0])}, uOp: {value: 0}}, vertexShader: SPRITE_VS, fragmentShader: HALO_FS});
+      rec.h = new THREE.Mesh(plane, hm); rec.h.frustumCulled = false; rec.hk = o.halo[1]; scene.add(rec.h);
+    }
+    OBJ.push(rec); return rec;
+  }
+  const P = (id, f) => fAt(IX[id], f);
+  const after = id => { const s = ST[IX[id] - 1]; return [s.b - .15, s.b + .5, 1e9, 1e9]; };   // appear once we leave the previous world
+  // worlds
+  sprite({tex: 'earth', T: P('earth', 0), D: 100, ox: 0, oy: -.86, w: 1.42, fx: ['LIGHTS'], amt: .8, halo: [[.25, .5, 1], .5], far: 1e9, near: 30});
+  sprite({tex: 'world-aurora', T: P('lumen', .45), win: after('lumen'), D: 100, ox: -.5, oy: .2, w: 1.05, fx: ['AURORA'], halo: [[.2, .9, .6], .18]});
+  sprite({tex: 'world-mnemos', T: P('mnemos', .45), win: after('mnemos'), D: 100, ox: .52, oy: .14, w: 1.12, fx: ['LIGHTS'], amt: 1.1, halo: [[1, .65, .3], .32]});
+  sprite({tex: 'world-vault', T: P('custos', .45), win: after('custos'), D: 100, ox: 0, oy: .86, w: 1.02, fx: ['GLINT'], halo: [[.3, .7, 1], .34]});
+  sprite({tex: 'world-camelot', T: P('camelot', .45), win: after('camelot'), D: 100, ox: -.12, oy: -.66, w: 2.15, fx: ['SPARKLE'], halo: [[1, .6, .3], .22]});
+  // the nebula of rules and tools
+  sprite({tex: 'nebula-pillars', T: P('pillars', .45), win: after('pillars'), D: 150, ox: .05, oy: -.84, w: 2.9, add: true, op: .95, fx: ['FLOW'], far: 900, near: 40});
+  // pulsar and galaxy
+  sprite({tex: 'pulsar', T: P('pulsar', .45), win: [ST[IX.lab].a - .4, ST[IX.lab].a + .4, 1e9, 1e9], D: 100, ox: 0, oy: .42, w: 1.7, add: true, op: 1, fx: ['PULSE'], spin: .045, far: 700, near: 30});
+  sprite({tex: 'galaxy', T: P('galaxy', .7), win: after('galaxy'), D: 120, ox: 0, oy: .12, w: 2.0, add: true, op: .95, spin: -.012, far: 1100, near: 40});
+  // veils we fly through between worlds, plus a dense cloud for the tools
+  const rnd = (() => { let s = 7; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
+  for (let i = 0; i < NS - 1; i++) {
+    const s = ST[i], n = s.id === 'pillars' ? 2 : 3;
+    for (let k = 0; k < n; k++) {
+      const t = s.b + s.tr * (.1 + .8 * (k + rnd() * .5) / n);
+      sprite({tex: (i + k) % 2 ? 'veil-rose' : 'veil-teal', T: t, win: [s.b - .25, s.b + .3, ST[i + 1].a - .3, ST[i + 1].a + .25], D: 70 + rnd() * 50, ox: (rnd() - .5) * 1.6, oy: (rnd() - .5) * 1.0, w: 4.2 + rnd() * 2.4,
+        add: true, op: .5 + rnd() * .2, fx: ['FLOW'], rot: (rnd() - .5) * 1.4, far: 380, near: 22});
+    }
+  }
+  for (let k = 0; k < 6; k++) sprite({tex: k % 2 ? 'veil-teal' : 'veil-rose', T: P('tools', .1 + k * .16), D: 150 + rnd() * 60, ox: (rnd() - .5) * 2.4, oy: (rnd() - .5) * 1.4, w: 4 + rnd() * 2, add: true, op: .25, fx: ['FLOW'], rot: rnd() * 6, far: 420, near: 30});
+  sprite({tex: 'veil-rose', T: P('lab', .5), D: 260, ox: 0, oy: .1, w: 3.6, add: true, op: .38, fx: ['FLOW'], far: 700, near: 60});
+  sprite({tex: 'veil-teal', T: P('lab', .5), D: 330, ox: .9, oy: -.4, w: 3.4, add: true, op: .35, fx: ['FLOW'], rot: 2.6, far: 800, near: 80});
+  // distant nebulae, so the sky is never empty
+  [['veil-teal', 'earth', .9, .55, 1.0], ['veil-rose', 'mnemos', -.9, .4, .9], ['veil-teal', 'custos', .8, -.5, 1.0], ['veil-rose', 'camelot', -.7, .5, .9], ['veil-teal', 'pulsar', .7, -.45, .8]]
+    .forEach(([tx, id, ox, oy, op], k) => sprite({tex: tx, T: P(id, .5), D: 1500, ox, oy, w: 3.2, add: true, op: op * .15, fx: ['FLOW'], rot: k * 1.3, far: 3200, near: 500}));
+
+  /* ---------- stardust: gives the glide its speed ---------- */
+  const ND = low ? 900 : 1800, dPos = new Float32Array(ND * 3), dSeed = new Float32Array(ND);
+  for (let i = 0; i < ND; i++) { const a = Math.random() * Math.PI * 2, r = 8 + Math.pow(Math.random(), .7) * 140; dPos[i * 3] = Math.cos(a) * r * 1.5; dPos[i * 3 + 1] = Math.sin(a) * r; dPos[i * 3 + 2] = Math.random() * 520; dSeed[i] = Math.random(); }
+  const dg = new THREE.BufferGeometry(); dg.setAttribute('position', new THREE.BufferAttribute(dPos, 3)); dg.setAttribute('aSeed', new THREE.BufferAttribute(dSeed, 1));
+  const dustMat = new THREE.ShaderMaterial({transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending,
+    uniforms: {uCamZ: {value: 0}, uDpr: {value: DPR}, uTime: {value: 0}, uGain: {value: 1}},
+    vertexShader: /* glsl */`
+    attribute float aSeed; uniform float uCamZ, uDpr, uTime, uGain; varying vec3 vC; varying float vA;
+    void main(){
+      float d = mod(position.z + uCamZ, 520.);
+      vec3 p = vec3(position.xy + vec2(sin(uTime*.2+aSeed*30.), cos(uTime*.17+aSeed*20.))*1.5, uCamZ - d);
+      vec4 mv = modelViewMatrix*vec4(p,1.); gl_Position = projectionMatrix*mv;
+      float dist = -mv.z;
+      vA = smoothstep(520.,300.,d)*smoothstep(4.,30.,dist)*uGain;
+      gl_PointSize = clamp(260./max(dist,1.)*uDpr*(.6+aSeed*.8), 1., 9.*uDpr);
+      vC = mix(vec3(.6,.8,1.), vec3(1.,.8,.6), step(.62,aSeed));
+    }`,
+    fragmentShader: `varying vec3 vC; varying float vA; void main(){ vec2 q=gl_PointCoord*2.-1.; float r=dot(q,q); if(r>1.) discard; gl_FragColor=vec4(vC*exp(-r*3.)*vA*.55,1.); }`});
+  const dust = new THREE.Points(dg, dustMat); dust.frustumCulled = false; scene.add(dust);
+
+  /* ---------- post: soft bloom + gentle film grade (keeps the artwork's colour) ---------- */
+  const rt = new THREE.WebGLRenderTarget(W * DPR, H * DPR, {type: THREE.HalfFloatType, samples: low ? 0 : 4});
+  const composer = new X.EffectComposer(renderer, rt);
+  composer.setPixelRatio(DPR); composer.setSize(W, H);
+  composer.addPass(new X.RenderPass(scene, camera));
+  const bloom = new X.UnrealBloomPass(new THREE.Vector2(W / 2, H / 2), .42, .55, .72);
+  composer.addPass(bloom);
+  { const m = bloom.materialHighPassFilter, a = 'gl_FragColor = mix( outputColor, texel, alpha );';
+    if (m.fragmentShader.includes(a)) { m.fragmentShader = m.fragmentShader.replace(a, 'gl_FragColor = min( mix( outputColor, texel, alpha ), vec4( 2. ) );'); m.needsUpdate = true; } }
+  const grade = new X.ShaderPass({
+    uniforms: {tDiffuse: {value: null}, uTime: {value: 0}, uFade: {value: 1}, uRes: {value: new THREE.Vector2(W, H)}},
+    vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
+    fragmentShader: /* glsl */`
+    uniform sampler2D tDiffuse; uniform float uTime, uFade; uniform vec2 uRes; varying vec2 vUv;
+    float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233)))*43758.5453); }
+    vec3 toSRGB(vec3 c){ c = max(c, 0.); return mix(c*12.92, 1.055*pow(c, vec3(1./2.4))-.055, step(.0031308, c)); }
+    void main(){
+      vec2 c = vUv-.5; float r2 = dot(c,c);
+      vec3 col = texture2D(tDiffuse, vUv).rgb;
+      col = col/(1.+max(col-1.,0.)*.6);                 // soft shoulder only above white
+      col *= 1.-r2*.6;
+      col = toSRGB(col);
+      col += (h(vUv*uRes+fract(uTime)*91.)-.5)*.024;
+      col *= 1.-uFade;
+      gl_FragColor = vec4(col, 1.);
+    }`
+  });
+  composer.addPass(grade);
+
+  /* ---------- per-frame ---------- */
+  let time = 0, intro = Q.has('at') || reduce ? 1 : 0, fadeIn = Q.has('at') ? 0 : 1, last = performance.now(), running = false;
+  let tanH = Math.tan(FOV * Math.PI / 360), hs = 1, ss = 1;
+  const scaleFor = () => { const a = W / H; hs = clamp(a / 1.55, .5, 1); ss = clamp(a / 1.2, .58, 1); };
+  scaleFor();
+  const cp = V(0, 0, 0);
+
+  function update(dt) {
+    time += dt;
+    const k = 1 - Math.exp(-dt * (reduce ? 12 : 3.4));
+    T += (tT - T) * k; if (Math.abs(tT - T) < 1e-5) T = tT;
+    if (intro < 1) intro = Math.min(1, intro + dt / 5.4 * (scrolled ? 4 : 1));
+    fadeIn = Math.max(0, fadeIn - dt / 1.8);
+    const ie = 1 - Math.pow(1 - intro, 3);
+
+    // camera: straight glide, a little sway, mouse parallax by moving (not turning) the camera
+    smx += (mx - smx) * Math.min(1, dt * 2); smy += (my - smy) * Math.min(1, dt * 2);
+    const z = camZ(T) + (1 - ie) * 70;
+    cp.set(Math.sin(T * .37) * 2.2 + (reduce ? 0 : smx * 4.5), Math.sin(T * .29 + 1) * 1.4 + (reduce ? 0 : smy * 2.6), z);
+    camera.position.copy(cp);
+    camera.rotation.set(Math.sin(T * .23) * .006 + (1 - ie) * .05, Math.sin(T * .19) * .008, Math.sin(T * .17 + .5) * .012);
+    camera.updateMatrixWorld();
+
+    // sky turns slowly with distance flown
+    turn.makeRotationY(T * .035 + time * .002); skyM4.multiplyMatrices(skyBase, turn);
+    skyRot.setFromMatrix4(skyM4); skyRotInv.copy(skyRot).transpose();
+    starMat.uniforms.uTime.value = time;
+    dustMat.uniforms.uCamZ.value = z; dustMat.uniforms.uTime.value = time;
+
+    // place every sprite from its anchor (all of them exist all the time; nothing pops)
+    for (const o of OBJ) {
+      const zc = camZ(o.T) - o.D, d = z - zc;
+      const sc = o.D * tanH;
+      const wv = o.w * sc * (o.add ? 1 : ss);
+      let fade = smooth(o.far, o.far * .62, d) * smooth(o.near * .5, o.near * 1.6, d);
+      if (o.win) fade *= smooth(o.win[0], o.win[1], T) * (1 - smooth(o.win[2], o.win[3], T));
+      const op = d > 1 ? fade * o.op : 0;
+      o.m.visible = op > .002;
+      o.mat.uniforms.uOp.value = op;
+      if (!o.m.visible) { if (o.h) o.h.visible = false; continue; }
+      o.m.position.set(o.ox * sc * hs * 1.15, o.oy * sc, zc);
+      o.m.scale.set(wv, wv / o.asp, 1);
+      o.m.rotation.z = o.rot + time * o.spin;
+      o.mat.uniforms.uTime.value = time;
+      if (o.h) { o.h.visible = true; o.h.position.copy(o.m.position); o.h.position.z -= .5; o.h.scale.set(wv * 1.5, wv * 1.5, 1); o.h.material.uniforms.uOp.value = op * o.hk; }
+    }
+    grade.uniforms.uTime.value = time; grade.uniforms.uFade.value = fadeIn;
+    return {ie};
+  }
+
+  /* ---------- text, screens and the side-mission orbit ---------- */
+  function placeLabels(ie) {
+    for (const l of LAB) {
+      const o = smooth(l.t[0], l.t[1], T) * (1 - smooth(l.t[2], l.t[3], T)) * (l === LAB[0] ? smooth(.45, .9, intro) : 1);
+      if (o <= .002) { if (l.vis) { l.el.style.visibility = 'hidden'; l.el.classList.remove('on'); l.vis = false; } continue; }
+      const mid = (l.t[1] + l.t[2]) / 2, half = Math.max(.2, (l.t[3] - l.t[0]) / 2), u = clamp((T - mid) / half, -1.2, 1.2);
+      const y = -l.y * H / 2 - u * 26, sc = 1 + u * .014;
+      l.el.style.transform = `translate3d(-50%,calc(-50% + ${y.toFixed(1)}px),0) scale(${sc.toFixed(4)})`;
+      l.el.style.opacity = o.toFixed(3);
+      l.el.style.filter = o < .98 ? `blur(${((1 - o) * 8).toFixed(2)}px)` : 'none';
+      if (!l.vis) { l.el.style.visibility = 'visible'; l.vis = true; }
+      l.el.classList.toggle('on', o > .6);
+    }
+    // project screens tilt toward the pointer
+    const rx = (-smy * 5).toFixed(2) + 'deg', ry = (smx * 7).toFixed(2) + 'deg';
+    for (const s of screens) { s.style.setProperty('--rx', rx); s.style.setProperty('--ry', ry); }
+    // side missions: four screens on a ring that turns as you scroll
+    const si = IX.lab, s = ST[si], f = (T - s.a) / s.dw;
+    const o = smooth(-.12, .08, f) * (1 - smooth(1.0, 1.14, f));
+    if (o > .002) {
+      orbit.style.visibility = 'visible'; orbit.style.opacity = o.toFixed(3); orbit.classList.toggle('on', o > .6);
+      const R = Math.min(W * .34, 520), ang = -clamp((f - .1) / .82) * (SHOTS.length - 1) * Math.PI / 2 * 1 + smx * .12;
+      orbit.style.top = (H * (mobile ? .58 : .6)) + 'px';
+      SHOTS.forEach((e, k) => {
+        const a = k * Math.PI / 2 + ang, x = Math.sin(a) * R, zz = (Math.cos(a) - 1) * R * .9, c = Math.cos(a);
+        e.style.transform = `translate3d(calc(-50% + ${x.toFixed(1)}px),-50%,${zz.toFixed(1)}px) rotateY(${(a * .7).toFixed(4)}rad)`;
+        e.style.opacity = clamp(c * 1.3 + .1).toFixed(3);
+        e.style.zIndex = Math.round(c * 10 + 10);
+        e.classList.toggle('front', c > .8);
+      });
+    } else if (orbit.style.visibility !== 'hidden') { orbit.style.visibility = 'hidden'; orbit.classList.remove('on'); }
+  }
+
+  /* ---------- hud ---------- */
+  const el = id => document.getElementById(id);
+  const routeBtns = [...route.children];
+  let lastI = -1;
+  function hud() {
+    const c = coord(T), i = stAt(T), s = ST[i];
+    const ci = Math.min(NS - 1, Math.round(c - .2) < i ? i : Math.round(c - .2));
+    if (ci !== lastI) {
+      lastI = ci; el('phn').textContent = String(ci + 1).padStart(2, '0'); el('tgt').textContent = ST[ci].nav;
+      routeBtns.forEach((b, k) => { b.classList.toggle('on', k === ci); b.classList.toggle('past', k < ci); });
+    }
+    const f = (T - s.a) / s.dw;
+    const yv = f <= 1 || i === NS - 1 ? lerp(s.yr[0], s.yr[1], clamp(f)) : lerp(s.yr[1], ST[i + 1].yr[0], smooth(0, 1, (T - s.b) / s.tr));
+    el('yr').textContent = yv.toFixed(2);
+    $('#bar i').style.width = (T / TT * 100).toFixed(2) + '%';
+  }
+
+  /* ---------- loop ---------- */
+  function frame(now) {
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    const info = update(dt);
+    composer.render(dt);
+    placeLabels(info.ie); hud(); cursorFrame(dt);
+    requestAnimationFrame(frame);
+  }
+  function resize() {
+    W = innerWidth; H = innerHeight;
+    renderer.setSize(W, H, false); composer.setSize(W, H);
+    camera.aspect = W / H; camera.updateProjectionMatrix(); scaleFor();
+    grade.uniforms.uRes.value.set(W * DPR, H * DPR);
+  }
+  resize();
+  OBJ.forEach(o => { o.m.visible = true; if (o.h) o.h.visible = true; });
+  camera.position.set(0, 0, camZ(0)); camera.updateMatrixWorld();
+  renderer.compile(scene, camera);
+  return {
+    start() { if (running) return; running = true; last = performance.now(); requestAnimationFrame(frame); },
+    resize, skipIntro() { intro = 1; fadeIn = 0; }
+  };
+}
+</script>
+</body>
+</html>
