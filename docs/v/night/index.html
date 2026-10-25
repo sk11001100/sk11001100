@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lei Kai · Senior Full-Stack Engineer</title>
+<meta name="description" content="Lei Kai, senior full-stack engineer and architect in Xianyang, China. The real night sky over Xianyang, tonight. Hold to open the shutter.">
+<meta name="theme-color" content="#050913">
+<meta property="og:title" content="Lei Kai · Senior Full-Stack Engineer">
+<meta property="og:description" content="The real night sky over Xianyang. Hold to open the shutter.">
+<meta property="og:image" content="assets/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23070c18'/%3E%3Cpath d='M9 24v-6a3 3 0 0 1 6 0v6zM17 24v-6a3 3 0 0 1 6 0v6z' fill='%23ffb661'/%3E%3Ccircle cx='16' cy='8' r='1.6' fill='%23eef1f8'/%3E%3C/svg%3E">
+<link rel="preload" href="assets/fonts/serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/mono-light.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:S;src:url(assets/fonts/serif.woff2) format('woff2');font-display:swap}
+@font-face{font-family:S;font-style:italic;src:url(assets/fonts/serif-italic.woff2) format('woff2');font-display:swap}
+@font-face{font-family:M;font-weight:300;src:url(assets/fonts/mono-light.woff2) format('woff2');font-display:swap}
+@font-face{font-family:M;font-weight:400;src:url(assets/fonts/mono.woff2) format('woff2');font-display:swap}
+:root{--ink:#eef1f8;--dim:#a3adc4;--faint:#6e7893;--warm:#ffb661;--bg:#050913}
+*{box-sizing:border-box}
+html{background:var(--bg);color:var(--ink);scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+body{margin:0;font-family:S,Georgia,serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+a{color:inherit;text-decoration:none}
+#stage{position:fixed;inset:0;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:pan-y}
+#sky,#cons,#land{position:absolute;inset:0;width:100%;height:100%;display:block}
+#cons,#land{pointer-events:none;overflow:visible}
+#track{height:820vh}
+
+/* the land */
+.fly,.smoke{transform-box:fill-box;transform-origin:center}
+.mist{animation:mist 46s ease-in-out infinite alternate}
+@keyframes mist{from{transform:translateX(0)}to{transform:translateX(-90px)}}
+.win{transition:opacity 1.6s ease}
+.fl{animation:fl 4.7s ease-in-out infinite}
+@keyframes fl{0%,100%{opacity:1}40%{opacity:.84}47%{opacity:.97}63%{opacity:.78}}
+.fly{animation:fly var(--d) ease-in-out var(--o) infinite}
+@keyframes fly{0%{transform:translate(0,0);opacity:0}18%{opacity:.95}30%{opacity:.15}42%{opacity:.9}55%{transform:translate(var(--x),var(--y));opacity:.05}72%{opacity:.8}100%{transform:translate(0,0);opacity:0}}
+.smoke{animation:smoke 9s linear var(--o) infinite}
+@keyframes smoke{0%{transform:translate(0,0) scale(.5);opacity:0}15%{opacity:.5}100%{transform:translate(var(--x),-70px) scale(2.6);opacity:0}}
+
+/* chapters live inside the picture: they dissolve in place, nothing slides */
+.ch{position:fixed;left:0;right:0;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 22px;pointer-events:none;opacity:0;visibility:hidden;will-change:opacity,filter}
+.ch.on{visibility:visible}
+.ch.live a{pointer-events:auto}
+#dusk{top:0;bottom:22vh;justify-content:center}
+#mid{bottom:calc(12vh + 18px)}
+#dawn{top:0;bottom:20vh;justify-content:center}
+.k{font:300 11.5px/1 M,monospace;letter-spacing:.34em;color:var(--faint);margin:0 0 22px;text-transform:uppercase}
+h1{font-weight:400;font-size:clamp(68px,10.5vw,152px);line-height:.9;letter-spacing:-.012em;margin:0;text-shadow:0 0 40px rgba(5,9,19,.6)}
+.sub{font-style:italic;font-size:clamp(22px,2.3vw,32px);color:#d5dbea;margin:18px 0 0}
+.lede{font-size:clamp(17px,1.45vw,20.5px);line-height:1.5;color:var(--dim);max-width:560px;margin:22px 0 0}
+.hint{font:300 10.5px/1.9 M,monospace;letter-spacing:.3em;color:var(--faint);margin:34px 0 0;text-transform:uppercase}
+.hint b{font-weight:300;color:#c9d1e3}
+.hint i{font-style:normal}
+#mid>*{transition:opacity .5s}
+#mid.dim>*{opacity:.12}
+h2{font-weight:400;font-size:clamp(36px,4.6vw,64px);line-height:1;letter-spacing:-.01em;margin:0}
+h2 i{color:#f4efe6}
+.mail{display:inline-block;font:400 clamp(14px,1.4vw,17px)/1 M,monospace;letter-spacing:.16em;margin:30px 0 0;padding:14px 22px;border:1px solid rgba(238,241,248,.22);border-radius:999px;transition:border-color .4s,background .4s}
+.mail:hover{border-color:rgba(255,214,160,.7);background:rgba(255,200,140,.06)}
+.links{font:300 11.5px/1 M,monospace;letter-spacing:.26em;margin:26px 0 0;color:var(--dim);text-transform:uppercase}
+.links a{padding:6px 2px;border-bottom:1px solid transparent;transition:border-color .3s,color .3s}
+.links a:hover{color:var(--ink);border-color:rgba(238,241,248,.5)}
+.links span{color:var(--faint);margin:0 14px}
+.note{font-style:italic;font-size:15.5px;line-height:1.55;color:var(--faint);max-width:520px;margin:34px 0 0}
+
+/* the constellation's whispers */
+.lab{opacity:0;position:absolute;left:0;top:0;font:300 10px/1 M,monospace;letter-spacing:.24em;color:#8f9ab4;white-space:nowrap;pointer-events:none;transition:opacity .6s}
+.wh{position:absolute;left:0;top:0;width:270px;pointer-events:none;opacity:0;transition:opacity .5s ease,filter .5s ease;filter:blur(4px)}
+.wh.show{opacity:1;filter:none;pointer-events:auto}
+.wh .y{font:300 10.5px/1 M,monospace;letter-spacing:.26em;color:var(--faint)}
+.wh .n{font-size:30px;line-height:1.05;margin:9px 0 0}
+.wh .r{font:300 10.5px/1.6 M,monospace;letter-spacing:.14em;color:var(--dim);margin:8px 0 0;text-transform:uppercase}
+.wh .p{font-style:italic;font-size:16.5px;line-height:1.4;color:#c3cadb;margin:10px 0 0}
+.wh .u{display:inline-block;font:400 10.5px/1 M,monospace;letter-spacing:.18em;color:#ffd7a6;margin:12px 16px 0 0;padding:4px 0;border-bottom:1px solid rgba(255,215,166,.35)}
+.wh .u:hover{border-color:#ffd7a6}
+.wh{text-align:center}
+.wh .u{margin:12px 8px 0}
+.tip{position:absolute;left:0;top:0;font:300 10px/1 M,monospace;letter-spacing:.22em;color:#aab4cc;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .4s}
+
+/* HUD */
+.hud{position:fixed;font:300 10.5px/1 M,monospace;letter-spacing:.26em;color:var(--faint);text-transform:uppercase;transition:opacity .8s}
+#hl{top:26px;left:28px;color:#c9d1e3}
+#hr{top:26px;right:28px;text-align:right}
+#hr b{font-weight:300;color:#c9d1e3}
+#bl{bottom:24px;left:28px;display:flex;align-items:center;gap:14px;cursor:pointer;pointer-events:auto}
+#bl i{position:relative;display:block;width:140px;height:1px;background:linear-gradient(90deg,rgba(255,170,110,.5),rgba(120,140,190,.28) 22%,rgba(120,140,190,.28) 78%,rgba(255,200,140,.55))}
+#bl i u{position:absolute;top:-3px;left:0;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:#eef1f8;box-shadow:0 0 10px rgba(238,241,248,.8)}
+#br{bottom:24px;right:28px;text-align:right}
+#br b{font-weight:300;color:#ffd7a6}
+.exposing .ch,.exposing .lab,.exposing .wh,.exposing #hl,.exposing #bl{opacity:0!important;transition:opacity .5s}
+
+@media (max-aspect-ratio:9/10){
+  #dusk{bottom:34vh}
+  #mid{bottom:calc(8vh + 10px)}
+  #dawn{bottom:30vh}
+  .hint{margin-top:26px}
+  #hl{left:20px;top:20px}#hr{right:20px;top:20px}#bl{left:20px;bottom:18px}#br{right:20px;bottom:18px}
+  #bl i{width:64px}
+  #bl span{display:none}
+  .hint span{display:block}.hint i{display:none}
+  .k{font-size:10px;letter-spacing:.2em}
+  .wh{width:220px}
+}
+@media (max-width:560px){.k{letter-spacing:.24em}.hint{letter-spacing:.2em}.links span{margin:0 8px}}
+
+/* no WebGL: the same words, still in the night */
+html.nogl #stage{background:linear-gradient(#050913,#0b1426 70%,#16223b)}
+html.nogl #track{display:none}
+html.nogl .ch{position:relative;opacity:1;visibility:visible;min-height:100vh;justify-content:center;top:auto;bottom:auto}
+html.nogl .ch a{pointer-events:auto}
+html.nogl #stage{position:fixed;z-index:-1}
+html.nogl .hud{display:none}
+html.clean .hud{display:none}
+@media (prefers-reduced-motion:reduce){.mist,.fl,.fly,.smoke{animation:none}}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <svg id="cons" aria-hidden="true"></svg>
+  <svg id="land" aria-hidden="true"></svg>
+  <div id="labs"></div>
+</div>
+
+<section class="ch" id="dusk">
+  <p class="k">Xianyang &nbsp;·&nbsp; 34.33° N &nbsp;·&nbsp; facing north</p>
+  <h1>Lei Kai</h1>
+  <p class="sub">Senior full-stack engineer &amp; architect.</p>
+  <p class="lede">Nine years of shipping software: a remote team led across time zones, a product built entirely alone, forensic tools that hold up in court, and the team behind a social-wager platform.</p>
+  <p class="hint"><span><b>Scroll</b> &nbsp;let the night pass</span><i> &nbsp;·&nbsp; </i><span><b>Hold</b> &nbsp;open the shutter</span></p>
+</section>
+
+<section class="ch" id="mid">
+  <p class="k">Midnight</p>
+  <h2>Four stars of my own.</h2>
+  <p class="hint" id="midhint"><b>Hover</b> &nbsp;a star</p>
+</section>
+
+<section class="ch" id="dawn">
+  <p class="k">Dawn</p>
+  <h2><i>Open to senior and lead roles.</i></h2>
+  <a class="mail" href="mailto:coblerpeach354@gmail.com">coblerpeach354@gmail.com</a>
+  <p class="links"><a href="https://t.me/kailei0325" target="_blank" rel="noopener">Telegram</a><span>·</span><a href="https://github.com/sk11001100" target="_blank" rel="noopener">GitHub</a><span>·</span><a href="assets/Lei-Kai-CV.pdf" target="_blank" rel="noopener">Résumé</a></p>
+  <p class="note">The sky on this page is real: 9,096 stars from the Yale Bright Star Catalogue, placed over Xianyang for tonight, <span id="tonight"></span>. Read the windows.</p>
+</section>
+
+<div class="hud" id="hl">Lei Kai</div>
+<div class="hud" id="hr"><b id="clock">--:--</b> &nbsp;CST<br><br><span id="date"></span></div>
+<div class="hud" id="bl" title="Jump through the night"><span>Dusk</span><i><u id="dot"></u></i><span>Dawn</span></div>
+<div class="hud" id="br"><span id="shut">Hold &nbsp;·&nbsp; long exposure</span></div>
+<div id="track"></div>
+
+<script>
+(() => {
+'use strict';
+const Q = new URLSearchParams(location.search);
+const $ = id => document.getElementById(id);
+const html = document.documentElement;
+if (Q.has('clean')) html.classList.add('clean');
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ================================================================ astronomy */
+const D2R = Math.PI / 180, LAT = 34.33, LON = 108.71, HOUR = 36e5, DAY = 864e5, CST = 8 * HOUR;
+const jdOf = ms => ms / DAY + 2440587.5;
+const lstOf = ms => ((280.46061837 + 360.98564736629 * (jdOf(ms) - 2451545) + LON) % 360 + 360) % 360;
+// equatorial -> horizon (x east, y north, z up), row-major
+function e2h(lst) {
+  const L = lst * D2R, p = LAT * D2R, cL = Math.cos(L), sL = Math.sin(L), cp = Math.cos(p), sp = Math.sin(p);
+  return [-sL, cL, 0, -sp * cL, -sp * sL, cp, cp * cL, cp * sL, sp];
+}
+const mul = (M, v) => [M[0] * v[0] + M[1] * v[1] + M[2] * v[2], M[3] * v[0] + M[4] * v[1] + M[5] * v[2], M[6] * v[0] + M[7] * v[1] + M[8] * v[2]];
+const mulT = (M, v) => [M[0] * v[0] + M[3] * v[1] + M[6] * v[2], M[1] * v[0] + M[4] * v[1] + M[7] * v[2], M[2] * v[0] + M[5] * v[1] + M[8] * v[2]];
+const colMajor = M => new Float32Array([M[0], M[3], M[6], M[1], M[4], M[7], M[2], M[5], M[8]]);
+const GAL = [-0.0548755604, -0.8734370902, -0.4838350155, 0.4941094279, -0.4448296300, 0.7469822445, -0.8676661490, -0.1980763734, 0.4559837762];
+function h2g(E) { // GAL * E^T
+  const o = [];
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) o.push(GAL[i * 3] * E[j * 3] + GAL[i * 3 + 1] * E[j * 3 + 1] + GAL[i * 3 + 2] * E[j * 3 + 2]);
+  return o;
+}
+function sunEq(ms) {
+  const n = jdOf(ms) - 2451545, L = (280.460 + 0.9856474 * n) * D2R, g = (357.528 + 0.9856003 * n) * D2R;
+  const lam = L + (1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * D2R, eps = (23.439 - 4e-7 * n) * D2R;
+  return [Math.cos(lam), Math.cos(eps) * Math.sin(lam), Math.sin(eps) * Math.sin(lam)];
+}
+const sunHor = ms => mul(e2h(lstOf(ms)), sunEq(ms));
+const sunAlt = ms => Math.asin(sunHor(ms)[2]) / D2R;
+const eqVec = (ra, dec) => [Math.cos(dec * D2R) * Math.cos(ra * D2R), Math.cos(dec * D2R) * Math.sin(ra * D2R), Math.sin(dec * D2R)];
+
+/* ---------------- tonight, for the visitor's own date ---------------- */
+let now = Date.now();
+if (Q.get('date')) { const [y, m, d] = Q.get('date').split('-').map(Number); now = Date.UTC(y, m - 1, d, 14); }
+const noon = Math.floor((now + CST - 12 * HOUR) / DAY) * DAY + 12 * HOUR - CST;   // the last noon in Xianyang
+let tFirst = 0, tDusk = 0, tDawn = 0;
+for (let t = noon; t < noon + DAY; t += 60e3) {
+  const a = sunAlt(t);
+  if (!tFirst && a < -7.5) tFirst = t;
+  if (!tDusk && a < -12.2) { tDusk = t; break; }
+}
+for (let t = noon + DAY; t > noon; t -= 60e3) if (sunAlt(t) < -4.6) { tDawn = t; break; }
+const tMid = (tDusk + tDawn) / 2;
+// scroll -> how far through the night: slow at dusk, at midnight and at dawn, quicker between
+const KP = [[0, 0], [.14, .05], [.38, .43], [.68, .57], [.86, .95], [1, 1]];
+function nightAt(p) {
+  for (let i = 1; i < KP.length; i++) if (p <= KP[i][0]) {
+    const t = (p - KP[i - 1][0]) / (KP[i][0] - KP[i - 1][0]), s = t * t * (3 - 2 * t);
+    return tDusk + (tDawn - tDusk) * (KP[i - 1][1] + (KP[i][1] - KP[i - 1][1]) * (t * .5 + s * .5));
+  }
+  return tDawn;
+}
+const cst = ms => new Date(ms + CST);
+const pad = n => String(n).padStart(2, '0');
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+{ const d = cst(tDusk); $('date').textContent = `${pad(d.getUTCDate())} ${MON[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+  $('tonight').textContent = `${d.getUTCDate()} ${['January','February','March','April','May','June','July','August','September','October','November','December'][d.getUTCMonth()]} ${d.getUTCFullYear()}`; }
+const MONTH = cst(tDusk).getUTCMonth();
+
+/* meteor showers by date: the radiant is real when one is active */
+const SHOWERS = [[0, 3, 230, 49], [3, 22, 271, 34], [4, 6, 338, -1], [7, 12, 48, 58], [9, 21, 95, 16], [10, 17, 152, 22], [11, 14, 112, 33]];
+let RADIANT = null;
+{ const d = cst(tMid), y = d.getUTCFullYear();
+  for (const [m, day, ra, dec] of SHOWERS) for (const yy of [y - 1, y, y + 1]) {
+    if (Math.abs(Date.UTC(yy, m, day) - Date.UTC(y, d.getUTCMonth(), d.getUTCDate())) < 8 * DAY) RADIANT = eqVec(ra, dec);
+  } }
+
+/* ================================================================ layout */
+const L = {};
+const sky = $('sky');
+function layout() {
+  const W = innerWidth, H = innerHeight, portrait = W / H < .9;
+  L.W = W; L.H = H; L.portrait = portrait;
+  L.k = portrait ? .5 * W : Math.max(.68 * H, W / 2 / 1.2);      // px per stereographic unit
+  L.hy = H * (portrait ? .78 : .80);                                // the horizon, a level line
+  L.cx = W / 2;
+}
+// stereographic, centred on the horizon and shifted down like a tilt-shift lens: the horizon stays level
+const CAM = {az: 0, dy: 0};
+function proj(h) {
+  const a = CAM.az * D2R, f = [Math.sin(a), Math.cos(a)], r = [Math.cos(a), -Math.sin(a)];
+  const z = h[0] * f[0] + h[1] * f[1], s = 2 / Math.max(1 + z, 1e-3);
+  return [L.cx + (h[0] * r[0] + h[1] * r[1]) * s * L.k, L.hy + CAM.dy - h[2] * s * L.k, z];
+}
+function unproj(px, py, k = L.k, cx = L.cx, hy = L.hy) {
+  const x = (px - cx) / k, y = -(py - hy) / k, r2 = x * x + y * y, z = (4 - r2) / (4 + r2), s = (1 + z) / 2;
+  return [x * s, z, y * s];   // facing north: right = east, forward = north
+}
+
+/* ================================================================ the four stars */
+const WORK = [
+  {y: '2017 — 2019', n: 'Shinetech Software', short: 'Shinetech', r: 'Front-end developer · remote team lead · Beijing',
+   p: 'Led a remote front-end team for international clients, and set the standards it shipped by.', u: [['shinetechsoftware.com', 'https://shinetechsoftware.com']], at: [.215, .40]},
+  {y: '2019 — 2021', n: 'Midinote', short: 'Midinote', r: 'Full-stack · built the whole app alone · Hong Kong',
+   p: 'A note app that grows into a mind map. Every line of it, front to servers, is mine.', u: [['midinote.me', 'https://midinote.me']], at: [.40, .25]},
+  {y: '2021 — 2024', n: 'Evidence Locker', short: 'Evidence Locker', r: 'Full-stack · forensic cloud evidence · Beijing',
+   p: 'Cloud evidence for law enforcement, preserved so that every byte holds up in court.', u: [['evidencelocker.com', 'https://evidencelocker.com']], at: [.60, .33]},
+  {y: '2024 — 2026', n: 'Camelot Technology', short: 'Camelot', r: 'Senior full-stack · team lead · Beijing',
+   p: 'Social wagers between friends. I led the team, from product and web to the services underneath.', u: [['moneyinthepot.com', 'https://moneyinthepot.com'], ['camelot.fm', 'https://camelot.fm']], at: [.785, .19]},
+];
+{ // pinned to the sky at tonight's midnight, framed for a 1440 x 900 screen
+  const E = e2h(lstOf(tMid)), W = 1440, H = 900, k = Math.max(.68 * H, W / 2 / 1.2);
+  for (const s of WORK) s.eq = mulT(E, unproj(s.at[0] * W, s.at[1] * H, k, W / 2, H * .8));
+}
+
+/* ================================================================ WebGL */
+const gl = Q.has('nogl') ? null : sky.getContext('webgl2', {antialias: false, alpha: false, depth: false, stencil: false, preserveDrawingBuffer: false});
+if (!gl) { html.classList.add('nogl'); document.querySelectorAll('.ch').forEach(e => e.classList.add('on', 'live')); return; }
+
+const PROJ = `
+uniform vec3 uF, uR; uniform float uK; uniform vec2 uC, uRes;
+vec3 toPx(vec3 h){ float z = dot(h, uF); float s = 2. / max(1. + z, 1e-3); return vec3(uC.x + dot(h, uR) * s * uK, uC.y - h.z * s * uK, z); }
+vec4 toClip(vec2 p){ return vec4(p.x / uRes.x * 2. - 1., 1. - p.y / uRes.y * 2., 0., 1.); }
+float hash(vec3 p){ return fract(sin(dot(p, vec3(12.9898, 78.233, 37.719))) * 43758.5453); }
+float starI(float mag, float sinAlt, float lim, out float X, out float f){
+  float s = max(sinAlt, 0.);
+  X = 1. / (s + .025 * exp(-11. * s));                // airmass: low stars dim and redden
+  float m = mag + .2 * (X - 1.);
+  f = pow(10., -.4 * (m - 1.)) * smoothstep(lim + .3, lim - 1.3, m);
+  return clamp(pow(f, .38) * 1.5, 0., 1.25);
+}
+vec3 redden(vec3 c, float X){ return mix(c, c * vec3(1., .8, .6), clamp((X - 1.) * .07, 0., .55)); }
+`;
+const SRC = {
+  skyV: `#version 300 es
+void main(){ vec2 p = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2); gl_Position = vec4(p * 2. - 1., 0., 1.); }`,
+  skyF: `#version 300 es
+precision highp float;
+uniform vec3 uF, uR; uniform float uK; uniform vec2 uC, uRes;
+uniform mat3 uH2G; uniform vec3 uSun; uniform float uSunAlt, uMW, uTime;
+uniform sampler2D uTex;
+out vec4 o;
+float h21(vec2 p){ return fract(52.9829189 * fract(dot(p, vec2(.06711056, .00583715)))); }
+void main(){
+  vec2 px = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);
+  float x = (px.x - uC.x) / uK, y = -(px.y - uC.y) / uK, r2 = x * x + y * y, z = (4. - r2) / (4. + r2), s = (1. + z) * .5;
+  vec3 h = normalize(x * s * uR + y * s * vec3(0., 0., 1.) + z * uF);
+  float alt = asin(clamp(h.z, -1., 1.)), a = max(alt, 0.), an = a / 1.5708;
+  float sa = uSunAlt;
+  float tw = smoothstep(-18., -1., sa), t2 = tw * tw;
+  // a cool navy night, never black
+  vec3 c = mix(vec3(.036, .056, .104), vec3(.012, .019, .045), pow(an, .5));
+  c += vec3(.012, .026, .028) * exp(-a * 9.);                       // airglow
+  // the twilight dome
+  c = mix(c, mix(vec3(.20, .27, .42), vec3(.05, .10, .23), pow(an, .45)), clamp(t2 * .95 + tw * .22, 0., 1.));
+  vec2 hz = normalize(h.xy + 1e-6), sz = normalize(uSun.xy + 1e-6);
+  float toward = dot(hz, sz) * .5 + .5;
+  float near = exp(-a * mix(10., 3.6, tw));
+  vec3 warm = mix(vec3(.46, .22, .26), vec3(1.0, .60, .32), smoothstep(-14., -3., sa));
+  c += warm * near * pow(toward, 1.5) * smoothstep(-19.5, -7., sa) * 1.7;
+  c += vec3(1., .74, .48) * exp(-a * 20.) * pow(toward, 1.3) * (t2 * .55 + tw * .16);
+  c += vec3(.16, .17, .25) * exp(-a * 7.) * smoothstep(-18., -8., sa) * (.5 + .5 * toward);
+  // a far village, warm and very faint
+  float az = atan(h.x, h.y);
+  c += vec3(.05, .03, .016) * exp(-a * 16.) * exp(-pow((az - .32) / .38, 2.)) * (1. - tw);
+  // the Milky Way, in galactic coordinates
+  vec3 g = uH2G * h;
+  float l = atan(g.y, g.x), b = asin(clamp(g.z, -1., 1.));
+  vec2 uv = vec2(.5 + l / 6.28318, .5 - b / 1.5708);
+  if (uv.y > 0. && uv.y < 1.) { vec3 m = texture(uTex, uv).rgb; c += m * m * uMW * .42 * smoothstep(0., .42, alt); }
+  if (alt < 0.) c = mix(c, vec3(.02, .028, .045), smoothstep(0., -.05, alt));
+  c += (h21(gl_FragCoord.xy + floor(fract(uTime * 7.) * 64.) * 5.588) - .5) / 255. * 1.5;   // no banding
+  o = vec4(c, 1.);
+}`,
+  starV: `#version 300 es
+in vec3 aPos; in float aMag; in vec3 aCol;
+uniform mat3 uE2H; uniform float uLim, uTime, uDpr, uTw;
+${PROJ}
+out vec3 vCol; out float vI, vSig, vHalo, vR, vSize;
+void main(){
+  vec3 h = uE2H * aPos; vec3 q = toPx(h);
+  float X, f; float I = starI(aMag * .001, h.z, uLim, X, f);
+  if (h.z < -.01 || q.z < -.5 || I < .006 || q.x < -60. || q.x > uRes.x + 60. || q.y < -60. || q.y > uRes.y + 60.) { gl_Position = vec4(2., 2., 2., 1.); gl_PointSize = 0.; return; }
+  float ph = hash(aPos) * 6.2831, s = max(h.z, 0.);
+  float amp = (.16 + .5 * pow(1. - s, 3.)) * uTw;
+  float tw = 1. + amp * (.6 * sin(uTime * (.7 + ph * .22) + ph * 7.) + .4 * sin(uTime * (1.9 + ph * .27) + ph * 3.))
+           + amp * 1.8 * pow(max(0., sin(uTime * .29 + ph * 13.)), 30.);
+  vCol = redden(aCol, X);
+  float hal = clamp(f - .12, 0., 5.);
+  vI = I * tw; vHalo = hal * tw;
+  vSig = (.55 + .62 * I) * uDpr;
+  vR = (5. + 13. * sqrt(hal)) * uDpr;
+  vSize = min(max(vSig * 7., hal > 0. ? vR * 2. : 0.), 96.);
+  gl_PointSize = vSize; gl_Position = toClip(q.xy);
+}`,
+  starF: `#version 300 es
+precision mediump float;
+in vec3 vCol; in float vI, vSig, vHalo, vR, vSize; out vec4 o;
+void main(){
+  vec2 d = (gl_PointCoord - .5) * vSize; float r2 = dot(d, d), r = sqrt(r2);
+  float a = vI * exp(-r2 / (2. * vSig * vSig)) + vHalo * .13 * exp(-r / (vR * .2)) * (1. - smoothstep(vR * .55, vR, r));
+  o = vec4(vCol * a, 1.);
+}`,
+  segV: `#version 300 es
+in vec2 aQ; in vec3 aPos; in float aMag; in vec3 aCol;
+uniform mat3 uA, uB; uniform float uLim, uScale;
+${PROJ}
+out vec3 vCol; out float vS, vI;
+void main(){
+  vec3 h0 = uA * aPos, h1 = uB * aPos; vec3 p0 = toPx(h0), p1 = toPx(h1);
+  float X, f; float I = starI(aMag * .001, h1.z, uLim, X, f);
+  if (I < .012 || (h0.z < -.02 && h1.z < -.02) || p0.z < -.5 || p1.z < -.5) { gl_Position = vec4(2., 2., 2., 1.); return; }
+  vec2 d = p1.xy - p0.xy; float len = length(d); vec2 t = len > 1e-4 ? d / len : vec2(1., 0.), n = vec2(-t.y, t.x);
+  float wT = .5 + 1.15 * I, wC = max(wT * uScale, 1.), hw = wC / uScale;
+  vec2 p = mix(p0.xy, p1.xy, aQ.x) + t * (aQ.x * 2. - 1.) * hw * .5 + n * aQ.y * hw;
+  vec3 c = redden(aCol, X); c = clamp(mix(vec3(dot(c, vec3(.333))), c, 1.5), 0., 1.);
+  vCol = c; vS = aQ.y; vI = I * .8 * (wT * uScale / wC);
+  gl_Position = toClip(p);
+}`,
+  segF: `#version 300 es
+precision mediump float;
+in vec3 vCol; in float vS, vI; out vec4 o;
+void main(){ float k = 1. - vS * vS; o = vec4(vCol * vI * k * k, 1.); }`,
+  metV: `#version 300 es
+in vec2 aQ; uniform vec2 uP0, uP1; uniform float uW; uniform vec2 uRes; out vec2 vQ;
+void main(){
+  vec2 d = uP1 - uP0; float len = max(length(d), 1e-3); vec2 t = d / len, n = vec2(-t.y, t.x);
+  vec2 p = mix(uP0, uP1, aQ.x) + n * aQ.y * uW * (.3 + .7 * aQ.x) + t * aQ.x * uW;
+  vQ = aQ; gl_Position = vec4(p.x / uRes.x * 2. - 1., 1. - p.y / uRes.y * 2., 0., 1.);
+}`,
+  metF: `#version 300 es
+precision mediump float;
+in vec2 vQ; uniform float uI; uniform vec3 uCol; out vec4 o;
+void main(){ float k = 1. - vQ.y * vQ.y; float a = uI * pow(vQ.x, 2.4) * k * k * (1. + 1.6 * smoothstep(.86, 1., vQ.x)); o = vec4(uCol * a, 1.); }`,
+  blitF: `#version 300 es
+precision mediump float;
+uniform sampler2D uTex; uniform vec2 uRes; uniform float uAmt; out vec4 o;
+void main(){ o = vec4(texture(uTex, gl_FragCoord.xy / uRes).rgb * uAmt, 1.); }`,
+};
+function prog(vs, fs) {
+  const p = gl.createProgram();
+  for (const [t, s] of [[gl.VERTEX_SHADER, vs], [gl.FRAGMENT_SHADER, fs]]) {
+    const sh = gl.createShader(t); gl.shaderSource(sh, s); gl.compileShader(sh);
+    if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(sh));
+    gl.attachShader(p, sh);
+  }
+  gl.bindAttribLocation(p, 0, 'aPos'); gl.bindAttribLocation(p, 1, 'aMag'); gl.bindAttribLocation(p, 2, 'aCol'); gl.bindAttribLocation(p, 3, 'aQ');
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  const u = {};
+  for (let i = 0, n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS); i < n; i++) { const nm = gl.getActiveUniform(p, i).name; u[nm] = gl.getUniformLocation(p, nm); }
+  return {p, u};
+}
+let P;
+try {
+  P = {sky: prog(SRC.skyV, SRC.skyF), star: prog(SRC.starV, SRC.starF), seg: prog(SRC.segV, SRC.segF),
+       met: prog(SRC.metV, SRC.metF), blit: prog(SRC.skyV, SRC.blitF)};
+} catch (e) { console.error(e); html.classList.add('nogl'); document.querySelectorAll('.ch').forEach(e => e.classList.add('on', 'live')); return; }
+
+/* ---------------- star data: catalogue + the four + dust ---------------- */
+function rng(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const G1 = (x, c, w) => Math.exp(-(((x - c) / w) ** 2));
+const prof = l => { l = ((l + 180) % 360 + 360) % 360 - 180; return .3 + .9 * G1(l, 0, 22) + .75 * G1(l, 76, 13) + .35 * G1(l, 28, 9) + .3 * G1(l, 118, 14) + .22 * G1(l, -50, 30) + .18 * G1(l, 160, 22); };
+const NDUST = 52000;
+function extras() {
+  const r = rng(1100), n = WORK.length + NDUST, buf = new ArrayBuffer(n * 12), dv = new DataView(buf);
+  const put = (i, v, mag, c) => {
+    dv.setInt16(i * 12, Math.round(v[0] * 32767), true); dv.setInt16(i * 12 + 2, Math.round(v[1] * 32767), true);
+    dv.setInt16(i * 12 + 4, Math.round(v[2] * 32767), true); dv.setInt16(i * 12 + 6, Math.round(mag * 1000), true);
+    dv.setUint8(i * 12 + 8, c[0]); dv.setUint8(i * 12 + 9, c[1]); dv.setUint8(i * 12 + 10, c[2]);
+  };
+  WORK.forEach((s, i) => put(i, s.eq, [1.45, 1.3, 1.15, .95][i], [255, 238, 218]));
+  const gauss = () => Math.sqrt(-2 * Math.log(r() + 1e-9)) * Math.cos(6.2831853 * r());
+  for (let i = 0; i < NDUST; i++) {
+    let l, b;
+    if (r() < .64) {
+      do { l = r() * 360 - 180; } while (r() * 2.2 > prof(l));
+      b = gauss() * (2.6 + 3.2 * G1(l, 0, 30)) * (r() < .3 ? 2.4 : 1) + 1.2 * Math.sin(l * D2R * 2);
+    } else { l = r() * 360; b = Math.asin(r() * 2 - 1) / D2R; }
+    const cb = Math.cos(b * D2R), g = [cb * Math.cos(l * D2R), cb * Math.sin(l * D2R), Math.sin(b * D2R)];
+    const eq = [GAL[0] * g[0] + GAL[3] * g[1] + GAL[6] * g[2], GAL[1] * g[0] + GAL[4] * g[1] + GAL[7] * g[2], GAL[2] * g[0] + GAL[5] * g[1] + GAL[8] * g[2]];
+    const w = r();
+    put(WORK.length + i, eq, 6.3 + 3.1 * Math.sqrt(r()), w < .2 ? [255, 222, 190] : w < .55 ? [214, 224, 255] : [236, 238, 250]);
+  }
+  return new Uint8Array(buf);
+}
+const quad = new Float32Array([0, -1, 0, 1, 1, -1, 1, 1]);
+let NSTAR = 0, starVAO, segVAO;
+const qBuf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, qBuf); gl.bufferData(gl.ARRAY_BUFFER, quad, gl.STATIC_DRAW);
+const metVAO = gl.createVertexArray(); gl.bindVertexArray(metVAO); gl.enableVertexAttribArray(3); gl.vertexAttribPointer(3, 2, gl.FLOAT, false, 0, 0);
+function starAttribs(buf, div) {
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 3, gl.SHORT, true, 12, 0);
+  gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1, 1, gl.SHORT, false, 12, 6);
+  gl.enableVertexAttribArray(2); gl.vertexAttribPointer(2, 3, gl.UNSIGNED_BYTE, true, 12, 8);
+  for (const i of [0, 1, 2]) gl.vertexAttribDivisor(i, div);
+}
+const ready = Promise.all([
+  fetch('assets/stars.bin').then(r => r.arrayBuffer()),
+  new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = 'assets/milkyway.webp'; }),
+]).then(([bin, img]) => {
+  const ex = extras(), all = new Uint8Array(bin.byteLength + ex.byteLength);
+  all.set(new Uint8Array(bin), 0); all.set(ex, bin.byteLength);
+  NSTAR = all.byteLength / 12;
+  const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, all, gl.STATIC_DRAW);
+  starVAO = gl.createVertexArray(); gl.bindVertexArray(starVAO); starAttribs(b, 0);
+  segVAO = gl.createVertexArray(); gl.bindVertexArray(segVAO); starAttribs(b, 1);
+  gl.bindBuffer(gl.ARRAY_BUFFER, qBuf); gl.enableVertexAttribArray(3); gl.vertexAttribPointer(3, 2, gl.FLOAT, false, 0, 0);
+  gl.bindVertexArray(null);
+  const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
+  if (img) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
+  else gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, new Uint8Array(3));
+  gl.generateMipmap(gl.TEXTURE_2D);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  MWTEX = tex;
+});
+let MWTEX = null;
+
+/* ---------------- the trail buffer, half resolution ---------------- */
+const TR = {tex: null, fb: null, w: 0, h: 0, live: false};
+function trailTarget() {
+  const w = Math.max(1, sky.width >> 1), h = Math.max(1, sky.height >> 1);
+  if (TR.w === w && TR.h === h) return;
+  if (TR.tex) { gl.deleteTexture(TR.tex); gl.deleteFramebuffer(TR.fb); }
+  TR.tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, TR.tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  TR.fb = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, TR.fb);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, TR.tex, 0);
+  gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  TR.w = w; TR.h = h;
+}
+
+/* ================================================================ the land */
+const SVGNS = 'http://www.w3.org/2000/svg';
+const land = $('land'), cons = $('cons');
+function noise1(seed) { const r = rng(seed), g = Array.from({length: 1024}, r); return x => { const i = Math.floor(x), t = x - i, s = t * t * (3 - 2 * t); return g[i & 1023] + (g[(i + 1) & 1023] - g[i & 1023]) * s; }; }
+const fbm = (n, x, o = 4) => { let v = 0, a = 1, t = 0; for (let k = 0; k < o; k++) { v += n(x * (1 << k) + k * 17.31) * a; t += a; a *= .5; } return v / t; };
+const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+const BITS = [1, 1, 0, 0, 1, 1, 0, 0];
+const ORDER = [2, 5, 0, 7, 3, 1, 6, 4];   // the order the windows light, one by one
+let WIN = [], LAYERS = [];
+function buildLand() {
+  const {W, H, hy, portrait} = L, pad = 90, step = Math.max(4, W / 260);
+  const nf = noise1(3), nm = noise1(5), nn = noise1(9);
+  const line = fn => { const pts = []; for (let x = -pad; x <= W + pad; x += step) pts.push([x, fn(x)]); return pts; };
+  const flat = (n, f) => Math.min(n, 1 - f) / (1 - f);
+  const u = x => x / Math.max(W, 900);
+  const far = line(x => hy - H * (.006 + .05 * flat(fbm(nf, u(x) * 4.2 + 3), .3)));
+  const mid = line(x => hy + H * .028 - H * .075 * flat(fbm(nm, u(x) * 5.6 + 11), .16));
+  const wx = W * (portrait ? .56 : .66), ww = portrait ? 8.5 : 10, wh = ww * 1.42, gap = ww * .7, pg = ww * 1.3;
+  const facade = 4 * (2 * ww + gap) + 3 * pg - gap * 0;
+  const base = hy + H * (portrait ? .135 : .105);
+  const near = line(x => {
+    let y = base - H * .055 * (1 - sstep(wx - W * .42, wx - W * .2, x));          // the shoulder on the left
+    y += H * .02 * sstep(wx - W * .2, wx - W * .1, x) * (1 - sstep(wx - 30, wx, x));  // a small valley
+    y -= H * .06 * sstep(wx + facade + W * .08, wx + facade + W * .3, x);          // the hill on the right
+    const calm = x > wx - 40 && x < wx + facade + 40;
+    return y + (fbm(nn, u(x) * 26) - .5) * (calm ? 3 : 10);
+  });
+  const poly = pts => 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L') + `L${W + pad} ${H + 40}L${-pad} ${H + 40}Z`;
+  const terr = (pts, gapy, op, id) => {
+    let y = Math.min(...pts.map(p => p[1])) + 8, d = '', k = 0;
+    while (y < H + 20) { const w = noise1(100 + k); d += `M${-pad} ${y.toFixed(1)}`; for (let x = -pad; x <= W + pad; x += 34) d += `L${x} ${(y + (w(x * .01) - .5) * 3.5).toFixed(1)}`; y += gapy; k++; }
+    return `<clipPath id="${id}"><path d="${poly(pts)}"/></clipPath><g clip-path="url(#${id})"><path d="${d}" fill="none" stroke="#8ea3c9" stroke-width=".7" opacity="${op}"/></g>`;
+  };
+  // the windows: arched openings cut into the loess face
+  const wy = base + (portrait ? 26 : 30);
+  let wins = '', glow = '', x = wx;
+  for (let i = 0; i < 8; i++) {
+    const r = ww / 2, d = `M${x} ${wy}v${-(wh - r)}a${r} ${r} 0 0 1 ${ww} 0v${wh - r}z`;
+    const fl = i === 1 || i === 4 ? ' fl' : '';
+    glow += `<ellipse class="win${fl}" data-i="${i}" cx="${x + r}" cy="${wy - wh / 2}" rx="${ww * 3.6}" ry="${wh * 2.1}" fill="url(#wg)" opacity="0"/>`;
+    wins += `<path d="${d}" fill="#0c111c" stroke="#171e2d" stroke-width=".6"/>`
+          + `<g class="win${fl}" data-i="${i}" opacity="0"><path d="${d}" fill="#ffb661"/><path d="M${x + r} ${wy}v${-wh + .6}M${x} ${wy - wh * .45}h${ww}" stroke="#2a160a" stroke-width=".9" opacity=".7"/></g>`;
+    x += ww + (i % 2 ? pg : gap);
+  }
+  // seasonal life: fireflies in summer, chimney smoke from the kang in the cold months
+  let life = '';
+  const lr = rng(4);
+  if (MONTH >= 4 && MONTH <= 8) {
+    for (let i = 0; i < 7; i++) {
+      const fx = wx - W * .25 + lr() * W * .5, fy = base + 14 + lr() * (H - base - 30), dur = 9 + lr() * 6;
+      life += `<g class="fly" style="--d:${dur.toFixed(1)}s;--o:${(-lr() * dur).toFixed(1)}s;--x:${(lr() * 56 - 28).toFixed(0)}px;--y:${(lr() * 22 - 16).toFixed(0)}px"><circle cx="${fx.toFixed(0)}" cy="${fy.toFixed(0)}" r="7" fill="url(#fg)"/></g>`;
+    }
+  } else if (MONTH >= 9 || MONTH <= 2) {
+    const cx = wx + facade * .72, cy = Math.min(...near.filter(p => p[0] > wx && p[0] < wx + facade).map(p => p[1]));
+    life += `<rect x="${cx - 1.5}" y="${cy - 9}" width="3" height="9" fill="#04060b"/>`;
+    for (let i = 0; i < 5; i++) life += `<circle class="smoke" style="--o:${(-i * 1.8).toFixed(1)}s;--x:${(-14 - lr() * 16).toFixed(0)}px" cx="${cx}" cy="${cy - 10}" r="5" fill="#8a96b3" opacity="0" filter="url(#sb)"/>`;
+  }
+  land.innerHTML = `<defs>
+<linearGradient id="farg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#121a31"/><stop offset="1" stop-color="#0b1122"/></linearGradient>
+<linearGradient id="mistg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a7ca0" stop-opacity="0"/><stop offset=".55" stop-color="#6a7ca0" stop-opacity=".22"/><stop offset="1" stop-color="#6a7ca0" stop-opacity="0"/></linearGradient>
+<radialGradient id="wg"><stop offset="0" stop-color="#ffc27a" stop-opacity=".5"/><stop offset=".35" stop-color="#ff9e4a" stop-opacity=".14"/><stop offset="1" stop-color="#ff9e4a" stop-opacity="0"/></radialGradient>
+<radialGradient id="fg"><stop offset="0" stop-color="#f4ffb0"/><stop offset=".25" stop-color="#d9f27a" stop-opacity=".35"/><stop offset="1" stop-color="#d9f27a" stop-opacity="0"/></radialGradient>
+<filter id="sb" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="2.4"/></filter>
+</defs>
+<g id="lfar"><path d="${poly(far)}" fill="url(#farg)"/>${terr(far, 9, .05, 'cf')}<rect class="mist" x="-60" y="${(hy - H * .035).toFixed(0)}" width="${W + 240}" height="${(H * .085).toFixed(0)}" fill="url(#mistg)"/></g>
+<g id="lmid"><path d="${poly(mid)}" fill="#090e1c"/>${terr(mid, 7, .04, 'cm')}</g>
+<g id="lnear"><path d="${poly(near)}" fill="#04060b"/>${glow}${wins}${life}</g>`;
+  WIN = [...land.querySelectorAll('.win')];
+  LAYERS = [['lfar', 1], ['lmid', 1.12], ['lnear', 1.3]].map(([id, k]) => [land.querySelector('#' + id), k]);
+}
+
+/* ================================================================ constellation + whispers */
+const labs = $('labs');
+cons.innerHTML = `<defs><radialGradient id="ring"><stop offset="0" stop-color="#fff3df" stop-opacity=".28"/><stop offset=".35" stop-color="#ffe2bc" stop-opacity=".08"/><stop offset="1" stop-color="#ffe2bc" stop-opacity="0"/></radialGradient></defs>`
+  + WORK.slice(1).map((_, i) => `<line class="cl" data-i="${i}" stroke="#a9bbdf" stroke-width=".8" stroke-linecap="round"/>`).join('')
+  + WORK.map((_, i) => `<circle class="cr" data-i="${i}" r="34" fill="url(#ring)"/>`).join('');
+const CL = [...cons.querySelectorAll('.cl')], CR = [...cons.querySelectorAll('.cr')];
+const LAB = WORK.map(s => { const e = document.createElement('div'); e.className = 'lab'; e.textContent = s.short.toUpperCase() + '  ' + s.y.slice(0, 4); labs.appendChild(e); return e; });
+const WH = WORK.map(s => {
+  const e = document.createElement('div'); e.className = 'wh';
+  e.innerHTML = `<div class="y">${s.y}</div><div class="n">${s.n}</div><div class="r">${s.r}</div><div class="p">${s.p}</div>`
+    + s.u.map(([t, h]) => `<a class="u" href="${h}" target="_blank" rel="noopener">${t} ↗</a>`).join('');
+  labs.appendChild(e); return e;
+});
+const TIP = document.createElement('div'); TIP.className = 'tip'; labs.appendChild(TIP);
+const NAMES = [["Vega",279.235,38.784],["Capella",79.172,45.998],["Arcturus",213.915,19.183],["Altair",297.696,8.868],["Aldebaran",68.98,16.509],["Pollux",116.329,28.026],["Deneb",310.358,45.28],["Castor",113.65,31.888],["Alioth",193.507,55.96],["Dubhe",165.932,61.751],["Mirfak",51.081,49.861],["Alkaid",206.885,49.313],["Polaris",37.955,89.264],["Menkalinan",89.882,44.947],["Alpheratz",2.097,29.091],["Mizar",200.981,54.925],["Schedar",10.127,56.537],["Caph",2.295,59.15],["Kochab",222.676,74.156],["Merak",165.46,56.382],["Eltanin",269.152,51.489],["Algol",47.042,40.956],["Alderamin",319.645,62.586],["Phecda",178.458,53.695],["Ruchbah",21.454,60.235],["Sadr",305.557,40.257],["Navi",14.177,60.717],["Rasalhague",263.734,12.56],["Hamal",31.793,23.463],["Mirach",17.433,35.621],["Almach",30.975,42.33],["Errai",354.837,77.632],["Thuban",211.097,64.376],["Megrez",183.857,57.033],["Elnath",81.573,28.607],["Albireo",292.68,27.96],["Scheat",345.944,28.083],["Markab",346.19,15.205],["Enif",326.046,9.875],["Regulus",152.093,11.967],["Denebola",177.265,14.572]].map(([n, ra, de]) => [n, eqVec(ra, de)]);
+
+/* ================================================================ state */
+const S = {
+  p: 0, ps: 0, t0: performance.now(), last: performance.now(), dpr: 1, qual: 1,
+  mx: 0, my: 0, cx: 0, cy: 0, hover: -1, pin: -1,
+  shut: false, held: 0, delta: 0, deltaPrev: 0, lst0: 0, fade: 0, develop: 0, metForced: false,
+  meteors: [], nextMet: 0, frames: 0, slow: 0,
+};
+const forceP = Q.has('p') ? parseFloat(Q.get('p')) : null;
+const INTRO = Q.has('p') || Q.get('intro') === '0' ? 0 : 5.5;
+
+function resize() {
+  layout();
+  S.dpr = Math.min(devicePixelRatio || 1, 1.5) * S.qual;
+  sky.width = Math.round(L.W * S.dpr); sky.height = Math.round(L.H * S.dpr);
+  buildLand();
+  if (TR.tex) { trailTarget(); TR.live = false; S.preDone = false; }
+}
+let rzT; addEventListener('resize', () => { clearTimeout(rzT); rzT = setTimeout(resize, 120); });
+resize();
+
+/* ---------------- scroll ---------------- */
+const maxScroll = () => Math.max(1, document.documentElement.scrollHeight - innerHeight);
+const readScroll = () => { S.p = forceP ?? Math.min(1, Math.max(0, scrollY / maxScroll())); };
+addEventListener('scroll', readScroll, {passive: true}); readScroll(); S.ps = S.p;
+$('bl').addEventListener('click', e => {
+  const r = e.currentTarget.querySelector('i').getBoundingClientRect();
+  const f = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+  scrollTo({top: f * maxScroll(), behavior: 'smooth'});
+});
+
+/* ---------------- the shutter ---------------- */
+let downAt = 0, downX = 0, downY = 0, holdT = 0;
+const startShut = () => { if (S.shut) return; trailTarget(); S.shut = true; S.held = 0; S.delta = S.deltaPrev = 0; S.lst0 = -1; S.metForced = false;
+  if (!TR.live || S.develop <= 0) clearTrails(); TR.live = true; S.fade = 1; html.classList.add('exposing'); };
+const endShut = () => { clearTimeout(holdT); if (!S.shut) return; S.shut = false; S.develop = 1.6; html.classList.remove('exposing'); };
+function clearTrails() { gl.bindFramebuffer(gl.FRAMEBUFFER, TR.fb); gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT); gl.bindFramebuffer(gl.FRAMEBUFFER, null); }
+const onUI = t => t.closest && t.closest('a,.wh,#bl');
+addEventListener('pointerdown', e => {
+  if (e.button > 0 || onUI(e.target)) return;
+  downX = e.clientX; downY = e.clientY;
+  if (e.pointerType === 'mouse') startShut(); else holdT = setTimeout(startShut, 260);
+});
+addEventListener('pointermove', e => {
+  S.mx = e.clientX / L.W * 2 - 1; S.my = e.clientY / L.H * 2 - 1; S.px = e.clientX; S.py = e.clientY;
+  if (e.pointerType !== 'mouse' && Math.hypot(e.clientX - downX, e.clientY - downY) > 10) { clearTimeout(holdT); endShut(); }
+});
+addEventListener('pointerup', endShut); addEventListener('pointercancel', endShut); addEventListener('blur', endShut);
+addEventListener('contextmenu', e => { if (S.shut) e.preventDefault(); });
+addEventListener('keydown', e => { if (e.code === 'Space' && !e.repeat && !onUI(e.target)) { e.preventDefault(); startShut(); } });
+addEventListener('keyup', e => { if (e.code === 'Space') endShut(); });
+// touch: tap a star to whisper
+addEventListener('click', e => { if (onUI(e.target)) return; S.pin = pick(e.clientX, e.clientY); });
+if (matchMedia('(hover: none)').matches) { $('midhint').innerHTML = '<b>Tap</b> &nbsp;a star'; $('shut').textContent = 'Press & hold  ·  exposure'; }
+
+/* ---------------- meteors ---------------- */
+function spawnMeteor(E, force) {
+  const r = Math.random;
+  for (let tries = 0; tries < 30; tries++) {
+    const sx = L.W * (.08 + .84 * r()), sy = L.hy * (.06 + .62 * r());
+    const h = unproj(sx, sy), S0 = mulT(E, h);
+    let R = RADIANT;
+    if (!R || r() < .3) { const a = r() * 6.283, z = r() * .8 + .2; const hh = [Math.cos(a) * Math.sqrt(1 - z * z), Math.sin(a) * Math.sqrt(1 - z * z), z]; R = mulT(E, hh); }
+    const d = S0[0] * R[0] + S0[1] * R[1] + S0[2] * R[2];
+    if (d > .97 || d < -.5) continue;
+    const t = [S0[0] * d - R[0], S0[1] * d - R[1], S0[2] * d - R[2]], tl = Math.hypot(...t);
+    const T = t.map(v => v / tl);
+    const big = force || r() < .22;
+    const len = (big ? 16 + r() * 16 : 6 + r() * 11) * D2R;
+    const end = mul(E, [S0[0] * Math.cos(len) + T[0] * Math.sin(len), S0[1] * Math.cos(len) + T[1] * Math.sin(len), S0[2] * Math.cos(len) + T[2] * Math.sin(len)]);
+    if (end[2] < .05) continue;
+    S.meteors.push({S: S0, T, len, dur: (big ? .9 : .45) + r() * .5, t: 0, bright: big ? 1.5 + r() * .5 : .7 + r() * .5, big,
+      col: big ? [.86, 1, .9] : [.92, .95, 1]});
+    return true;
+  }
+  return false;
+}
+function meteorEnds(m, E) {
+  const ease = 1 - Math.pow(1 - m.t, 1.6), head = m.len * ease, tail = Math.max(0, head - m.len * .42);
+  const at = s => proj(mul(E, [m.S[0] * Math.cos(s) + m.T[0] * Math.sin(s), m.S[1] * Math.cos(s) + m.T[1] * Math.sin(s), m.S[2] * Math.cos(s) + m.T[2] * Math.sin(s)]));
+  const fade = Math.min(1, m.t / .12) * (1 - sstep(.7, 1, m.t));
+  return [at(tail), at(head), fade];
+}
+
+/* ---------------- picking ---------------- */
+let WPOS = [];
+function pick(x, y) {
+  if (opMid < .4) return -1;
+  let best = -1, bd = 40;
+  WPOS.forEach((p, i) => { const d = Math.hypot(p[0] - x, p[1] - y); if (d < bd) { bd = d; best = i; } });
+  return best;
+}
+
+/* ================================================================ frame */
+const chEls = {dusk: $('dusk'), mid: $('mid'), dawn: $('dawn')};
+const ramp = (p, a, b, c, d) => p < a || p > d ? 0 : p < b ? sstep(a, b, p) : p <= c ? 1 : 1 - sstep(c, d, p);
+let opMid = 0;
+function setCh(el, o) {
+  el.style.opacity = o.toFixed(3);
+  el.style.filter = o > .01 && o < .99 ? `blur(${((1 - o) * 7).toFixed(1)}px)` : 'none';
+  el.classList.toggle('on', o > .01); el.classList.toggle('live', o > .6);
+}
+function limMag(a) {   // the faintest star the sky allows, from the sun's depth below the horizon
+  const k = [[-4, 1.2], [-6, 2.4], [-9, 4.2], [-12, 6.1], [-15, 8.3], [-18, 9.9]];
+  if (a >= -4) return 1; if (a <= -18) return 9.9;
+  for (let i = 1; i < k.length; i++) if (a >= k[i][0]) { const t = (a - k[i - 1][0]) / (k[i][0] - k[i - 1][0]); return k[i - 1][1] + (k[i][1] - k[i - 1][1]) * t; }
+}
+
+function frame(nowMs) {
+  raf = requestAnimationFrame(frame);
+  const dt = Math.min(.05, (nowMs - S.last) / 1000); S.last = nowMs;
+  const time = (nowMs - S.t0) / 1000;
+  if (!NSTAR || !MWTEX) return;
+  if (innerWidth !== L.W || innerHeight !== L.H) resize();
+
+  // the night's clock: scroll, plus a short arrival of darkness on first load
+  S.ps += (S.p - S.ps) * (1 - Math.exp(-dt * 4.5));
+  if (Math.abs(S.p - S.ps) < 1e-4) S.ps = S.p;
+  const intro = INTRO ? Math.pow(1 - sstep(0, INTRO, time), 1.4) : 0;
+  const t = nightAt(S.ps) - intro * (tDusk - tFirst);
+  const lst = lstOf(t), E = e2h(lst), sun = sunHor(t), sa = Math.asin(sun[2]) / D2R;
+  const lim = limMag(sa);
+
+  // turning your head: a little, with weight
+  S.cx += (S.mx - S.cx) * (1 - Math.exp(-dt * 2.2)); S.cy += (S.my - S.cy) * (1 - Math.exp(-dt * 2.2));
+  CAM.az = S.cx * 2.2; CAM.dy = -S.cy * 10;
+  const shift = -CAM.az * D2R * L.k;
+  for (const [g, k] of LAYERS) if (g) g.setAttribute('transform', `translate(${(shift * k).toFixed(2)} ${(CAM.dy * k).toFixed(2)})`);
+
+  // GL uniforms shared by every pass
+  const dpr = S.dpr, W = sky.width, H = sky.height, a = CAM.az * D2R;
+  const F = [Math.sin(a), Math.cos(a), 0], R = [Math.cos(a), -Math.sin(a), 0];
+  const common = (u, res = [W, H]) => {
+    if (u.uF) gl.uniform3fv(u.uF, F); if (u.uR) gl.uniform3fv(u.uR, R);
+    if (u.uK) gl.uniform1f(u.uK, L.k * dpr); if (u.uC) gl.uniform2f(u.uC, L.cx * dpr, (L.hy + CAM.dy) * dpr);
+    if (u.uRes) gl.uniform2fv(u.uRes, res);
+  };
+
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.viewport(0, 0, W, H);
+  gl.disable(gl.BLEND);
+  // 1 - sky
+  gl.useProgram(P.sky.p); common(P.sky.u);
+  gl.uniformMatrix3fv(P.sky.u.uH2G, false, colMajor(h2g(E)));
+  gl.uniform3fv(P.sky.u.uSun, sun); gl.uniform1f(P.sky.u.uSunAlt, sa);
+  gl.uniform1f(P.sky.u.uMW, sstep(-11, -17.5, sa)); gl.uniform1f(P.sky.u.uTime, time);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, MWTEX); gl.uniform1i(P.sky.u.uTex, 0);
+  gl.bindVertexArray(null); gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  // 2 - the shutter: draw this frame's piece of every arc into the half-resolution buffer
+  const Mx = [];
+  if (S.shut) {
+    S.held += dt;
+    if (S.lst0 < 0) S.lst0 = lst;
+    S.deltaPrev = S.delta;
+    S.delta = Math.min(360, S.delta + dt * (5 + 27 * sstep(0, 3.2, S.held)));
+    if (!S.metForced && S.held > 3.4 && !REDUCED) { S.metForced = spawnMeteor(E, true); }
+  }
+  const pre = Q.has('expose') && !S.preDone ? parseFloat(Q.get('expose')) : 0;
+  if (S.shut || pre) {
+    trailTarget();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, TR.fb); gl.viewport(0, 0, TR.w, TR.h);
+    gl.enable(gl.BLEND); gl.blendEquation(gl.MAX); gl.blendFunc(gl.ONE, gl.ONE);
+    gl.useProgram(P.seg.p); common(P.seg.u);
+    gl.uniform1f(P.seg.u.uLim, lim); gl.uniform1f(P.seg.u.uScale, TR.w / W);
+    gl.bindVertexArray(segVAO);
+    const segs = pre ? Array.from({length: Math.ceil(pre / 1.5)}, (_, i) => [i * 1.5, Math.min(pre, i * 1.5 + 1.5)]) : [[S.deltaPrev, S.delta]];
+    const l0 = pre ? lst : S.lst0;
+    for (const [d0, d1] of segs) {
+      if (d1 <= d0) continue;
+      gl.uniformMatrix3fv(P.seg.u.uA, false, colMajor(e2h(l0 - d0)));
+      gl.uniformMatrix3fv(P.seg.u.uB, false, colMajor(e2h(l0 - d1)));
+      gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, NSTAR);
+    }
+    gl.blendEquation(gl.FUNC_ADD);
+    if (pre) { S.preDone = true; TR.live = true; S.fade = 1; S.develop = 1e9; }
+  } else if (TR.live) {
+    if (S.develop > 0) S.develop -= dt;
+    else {
+      S.fade *= Math.pow(.972, dt * 60);
+      if (S.fade < .02) { TR.live = false; clearTrails(); }
+    }
+  }
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.viewport(0, 0, W, H);
+  gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
+  if (TR.live) {
+    gl.useProgram(P.blit.p); gl.uniform2f(P.blit.u.uRes, W, H); gl.uniform1f(P.blit.u.uAmt, S.fade);
+    gl.bindTexture(gl.TEXTURE_2D, TR.tex); gl.uniform1i(P.blit.u.uTex, 0);
+    gl.bindVertexArray(null); gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+
+  // 3 - stars, twinkling
+  gl.useProgram(P.star.p); common(P.star.u);
+  gl.uniformMatrix3fv(P.star.u.uE2H, false, colMajor(E));
+  gl.uniform1f(P.star.u.uLim, lim); gl.uniform1f(P.star.u.uTime, time); gl.uniform1f(P.star.u.uDpr, dpr);
+  gl.uniform1f(P.star.u.uTw, REDUCED ? .3 : 1);
+  gl.bindVertexArray(starVAO);
+  gl.drawArrays(gl.POINTS, 0, S.qual < 1 ? NSTAR - (NDUST >> 1) : NSTAR);
+
+  // 4 - meteors: rare, so people wait for them
+  if (!REDUCED) {
+    if (!S.nextMet) S.nextMet = time + 7 + Math.random() * 6;
+    if (time > S.nextMet && !S.shut) { if (sa < -7) spawnMeteor(E, false); S.nextMet = time + 11 + Math.random() * 17; }
+    if (Q.has('meteor') && !S.metShown) { S.metShown = spawnMeteor(E, true); if (S.metShown) S.meteors[S.meteors.length - 1].hold = .55; }
+  }
+  if (S.meteors.length) {
+    gl.useProgram(P.met.p); gl.bindVertexArray(metVAO);
+    for (const m of S.meteors) {
+      m.t = m.hold ?? Math.min(1, m.t + dt / m.dur);
+      const [p0, p1, fade] = meteorEnds(m, E);
+      if (p0[2] < -.5 || p1[2] < -.5) { m.t = 1; continue; }
+      const dark = 1 - sstep(-10, -4, sa);
+      const draw = (scale, res) => {
+        gl.uniform2f(P.met.u.uP0, p0[0] * dpr * scale, (p0[1]) * dpr * scale); gl.uniform2f(P.met.u.uP1, p1[0] * dpr * scale, p1[1] * dpr * scale);
+        gl.uniform2fv(P.met.u.uRes, res); gl.uniform1f(P.met.u.uW, (m.big ? 1.9 : 1.25) * dpr * scale + (scale < 1 ? .6 : 0));
+        gl.uniform1f(P.met.u.uI, m.bright * fade * dark); gl.uniform3fv(P.met.u.uCol, m.col);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      };
+      draw(1, [W, H]);
+      if (S.shut) {   // the shutter catches it too
+        gl.bindFramebuffer(gl.FRAMEBUFFER, TR.fb); gl.viewport(0, 0, TR.w, TR.h); gl.blendEquation(gl.MAX);
+        draw(TR.w / W, [TR.w, TR.h]);
+        gl.blendEquation(gl.FUNC_ADD); gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.viewport(0, 0, W, H);
+      }
+    }
+    S.meteors = S.meteors.filter(m => m.t < 1);
+  }
+
+  // ---------------- DOM: chapters, constellation, windows, HUD ----------------
+  const p = S.ps;
+  setCh(chEls.dusk, ramp(p, -1, -.5, .085, .16) * (1 - intro * .0));
+  opMid = ramp(p, .37, .43, .63, .69);
+  setCh(chEls.mid, opMid);
+  setCh(chEls.dawn, ramp(p, .83, .9, 2, 3));
+
+  WPOS = WORK.map(s => proj(mul(E, s.eq)));
+  if (Q.has('hover')) S.hover = +Q.get('hover');
+  else S.hover = S.pin >= 0 ? S.pin : (S.px != null ? pick(S.px, S.py) : -1);
+  if (opMid < .4) S.pin = -1;
+  chEls.mid.classList.toggle('dim', S.hover >= 0 && opMid > .4);
+  const night = 1 - sstep(-14, -8, sa);
+  WPOS.forEach((q, i) => {
+    const on = S.hover === i, adj = S.hover >= 0 && (i === S.hover || i === S.hover + 1);
+    CR[i].setAttribute('cx', q[0].toFixed(1)); CR[i].setAttribute('cy', q[1].toFixed(1));
+    CR[i].setAttribute('opacity', ((on ? 1 : .45) * opMid).toFixed(3));
+    CR[i].setAttribute('r', on ? 46 : 30);
+    const lw = LAB[i].offsetWidth, lx = q[0] + 16 + lw > L.W - 10 ? q[0] - 16 - lw : q[0] + 16;
+    LAB[i].style.transform = `translate(${lx.toFixed(1)}px,${(q[1] - 4).toFixed(1)}px)`;
+    LAB[i].style.opacity = (opMid * (on ? 0 : .85) + (1 - opMid) * .0).toFixed(3);
+    // peaks of the zigzag whisper above, valleys below, so the words never sit on a line
+    const up = L.portrait || i % 2 === 1, ww = WH[i].offsetWidth, wh = WH[i].offsetHeight;
+    const wx = Math.max(12, Math.min(L.W - ww - 12, q[0] - ww / 2)), wy = up && q[1] - 30 - wh > 64 ? q[1] - 30 - wh : q[1] + 30;
+    WH[i].style.transform = `translate(${wx.toFixed(1)}px,${Math.max(64, wy).toFixed(1)}px)`;
+    WH[i].classList.toggle('show', on && opMid > .4);
+    if (i > 0) {
+      const l = CL[i - 1], q0 = WPOS[i - 1], hl = S.hover === i || S.hover === i - 1;
+      l.setAttribute('x1', q0[0].toFixed(1)); l.setAttribute('y1', q0[1].toFixed(1)); l.setAttribute('x2', q[0].toFixed(1)); l.setAttribute('y2', q[1].toFixed(1));
+      l.setAttribute('opacity', ((hl ? .75 : .2) * opMid).toFixed(3));
+      l.setAttribute('stroke-width', hl ? 1.3 : .8);
+    }
+  });
+  // name a bright star under the cursor, for anyone who knows the sky
+  let tip = '';
+  if (S.px != null && S.hover < 0 && !S.shut && night > .5) {
+    for (const [n, v] of NAMES) { const q = proj(mul(E, v)); if (q[2] > -.5 && Math.hypot(q[0] - S.px, q[1] - S.py) < 14 && mul(E, v)[2] > 0) { tip = n; TIP.style.transform = `translate(${(q[0] + 14).toFixed(0)}px,${(q[1] - 16).toFixed(0)}px)`; break; } }
+  }
+  if (tip) TIP.textContent = tip.toUpperCase();
+  TIP.style.opacity = tip ? .9 : 0;
+
+  // the windows: lit one by one at dusk, 1 1 0 0 1 1 0 0 through the night, and someone wakes before dawn
+  const evening = t < tMid;
+  WIN.forEach(el => {
+    const i = +el.dataset.i, o = ORDER[i];
+    const lit = evening ? BITS[i] && sa < -5.6 - o * .55 : (BITS[i] && sa < -10.5 + o * .75) || (i === 7 && sa > -12);
+    const want = lit ? '1' : '0';
+    if (el.getAttribute('opacity') !== want) el.setAttribute('opacity', want);
+  });
+
+  // HUD
+  const d = cst(t);
+  const clock = `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
+  if ($('clock').textContent !== clock) $('clock').textContent = clock;
+  $('dot').style.left = (p * 100).toFixed(2) + '%';
+  const shut = $('shut');
+  if (S.shut) { const m = Math.round(S.delta / 15 * 60); shut.innerHTML = `<b>●</b> &nbsp;exposure &nbsp;${Math.floor(m / 60)}h ${pad(m % 60)}m`; }
+  else if (TR.live && S.develop > 0) shut.textContent = 'developing';
+  else if (shut.dataset.idle !== '1') { shut.textContent = 'Hold  ·  long exposure'; }
+  shut.dataset.idle = !S.shut && !(TR.live && S.develop > 0) ? '1' : '0';
+
+  // a weak GPU drops to fewer pixels, then fewer dust stars
+  S.frames++;
+  if (Q.has('fps')) { S.ft = (S.ft || 0) + dt; if (S.frames % 120 === 0) { document.title = `fps ${(120 / S.ft).toFixed(1)} q${S.qual}`; S.ft = 0; } }
+  if (S.frames > 40 && S.frames < 400) {
+    S.slow = S.slow * .95 + (dt > .028 ? 1 : 0) * .05;
+    if (S.slow > .6 && S.qual > .67) { S.qual = .67; S.slow = 0; resize(); }
+  }
+}
+let raf = 0;
+ready.then(() => { raf = requestAnimationFrame(frame); if (Q.has('shut')) setTimeout(startShut, 800); });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { cancelAnimationFrame(raf); endShut(); }
+  else { S.last = performance.now(); raf = requestAnimationFrame(frame); }
+});
+})();
+</script>
+</body>
+</html>

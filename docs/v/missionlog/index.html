@@ -406,7 +406,7 @@ async function build(THREE, X) {
   mgr.onProgress = (u, l, t) => { loaded = l; total = t + 1; pct(); };
   const texLoader = new THREE.TextureLoader(mgr);
   const tex = (f, srgb = true, mips = true) => {
-    const t = texLoader.load('../../assets/space/' + f);
+    const t = texLoader.load('../worlds/assets/space/' + f);
     if (srgb) t.colorSpace = THREE.SRGBColorSpace;
     t.anisotropy = maxAniso;
     if (!mips) { t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; }
@@ -419,7 +419,7 @@ async function build(THREE, X) {
     jup: tex(`jupiter${sfx}.webp`), triton: tex('triton.webp'), mw: tex('milkyway.webp', true, false)
   };
   TX.mw.wrapS = THREE.RepeatWrapping;
-  const starsBuf = fetch('../../assets/space/stars.bin').then(r => { if (!r.ok) throw new Error('stars'); return r.arrayBuffer(); });
+  const starsBuf = fetch('../worlds/assets/space/stars.bin').then(r => { if (!r.ok) throw new Error('stars'); return r.arrayBuffer(); });
   const texReady = new Promise(r => { mgr.onLoad = r; });
   const [sb] = await Promise.all([starsBuf, texReady]);
   loaded = total; pct();

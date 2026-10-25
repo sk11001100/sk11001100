@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wind — Lei Kai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<script type="importmap">{"imports":{"three":"../worlds/assets/vendor/three/three.module.min.js"}}</script>
+<style>
+:root{--ink:#2a221b;--soft:#6f5f4f;--faint:rgba(42,34,27,.3);--amber:#b8620f;--bg:#f1e1c7}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink)}
+body{font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+#gl{position:fixed;inset:0;width:100vw;height:100vh;display:block;touch-action:none;opacity:0;transition:opacity 2s ease}
+#gl.on{opacity:1}
+#gl.drag{cursor:grabbing}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.ui{position:fixed;pointer-events:none;z-index:2;text-shadow:0 0 22px rgba(250,242,228,.9),0 0 6px rgba(250,242,228,.6)}
+#top{top:24px;left:28px;right:28px;display:flex;justify-content:space-between;align-items:flex-start}
+#top b{font-weight:500}
+#top span{display:block;color:var(--soft);margin-top:6px}
+#top .r{text-align:right}
+#count em{font-style:normal;color:var(--amber)}
+#hero{left:16px;right:16px;bottom:7.5vh;text-align:center;transition:opacity 1.2s}
+#hero h1{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(44px,6.6vw,100px);line-height:.95;letter-spacing:-.01em}
+#hero h1 i{color:var(--amber)}
+#hero p{max-width:540px;margin:16px auto 0;color:var(--soft);font-size:15px;line-height:1.55}
+#hero.dim{opacity:.0}
+#hint{left:0;right:0;bottom:22px;text-align:center;color:var(--soft)}
+#hint s{text-decoration:none;color:var(--faint);margin:0 .9em}
+.art{position:fixed;left:0;top:0;width:300px;margin-left:-150px;text-align:center;opacity:0;transition:opacity .7s ease;will-change:transform}
+.art.on{opacity:1}
+.art .eb{color:var(--amber)}
+.art h3{font-family:'Instrument Serif',serif;font-weight:400;font-size:36px;line-height:1;margin-top:8px}
+.art p{margin-top:8px;color:var(--soft);font-size:13px;line-height:1.5}
+.art i{display:block;width:1px;height:26px;margin:10px auto 0;background:var(--faint)}
+#nogl{display:none;position:fixed;inset:0;place-items:center;text-align:center;padding:24px}
+html.nogl #nogl{display:grid}
+@media (max-width:700px){#top{left:16px;right:16px}#hint s{margin:0 .4em}.art h3{font-size:28px}.art{width:240px;margin-left:-120px}}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+
+<header id="top" class="ui mono">
+  <div><b>Lei Kai</b><span>Senior full-stack engineer</span></div>
+  <div class="r"><b>sk11001100</b><span id="count">uncovered <em>0</em> / 4</span></div>
+</header>
+
+<section id="hero" class="ui">
+  <h1>Move the <i>wind.</i></h1>
+  <p>This desert wind carried the dust that built the Loess Plateau, my home in Xianyang. Sweep it hard across the dune and it uncovers what I have built.</p>
+</section>
+
+<div id="arts"></div>
+<div id="hint" class="ui mono">move fast <s>/</s> strong wind <s>·</s> drag <s>/</s> walk around</div>
+<div id="nogl"><p>This sketch needs WebGL.</p></div>
+
+<script type="module">
+import * as THREE from 'three';
+
+const $ = s => document.querySelector(s);
+const Q = new URLSearchParams(location.search);
+const canvas = $('#gl');
+const coarse = matchMedia('(pointer: coarse)').matches;
+const small = coarse || innerWidth < 700;
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); }
+catch (e) { document.documentElement.classList.add('nogl'); throw e; }
+renderer.setPixelRatio(Math.min(devicePixelRatio, small ? 1.75 : 2));
+renderer.setClearColor(0x000000, 1);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(34, 1, .5, 900);
+const C = h => new THREE.Color(h);
+const PAL = {
+  top: C('#8db3cf'), horizon: C('#f0e2cb'), glow: C('#fff0d4'),
+  sand: C('#e6b980'), sand2: C('#d29b68'), ambSky: C('#bccbd8'), ambGnd: C('#e3bb8e'), sunC: C('#fff4e4'),
+  rockA: C('#c46a40'), rockB: C('#f0d2aa'), rockC: C('#9a4a2c'), grain: C('#e2bf8f'), grainLight: C('#ead0a8'),
+};
+const SUN = new THREE.Vector3(-.82, .4, -.25).normalize();
+
+/* ---------- the desert: one height function, shared by JS (placement, picking) and a baked heightmap (particles) ---------- */
+// [crest x, centre z, height, half-length along the crest, windward length, phase]
+// wind blows to +x: crests run away from the viewer, sunlit windward faces on the left, shaded slip faces on the right
+const RIDGES = [
+  [-2, -38, 17, 24, 15, 0],
+  [-38, -20, 6, 18, 10, 1.3],
+  [-62, -75, 13, 30, 16, 2.1],
+  [34, -50, 11, 26, 13, 3.3],
+  [42, -4, 4, 14, 9, 4.1],
+  [10, -125, 22, 45, 22, 5.1],
+  [85, -100, 16, 35, 18, .7],
+  [-105, -110, 18, 40, 20, 2.9],
+];
+const crestX = (zz, x0, len, ph) => x0 + .12 * len * Math.sin(zz / len * 1.7 + ph) + .05 * len * Math.sin(zz / len * 4.3 + ph * 2);
+function ridge(x, z, r) {
+  const [x0, z0, H, len, Lw, ph] = r, zz = z - z0;
+  const Hc = H * Math.exp(-zz * zz / (2 * len * len));
+  if (Hc < .02) return 0;
+  const d = x - crestX(zz, x0, len, ph);
+  if (d < 0) return Hc * Math.exp(-d * d / (2 * Lw * Lw));
+  const u = Math.min(d / (Hc * 1.45 + .6), 1);          // slip face at the angle of repose
+  return Hc * Math.pow(1 - u, 1.25);
+}
+function height(x, z) {
+  let h = 1.1 * Math.sin(x * .05 + z * .03) + .7 * Math.sin(x * .13 - z * .07 + 2) + .45 * Math.sin(z * .17 + x * .02 + .5) + .25 * Math.sin(x * .31 + z * .23);
+  for (const r of RIDGES) {
+    const b = ridge(x, z, r), k = 1.6, m = Math.max(k - Math.abs(h - b), 0) / k;
+    h = Math.max(h, b) + m * m * k * .25;
+  }
+  return h;
+}
+
+/* ---------- shared GLSL ---------- */
+const NOISE = /* glsl */`
+float hash(vec3 p){ p = fract(p*.3183099 + .1); p *= 17.; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }
+float noise(vec3 x){ vec3 i = floor(x), f = fract(x); f = f*f*(3.-2.*f);
+  return mix(mix(mix(hash(i), hash(i+vec3(1,0,0)), f.x), mix(hash(i+vec3(0,1,0)), hash(i+vec3(1,1,0)), f.x), f.y),
+             mix(mix(hash(i+vec3(0,0,1)), hash(i+vec3(1,0,1)), f.x), mix(hash(i+vec3(0,1,1)), hash(i+vec3(1,1,1)), f.x), f.y), f.z); }
+float fbm(vec3 p){ float a = .5, s = 0.; for (int i = 0; i < 4; i++){ s += a*noise(p); p *= 2.03; a *= .5; } return s; }
+`;
+const HMAP = /* glsl */`
+uniform sampler2D uHM; uniform vec4 uHMR; uniform vec2 uHMN;
+float hm(vec2 xz){
+  vec2 g = clamp((xz - uHMR.xy)/uHMR.zw, 0., 1.)*(uHMN - 1.);
+  vec2 i = min(floor(g), uHMN - 2.); vec2 f = g - i; ivec2 k = ivec2(i);
+  float a = texelFetch(uHM, k, 0).r, b = texelFetch(uHM, k + ivec2(1, 0), 0).r;
+  float c = texelFetch(uHM, k + ivec2(0, 1), 0).r, d = texelFetch(uHM, k + ivec2(1, 1), 0).r;
+  return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}`;
+const FOG = /* glsl */`
+uniform vec3 uFog, uGlowC, uSun, uCam;
+vec3 aerial(vec3 c, vec3 wp){
+  float d = length(wp - uCam);
+  float f = 1. - exp(-pow(d*.0075, 1.6));
+  vec3 V = normalize(wp - uCam);
+  return mix(c, uFog + uGlowC*pow(max(dot(V, uSun), 0.), 6.)*.35, f);
+}`;
+
+/* ---------- sky + environment light ---------- */
+const skyMat = new THREE.ShaderMaterial({
+  side: THREE.BackSide, depthWrite: false,
+  uniforms: { uTop: { value: PAL.top }, uHorizon: { value: PAL.horizon }, uGlowC: { value: PAL.glow }, uSun: { value: SUN } },
+  vertexShader: 'varying vec3 vDir; void main(){ vDir = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }',
+  fragmentShader: /* glsl */`
+uniform vec3 uTop, uHorizon, uGlowC, uSun; varying vec3 vDir;
+void main(){
+  vec3 d = normalize(vDir);
+  vec3 c = mix(uHorizon, uTop, pow(smoothstep(-.02, .55, d.y), .7));
+  float s = max(dot(d, uSun), 0.);
+  c += uGlowC*(pow(s, 6.)*.35 + pow(s, 60.)*.5);
+  gl_FragColor = vec4(c, 1.);
+  #include <colorspace_fragment>
+}`,
+});
+const sky = new THREE.Mesh(new THREE.SphereGeometry(420, 48, 24), skyMat);
+sky.renderOrder = -1; scene.add(sky);
+const pmrem = new THREE.PMREMGenerator(renderer);
+const envScene = new THREE.Scene(); envScene.add(new THREE.Mesh(new THREE.SphereGeometry(50, 32, 16), skyMat));
+const sandFloor = new THREE.Mesh(new THREE.CircleGeometry(48, 32).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: PAL.sand2 }));
+sandFloor.position.y = -2; envScene.add(sandFloor);
+scene.environment = pmrem.fromScene(envScene, .03).texture;
+scene.add(new THREE.HemisphereLight(0xdbe6ee, 0xd9a874, 1.1));
+const sunL = new THREE.DirectionalLight(0xfff4e4, 2.6); sunL.position.copy(SUN).multiplyScalar(50); scene.add(sunL);
+
+/* ---------- erosion field: where the wind has dug, ping-ponged on the GPU, slowly refilled by sand ---------- */
+const ERO = { x0: -40, z0: -66, w: 74, h: 62 };
+const eroRT = [0, 1].map(() => new THREE.WebGLRenderTarget(592, 496, { type: THREE.HalfFloatType, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, depthBuffer: false }));
+for (const rt of eroRT) { renderer.setRenderTarget(rt); renderer.clear(); }
+renderer.setRenderTarget(null);
+let eroI = 0;
+const eroMat = new THREE.ShaderMaterial({
+  uniforms: { uPrev: { value: null }, uRect: { value: new THREE.Vector4(ERO.x0, ERO.z0, ERO.w, ERO.h) }, uA: { value: new THREE.Vector2() }, uB: { value: new THREE.Vector2() }, uStr: { value: 0 }, uRad: { value: 2.4 }, uDecay: { value: 1 } },
+  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0., 1.); }',
+  fragmentShader: /* glsl */`
+uniform sampler2D uPrev; uniform vec4 uRect; uniform vec2 uA, uB; uniform float uStr, uRad, uDecay; varying vec2 vUv;
+void main(){
+  float e = texture2D(uPrev, vUv).r * uDecay;
+  vec2 p = uRect.xy + vUv*uRect.zw, ab = uB - uA;
+  float t = clamp(dot(p - uA, ab)/max(dot(ab, ab), 1e-4), 0., 1.);
+  float d = length(p - uA - ab*t);
+  gl_FragColor = vec4(min(1., e + uStr*exp(-d*d/(uRad*uRad))), 0., 0., 1.);
+}`,
+});
+const eroScene = new THREE.Scene(), eroCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+eroScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), eroMat));
+function eroPass(a, b, str, decay) {
+  eroMat.uniforms.uPrev.value = eroRT[eroI].texture;
+  eroMat.uniforms.uA.value.set(a.x, a.z); eroMat.uniforms.uB.value.set(b.x, b.z);
+  eroMat.uniforms.uStr.value = str; eroMat.uniforms.uDecay.value = decay;
+  eroI ^= 1;
+  renderer.setRenderTarget(eroRT[eroI]); renderer.render(eroScene, eroCam); renderer.setRenderTarget(null);
+}
+
+/* ---------- terrain ---------- */
+const SEG = small ? 440 : 760, SIZE = 340, CZ = -60;
+const tg = new THREE.PlaneGeometry(SIZE, SIZE, SEG, SEG);
+tg.rotateX(-Math.PI / 2); tg.translate(0, 0, CZ);
+{ const p = tg.attributes.position; for (let i = 0; i < p.count; i++) p.setY(i, height(p.getX(i), p.getZ(i))); }
+tg.computeVertexNormals();
+const DEPTH = 4.4;
+const ART_N = 4;
+const TU = {
+  uEro: { value: eroRT[0].texture }, uEroR: { value: new THREE.Vector4(ERO.x0, ERO.z0, ERO.w, ERO.h) }, uDepth: { value: DEPTH },
+  uSun: { value: SUN }, uSunC: { value: PAL.sunC }, uAmbSky: { value: PAL.ambSky }, uAmbGnd: { value: PAL.ambGnd },
+  uSand: { value: PAL.sand }, uSand2: { value: PAL.sand2 }, uRockA: { value: PAL.rockA }, uRockB: { value: PAL.rockB }, uRockC: { value: PAL.rockC },
+  uFog: { value: PAL.horizon }, uGlowC: { value: PAL.glow }, uCam: { value: camera.position }, uTime: { value: 0 },
+  uArt: { value: Array.from({ length: ART_N }, () => new THREE.Vector4()) },
+  uArtC: { value: Array.from({ length: ART_N }, () => new THREE.Color()) },
+};
+const terrain = new THREE.Mesh(tg, new THREE.ShaderMaterial({
+  uniforms: TU,
+  vertexShader: /* glsl */`
+uniform sampler2D uEro; uniform vec4 uEroR; uniform float uDepth;
+varying vec3 vWorld, vN; varying float vE;
+float ero(vec2 xz){
+  vec2 uv = (xz - uEroR.xy)/uEroR.zw;
+  if (uv.x < 0. || uv.y < 0. || uv.x > 1. || uv.y > 1.) return 0.;
+  vec2 m = smoothstep(0., .06, uv)*smoothstep(1., .94, uv);
+  return texture2D(uEro, uv).r*m.x*m.y;
+}
+void main(){
+  vec3 p = position;
+  float e = ero(p.xz);
+  float ex = (ero(p.xz + vec2(.35, 0.)) - ero(p.xz - vec2(.35, 0.)))/.7;
+  float ez = (ero(p.xz + vec2(0., .35)) - ero(p.xz - vec2(0., .35)))/.7;
+  float hx = -normal.x/normal.y, hz = -normal.z/normal.y;
+  vN = normalize(vec3(-(hx - uDepth*ex), 1., -(hz - uDepth*ez)));
+  p.y -= uDepth*e;
+  vE = e; vWorld = p;
+  gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.);
+}`,
+  fragmentShader: /* glsl */`
+uniform vec3 uSunC, uAmbSky, uAmbGnd, uSand, uSand2, uRockA, uRockB, uRockC;
+uniform float uTime;
+uniform vec4 uArt[${ART_N}]; uniform vec3 uArtC[${ART_N}];
+varying vec3 vWorld, vN; varying float vE;
+${NOISE}
+${FOG}
+void main(){
+  vec3 N = normalize(vN);
+  vec3 V = normalize(uCam - vWorld);
+  float dist = length(uCam - vWorld);
+  float exposed = smoothstep(.2, .65, vE);
+  vec2 q = vWorld.xz;
+  // wind ripples, bump-mapped from screen derivatives
+  float amp = .045*smoothstep(70., 10., dist)*(1. - exposed)*smoothstep(.45, .9, N.y);
+  float s = dot(q, vec2(.99, .12))*2.6 + fbm(vec3(q*.07, 1.))*7.;
+  float rh = sin(s + .6*sin(s))*amp;
+  vec3 dpx = dFdx(vWorld), dpy = dFdy(vWorld);
+  vec3 r1 = cross(dpy, N), r2 = cross(N, dpx);
+  float det = dot(dpx, r1);
+  N = normalize(abs(det)*N - sign(det)*(dFdx(rh)*r1 + dFdy(rh)*r2));
+  // sand, with large soft colour drifts
+  float big = fbm(vec3(q*.025, 3.));
+  vec3 alb = mix(uSand2, uSand, smoothstep(.3, .7, big)) * (.95 + .08*smoothstep(2., 18., vWorld.y));
+  // under the sand: wind-cut sandstone, banded like the Wave
+  float sy = vWorld.y*2.3 + fbm(vec3(q*.16, 5.))*2.4;
+  vec3 rock = mix(uRockA, uRockB, sin(sy)*.5 + .5);
+  rock = mix(rock, uRockC, (sin(sy*2.7 + 1.)*.5 + .5)*.4) * (.9 + .2*noise(vWorld*6.));
+  alb = mix(alb, rock, exposed);
+  float ndl = dot(N, uSun);
+  float dif = clamp(ndl*1.35 + .05, 0., 1.);
+  vec3 amb = mix(uAmbGnd, uAmbSky, N.y*.5 + .5);
+  vec3 c = alb*(uSunC*dif*.95 + amb*.78);
+  // grains catching the sun
+  float g = step(.982, hash(floor(vWorld*24.)))*pow(max(dot(reflect(-uSun, N), V), 0.), 18.)*smoothstep(28., 6., dist)*(1. - exposed);
+  c += g*.9;
+  // warm light from whatever the wind has uncovered
+  for (int i = 0; i < ${ART_N}; i++){
+    vec3 d = uArt[i].xyz - vWorld; float l2 = dot(d, d);
+    c += uArtC[i]*uArt[i].w*(.35 + .65*max(dot(N, d*inversesqrt(l2)), 0.))*1.1/(1. + l2*.7);
+  }
+  gl_FragColor = vec4(aerial(c, vWorld), 1.);
+  #include <colorspace_fragment>
+}`,
+}));
+scene.add(terrain);
+
+/* heightmap for the particle shaders */
+const HM = { x0: -90, z0: -120, w: 180, h: 170, nx: 361, nz: 341 };
+const hmData = new Float32Array(HM.nx * HM.nz);
+for (let j = 0; j < HM.nz; j++) for (let i = 0; i < HM.nx; i++) hmData[j * HM.nx + i] = height(HM.x0 + i / (HM.nx - 1) * HM.w, HM.z0 + j / (HM.nz - 1) * HM.h);
+const hmTex = new THREE.DataTexture(hmData, HM.nx, HM.nz, THREE.RedFormat, THREE.FloatType); hmTex.needsUpdate = true;
+const HU = { uHM: { value: hmTex }, uHMR: { value: new THREE.Vector4(HM.x0, HM.z0, HM.w, HM.h) }, uHMN: { value: new THREE.Vector2(HM.nx, HM.nz) } };
+
+/* ---------- flying sand ---------- */
+const WIND = new THREE.Vector3(1, 0, .12).normalize();
+const PU = { uTime: TU.uTime, uWindT: { value: 0 }, uBoost: { value: 0 }, uPR: { value: 1 }, uWind: { value: WIND }, uFog: TU.uFog, uGlowC: TU.uGlowC, uSun: TU.uSun, uCam: TU.uCam };
+const PART_F = /* glsl */`
+uniform vec3 uCol; varying float vA; varying vec3 vWp;
+${FOG}
+void main(){
+  float d = length(gl_PointCoord - .5); if (d > .5) discard;
+  gl_FragColor = vec4(aerial(uCol, vWp), smoothstep(.5, .05, d)*vA);
+  #include <colorspace_fragment>
+}`;
+function particles(n, body, col, extraAttr) {
+  const g = new THREE.BufferGeometry();
+  const seed = new Float32Array(n * 4); for (let i = 0; i < seed.length; i++) seed[i] = Math.random();
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+  g.setAttribute('aSeed', new THREE.BufferAttribute(seed, 4));
+  if (extraAttr) extraAttr(g, n);
+  const m = new THREE.ShaderMaterial({
+    uniforms: { ...PU, ...HU, ...(body.uniforms || {}), uCol: { value: col } },
+    vertexShader: `attribute vec4 aSeed; ${body.attrs || ''}
+uniform float uTime, uWindT, uBoost, uPR; uniform vec3 uWind;
+varying float vA; varying vec3 vWp;
+${HMAP}
+void main(){
+${body.main}
+  vWp = p;
+  vec4 mv = modelViewMatrix*vec4(p, 1.);
+  gl_Position = projectionMatrix*mv;
+  gl_PointSize = size*uPR/-mv.z;
+  vA *= smoothstep(7., 20., -mv.z);
+}`,
+    fragmentShader: PART_F, transparent: true, depthWrite: false,
+  });
+  const pts = new THREE.Points(g, m); pts.frustumCulled = false; scene.add(pts);
+  return pts;
+}
+const K = small ? .45 : 1;
+// spindrift: sand streaming off the main crest, always (fine grains, plus soft veils that give the plume body)
+const SPIN = (sizeK, alphaK) => /* glsl */`
+  float z = -76. + aSeed.x*74., zz = z + 38.;
+  float xc = -2. + 2.88*sin(zz/24.*1.7) + 1.2*sin(zz/24.*4.3);
+  float ch = hm(vec2(xc, z));
+  float w = smoothstep(4., 12., ch);
+  float a = fract(aSeed.y + uWindT*(.13 + .12*aSeed.z));
+  vec3 p = vec3(xc, ch, z) + uWind*(a*(8. + 12.*aSeed.w)*(1. + uBoost*.6));
+  p.y += .25 + a*(1. + 2.8*aSeed.z) - a*a*(1.6 + 1.2*aSeed.w);
+  p += vec3(sin(uTime*1.3 + aSeed.w*30. + a*6.)*.5, sin(uTime*1.7 + aSeed.x*40.)*.3, cos(uTime*1.1 + aSeed.y*25.)*.5)*a;
+  p.y = max(p.y, hm(p.xz) + .06);
+  vA = pow(sin(a*3.14159), .8)*w*(.5 + .5*aSeed.w)*${alphaK}*(.75 + .5*uBoost);
+  float size = (1. + aSeed.w*aSeed.w)*${sizeK};`;
+particles(Math.round(26000 * K), { main: SPIN('260.', '.5') }, PAL.grain);
+particles(Math.round(2400 * K), { main: SPIN('3400.', '.11') }, PAL.grainLight);
+// saltation: a skin of sand running over the ground everywhere
+particles(Math.round(26000 * K), { main: /* glsl */`
+  vec2 base = vec2(-75. + aSeed.x*130., -95. + aSeed.y*100.);
+  float a = fract(aSeed.z + uWindT*(.07 + .08*aSeed.w));
+  vec2 xz = base + uWind.xz*(a*16.);
+  vec3 p = vec3(xz.x, 0., xz.y);
+  p.y = hm(xz) + .05 + pow(aSeed.w, 3.)*(1.2 + 1.5*uBoost) + sin(a*3.14159)*.25*aSeed.z;
+  vA = sin(a*3.14159)*(.18 + .3*aSeed.w)*(.8 + .5*uBoost);
+  float size = (1. + 2.4*aSeed.w*aSeed.w)*75.;` }, PAL.grain);
+// veils of fine dust drifting across the whole view
+particles(small ? 120 : 260, { main: /* glsl */`
+  vec2 base = vec2((aSeed.x - .5)*190., -130. + aSeed.y*140.);
+  float a = fract(aSeed.z + uWindT*.012);
+  vec2 xz = base + uWind.xz*(a*40. - 20.);
+  vec3 p = vec3(xz.x, 0., xz.y);
+  p.y = hm(xz) + 1. + aSeed.w*9.;
+  vA = sin(a*3.14159)*.07;
+  float size = (260. + 520.*aSeed.w)*12.;` }, PAL.grainLight);
+
+/* gusts: every strong mouse stroke launches a cloud of sand from where it hit */
+const GN = 32;
+const GP = Array.from({ length: GN }, () => new THREE.Vector4(0, -99, 0, -99)), GD = Array.from({ length: GN }, () => new THREE.Vector4());
+let gI = 0;
+particles(Math.round(14000 * K), {
+  uniforms: { uGP: { value: GP }, uGD: { value: GD } },
+  attrs: `attribute float aEv; uniform vec4 uGP[${GN}]; uniform vec4 uGD[${GN}];`,
+  main: /* glsl */`
+  int k = int(aEv); vec4 g = uGP[k]; vec4 gd = uGD[k];
+  float age = uTime - g.w, life = 2.8*(.5 + .7*aSeed.w);
+  if (age < 0. || age > life){ gl_Position = vec4(2., 2., 2., 1.); gl_PointSize = 0.; vA = 0.; return; }
+  float a = age/life;
+  vec3 rnd = (aSeed.xyz - .5)*2.;
+  vec3 p = g.xyz + rnd*vec3(1.6, .4, 1.6)*(.4 + a*1.8) + gd.xyz*(age*(4. + 8.*aSeed.x))*gd.w
+         + vec3(0., age*(1.2 + 2.6*aSeed.y) - age*age*.8, 0.) + uWind*age*2.5;
+  p += vec3(sin(uTime*2. + aSeed.w*40.), 0., cos(uTime*1.7 + aSeed.x*30.))*a*.6;
+  p.y = max(p.y, hm(p.xz) + .05);
+  vA = pow(1. - a, 1.6)*smoothstep(0., .06, a)*(.25 + .35*aSeed.w)*min(gd.w*1.6, 1.);
+  float size = (1.5 + 4.*aSeed.w*aSeed.w)*70.;`,
+}, PAL.grain, (g, n) => {
+  const ev = new Float32Array(n); for (let i = 0; i < n; i++) ev[i] = i % GN;
+  g.setAttribute('aEv', new THREE.BufferAttribute(ev, 1));
+});
+
+/* ---------- what is buried in the dune: four pieces of work ---------- */
+const rand = (s => () => (s = (s * 16807) % 2147483647) / 2147483647)(11);
+const gold = new THREE.MeshPhysicalMaterial({ color: 0xf1c06a, metalness: 1, roughness: .2, clearcoat: .6, envMapIntensity: 1.3 });
+function amberPiece() {
+  const g = new THREE.IcosahedronGeometry(1.15, 1), p = g.attributes.position, v = new THREE.Vector3();
+  for (let i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i);
+    v.multiplyScalar(1 + .17 * Math.sin(v.x * 2.8 + v.y * 17 + v.z * 8.2) * Math.cos(v.x * .9 - v.z * 2));
+    p.setXYZ(i, v.x * 1.25, v.y * .85, v.z);
+  }
+  g.computeVertexNormals();
+  const m = new THREE.Mesh(g, new THREE.MeshPhysicalMaterial({
+    color: 0xffd98a, transmission: 1, thickness: 1.6, roughness: .08, ior: 1.55, flatShading: true,
+    attenuationColor: C('#f0a63c'), attenuationDistance: 4.5, clearcoat: 1, clearcoatRoughness: .04, envMapIntensity: 1.3,
+  }));
+  const core = new THREE.Group();
+  core.add(new THREE.Mesh(new THREE.BoxGeometry(.32, .32, .32), new THREE.MeshBasicMaterial({ color: 0xfff4da })));
+  core.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(.46, .46, .46)), new THREE.LineBasicMaterial({ color: 0x8a4a0c })));
+  m.add(core); m.userData.spin = core;
+  return m;
+}
+function potPiece() {
+  const g = new THREE.Group();
+  g.add(new THREE.Mesh(new THREE.TorusGeometry(1.1, .2, 28, 120), gold));
+  const grains = new THREE.Group();
+  for (let i = 0; i < 9; i++) {
+    const s = new THREE.Mesh(new THREE.SphereGeometry(.12 + rand() * .13, 20, 14), gold);
+    const a = i / 9 * Math.PI * 2;
+    s.position.set(Math.cos(a) * (.25 + rand() * .45), Math.sin(a) * (.25 + rand() * .45), (rand() - .5) * .3);
+    grains.add(s);
+  }
+  g.add(grains); g.userData.spin = grains;
+  return g;
+}
+function mapPiece() {
+  const g = new THREE.Group(), pts = [new THREE.Vector3(0, -.7, 0)], seg = [];
+  for (let i = 1; i < 16; i++) {
+    const p = pts[Math.floor(rand() * i)];
+    const d = new THREE.Vector3(rand() - .5, rand() * .7 + .15, rand() - .5).normalize().multiplyScalar(.4 + rand() * .3);
+    const q = p.clone().add(d); q.clampLength(0, 1.25); pts.push(q); seg.push(p, q);
+  }
+  const nodeMat = new THREE.MeshBasicMaterial({ color: 0xfff2d2 });
+  pts.forEach((p, i) => { const s = new THREE.Mesh(new THREE.SphereGeometry(i ? .07 + rand() * .07 : .16, 16, 12), nodeMat); s.position.copy(p); g.add(s); });
+  g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(seg), new THREE.LineBasicMaterial({ color: 0xb8690f })));
+  g.add(new THREE.Mesh(new THREE.SphereGeometry(1.35, 48, 32), new THREE.MeshPhysicalMaterial({ transmission: 1, roughness: .04, thickness: .2, ior: 1.3, color: 0xfff8ee, envMapIntensity: 1.2 })));
+  return g;
+}
+function panesPiece() {
+  const g = new THREE.Group();
+  const glass = new THREE.MeshPhysicalMaterial({ transmission: 1, roughness: .06, thickness: .12, ior: 1.5, color: 0xfbf3e4, envMapIntensity: 1.3 });
+  const edge = new THREE.LineBasicMaterial({ color: 0xc27a22 });
+  for (let i = 0; i < 3; i++) {
+    const box = new THREE.BoxGeometry(1.9, 1.3, .06);
+    const m = new THREE.Mesh(box, glass); m.add(new THREE.LineSegments(new THREE.EdgesGeometry(box), edge));
+    m.rotation.y = i * .45 - .45; m.position.z = (i - 1) * .32; m.position.y = (i - 1) * .12;
+    g.add(m);
+  }
+  return g;
+}
+const ARTS = [
+  { make: amberPiece,  x: -10, z: -30, col: '#ffa63a', years: '2021 — 2024', name: 'Evidence Locker', line: 'Forensic preservation of cloud data, sealed exactly as it was found.' },
+  { make: potPiece,    x: -21, z: -24, col: '#ffc04f', years: '2024 — 2026', name: 'Camelot', line: 'Challenge friends to put their money where their mouth is.' },
+  { make: mapPiece,    x: 8, z: -20, col: '#ffe2a6', years: '2019 — 2021', name: 'Midinote', line: 'Tag-based notes that grow into a mind map. Built solo, in Hong Kong.' },
+  { make: panesPiece,  x: -14, z: -10, col: '#ffcf7a', years: '2017 — 2019', name: 'Shinetech', line: 'A remote team across time zones, building for international clients.' },
+];
+ARTS.forEach((a, i) => {
+  a.obj = a.make();
+  a.surf = height(a.x, a.z);
+  a.base = new THREE.Vector3(a.x, a.surf - 1.95, a.z);       // buried below the slip face
+  a.obj.position.copy(a.base);
+  a.obj.rotation.y = rand() * Math.PI;
+  scene.add(a.obj);
+  a.exp = 0; a.on = false; a.seen = false;
+  TU.uArtC.value[i].set(a.col);
+  a.el = document.createElement('div');
+  a.el.className = 'art ui';
+  a.el.innerHTML = `<div class="eb mono">${a.years}</div><h3>${a.name}</h3><p>${a.line}</p><i></i>`;
+  $('#arts').appendChild(a.el);
+});
+
+/* ---------- input: mouse speed is wind; drag walks around the dune ---------- */
+const orb = { az: -.06, el: .1, vAz: 0, drag: false, lx: 0 };
+const mouse = new THREE.Vector2(), par = new THREE.Vector2(), ray = new THREE.Raycaster();
+let hasMouse = false, moveAcc = 0, mvx = 0, mvy = 0, lastMove = -10, prevHit = null, t = 0, boost = 0, lastGust = 0, found = 0;
+canvas.addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'mouse') return;
+  orb.drag = true; orb.lx = e.clientX; orb.vAz = 0; canvas.setPointerCapture(e.pointerId); canvas.classList.add('drag');
+});
+const endDrag = () => { orb.drag = false; canvas.classList.remove('drag'); prevHit = null; };
+canvas.addEventListener('pointerup', endDrag); canvas.addEventListener('pointercancel', endDrag);
+addEventListener('pointerleave', () => { hasMouse = false; prevHit = null; });
+let lx = null, ly = null;
+addEventListener('pointermove', e => {
+  mouse.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  const px = lx === null ? 0 : e.clientX - lx, py = ly === null ? 0 : e.clientY - ly;
+  lx = e.clientX; ly = e.clientY; hasMouse = true; lastMove = t;
+  if (orb.drag) {
+    const d = e.clientX - orb.lx; orb.lx = e.clientX;
+    orb.az = THREE.MathUtils.clamp(orb.az - d * .0035, -.8, .8); orb.vAz += (-d * .0035 - orb.vAz) * .6;
+  } else { moveAcc += Math.hypot(px, py); mvx += px; mvy += py; }
+}, { passive: true });
+addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') { lx = e.clientX; ly = e.clientY; } });
+
+const tv = new THREE.Vector3();
+function pick() {
+  ray.setFromCamera(mouse, camera);
+  const o = ray.ray.origin, d = ray.ray.direction;
+  let prev = 0;
+  for (let s = 1; s < 320; s += Math.max(.3, s * .02)) {
+    if (o.y + d.y * s < height(o.x + d.x * s, o.z + d.z * s)) {
+      let a = prev, b = s;
+      for (let i = 0; i < 10; i++) { const m = (a + b) / 2; if (o.y + d.y * m < height(o.x + d.x * m, o.z + d.z * m)) b = m; else a = m; }
+      return new THREE.Vector3().copy(o).addScaledVector(d, b);
+    }
+    prev = s;
+  }
+  return null;
+}
+const segDist = (px, pz, a, b) => {
+  const abx = b.x - a.x, abz = b.z - a.z, l = abx * abx + abz * abz;
+  const k = l > 1e-6 ? THREE.MathUtils.clamp(((px - a.x) * abx + (pz - a.z) * abz) / l, 0, 1) : 0;
+  return Math.hypot(px - a.x - abx * k, pz - a.z - abz * k);
+};
+const strokes = [];
+function blow(a, b, str, dirW) {
+  strokes.push([a.clone(), b.clone(), str]);
+  for (const art of ARTS) { const d = segDist(art.x, art.z, a, b); art.exp = Math.min(1, art.exp + str * Math.exp(-d * d / 5.76)); }
+  if (t - lastGust > .045 && str > .02) {
+    lastGust = t;
+    GP[gI].set(b.x, b.y + .3, b.z, t); GD[gI].set(dirW.x, dirW.y, dirW.z, Math.min(1, str * 9)); gI = (gI + 1) % GN;
+  }
+}
+if (Q.has('demo')) ARTS.forEach(a => { const p = new THREE.Vector3(a.x, a.surf, a.z); for (let i = 0; i < 6; i++) blow(p, p, .3, WIND); });
+
+/* ---------- loop ---------- */
+const lerp = THREE.MathUtils.lerp, clamp = THREE.MathUtils.clamp, smooth = THREE.MathUtils.smoothstep;
+const target = new THREE.Vector3(), camR = new THREE.Vector3(), fwd = new THREE.Vector3(), dirW = new THREE.Vector3(), proj = new THREE.Vector3();
+let W = 0, H = 0, autoT = 0;
+function resize() {
+  W = innerWidth; H = innerHeight;
+  renderer.setSize(W, H, false); camera.aspect = W / H; camera.updateProjectionMatrix();
+  PU.uPR.value = renderer.getPixelRatio() * Math.min(1, H / 900);
+}
+addEventListener('resize', resize); resize();
+
+const clock = new THREE.Clock();
+function frame() {
+  const dt = Math.max(Math.min(clock.getDelta(), 1 / 20), 1e-4);   // never 0: speed below divides by it t += dt; TU.uTime.value = t;
+
+  // camera: eye level in the dunes, slow drift, inertial walk on drag
+  if (!orb.drag) { orb.az = clamp(orb.az + orb.vAz * dt * 60, -.8, .8); orb.vAz *= Math.exp(-dt * 2.2); } else orb.vAz *= Math.exp(-dt * 10);
+  par.lerp(mouse, 1 - Math.exp(-dt * 1.5));
+  const portrait = W < H;
+  const az = orb.az + par.x * .04 + Math.sin(t * .06) * .05;
+  const el = orb.el - par.y * .015;
+  const dist = portrait ? 74 : 56;
+  target.set(-4, 7.5, -36);
+  camera.position.set(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)).multiplyScalar(dist).add(target);
+  camera.position.y = Math.max(camera.position.y, height(camera.position.x, camera.position.z) + 2.5);
+  camera.lookAt(target);
+  camera.updateMatrixWorld();
+  sky.position.copy(camera.position);
+  camR.setFromMatrixColumn(camera.matrixWorld, 0);
+  camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize();
+
+  // wind from mouse speed
+  const speed = moveAcc / dt; moveAcc = 0;
+  const bT = clamp(speed / 1800, 0, 1);
+  boost += (bT - boost) * (1 - Math.exp(-dt * (bT > boost ? 8 : 1.4)));
+  PU.uBoost.value = boost;
+  PU.uWindT.value += dt * (1 + boost * 2.4);
+  if (hasMouse && !orb.drag) {
+    const hit = pick();
+    const str = clamp((speed - 120) / 1400, 0, 1) * dt * 9;
+    if (hit && prevHit && str > 0) {
+      dirW.copy(camR).multiplyScalar(mvx).addScaledVector(fwd, -mvy);
+      if (dirW.lengthSq() < 1e-6) dirW.copy(WIND);
+      dirW.normalize(); dirW.y = .25;
+      blow(prevHit, hit, str, dirW);
+    }
+    prevHit = hit;
+  }
+  mvx = mvy = 0;
+
+  // idle: a gust sweeps the lower face now and then, so the dune shows it is hiding something
+  if (t - lastMove > 4.5 && !Q.has('demo')) {
+    autoT += dt;
+    const cyc = autoT % 10;
+    if (cyc < 3.6) {
+      const k = cyc / 3.6, n = Math.floor(autoT / 10);
+      const z = lerp(-14, -58, n % 2 ? 1 - k : k), x = -10 - 4 * Math.sin(k * Math.PI * 2 + n) + (n % 3) * 2;
+      const p = new THREE.Vector3(x, height(x, z), z);
+      if (prevHit) blow(prevHit, p, dt * 1.5, WIND);
+      prevHit = p;
+    } else prevHit = null;
+  } else autoT = 0;
+
+  // erosion passes: decay (sand creeping back), then this frame's strokes
+  const decay = Q.has('demo') ? 1 : Math.exp(-dt / 11);
+  if (!strokes.length) eroPass(tv.set(0, 0, 0), tv, 0, decay);
+  strokes.forEach((s, i) => eroPass(s[0], s[1], s[2], i ? 1 : decay));
+  strokes.length = 0;
+  TU.uEro.value = eroRT[eroI].texture;
+
+  // buried work
+  ARTS.forEach((a, i) => {
+    a.exp *= decay;
+    const r = smooth(a.exp, .18, .75);
+    a.obj.position.y = a.base.y + r * .5 + Math.sin(t * .9 + i) * .06 * r;
+    a.obj.rotation.y += dt * (.05 + .25 * r);
+    if (a.obj.userData.spin) { a.obj.userData.spin.rotation.x += dt * .5; a.obj.userData.spin.rotation.z += dt * .3; }
+    TU.uArt.value[i].set(a.obj.position.x, a.obj.position.y, a.obj.position.z, r);
+    if (!a.on && a.exp > .45) { a.on = true; if (!a.seen) { a.seen = true; found++; $('#count em').textContent = found; } }
+    if (a.on && a.exp < .28) a.on = false;
+    a.el.classList.toggle('on', a.on);
+    if (a.on) {
+      proj.copy(a.obj.position).y += 1.9; proj.project(camera);
+      a.el.style.transform = `translate(${(proj.x * .5 + .5) * W}px,calc(${(-proj.y * .5 + .5) * H}px - 100%))`;
+    }
+  });
+  $('#hero').classList.toggle('dim', ARTS.some(a => a.on));
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(() => { canvas.classList.add('on'); frame(); });
+</script>
+</body>
+</html>
