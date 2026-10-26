@@ -767,8 +767,8 @@ const CAM = {};
 function camera() {
   const asp = canvas.width / canvas.height, fov = 40 * Math.PI / 180;
   const hfov = 2 * Math.atan(Math.tan(fov / 2) * asp);
-  const dist = Math.max(6.95, 3.5 / Math.tan(hfov / 2)), pitch = .135;
-  const tgt = [0, asp < 1 ? .6 : 1.95, 0];   // on a tall screen the curtain sits higher, above the words
+  const dist = Math.max(9.9, 3.95 / Math.tan(hfov / 2)), pitch = .135;
+  const tgt = [0, asp < 1 ? .75 : 1.8, 0];   // on a tall screen the curtain sits higher, above the words
   const e = [tgt[0] + dist * Math.sin(S.yaw) * Math.cos(pitch), tgt[1] + dist * Math.sin(pitch), tgt[2] + dist * Math.cos(S.yaw) * Math.cos(pitch)];
   const VP = mm(persp(fov, asp, .1, 80), look(e, tgt));
   CAM.e = e; CAM.VP = VP; CAM.inv = inv(VP);

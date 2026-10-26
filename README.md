@@ -1,4 +1,4 @@
-<a href="https://sk11001100.github.io/sk11001100/"><img src="./assets/hero.webp" alt="Ten bare bulbs in the dark, nine vents between them, and a curtain of mist falling to the floor. The name Lei Kai is lit inside the mist." width="100%"/></a>
+<h1 align="center">Lei Kai</h1>
 
 <p align="center">
   I'm a senior full-stack engineer and architect in Xianyang, China.<br/>
@@ -14,8 +14,6 @@
 </p>
 
 <br/>
-
-<a href="https://sk11001100.github.io/sk11001100/"><img src="./assets/work.webp" alt="The work, projected into the mist one after another: Shinetech Software, Midinote and Evidence Locker. Each picture falls away with the mist that carried it while the next one forms above." width="100%"/></a>
 
 <p align="center">
   <sub>2017 – 2019</sub> &nbsp;<a href="https://shinetechsoftware.com"><b>Shinetech Software</b></a> &nbsp;·&nbsp; front-end developer, remote team lead<br/>
@@ -55,9 +53,7 @@
 
 <br/>
 
-<a href="mailto:coblerpeach354@gmail.com"><img src="./assets/contact.jpg" alt="Write to me. Lit in the mist. Open to senior and lead roles: coblerpeach354@gmail.com" width="100%"/></a>
-
 <p align="center"><sub>
   Open to senior and lead roles &nbsp;·&nbsp; <a href="mailto:coblerpeach354@gmail.com">coblerpeach354@gmail.com</a><br/>
-  The mist above is real: a fluid simulation lit by ten lamps, rendered in WebGL. <a href="https://sk11001100.github.io/sk11001100/">Move your hand through it.</a>
+  My portfolio is a curtain of mist lit by ten lamps, a live fluid simulation in WebGL. <a href="https://sk11001100.github.io/sk11001100/">Move your hand through it.</a>
 </sub></p>
