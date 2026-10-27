@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="1200" height="300" role="img">
+<defs>
+  <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="12" cy="12" r=".9" fill="#ddd5c8" opacity=".09"/></pattern>
+  <radialGradient id="vig" cx="50%" cy="45%" r="70%"><stop offset="0" stop-color="#1a1714"/><stop offset="1" stop-color="#0c0b0a"/></radialGradient>
+</defs>
+<rect width="1200" height="300" rx="18" fill="url(#vig)"/>
+<rect width="1200" height="300" rx="18" fill="url(#grid)"/>
+<rect x=".5" y=".5" width="1199" height="299" rx="17.5" fill="none" stroke="#ddd5c8" stroke-opacity=".12"/>
+
+<clipPath id="hill"><path d="M250,206 L850,96 L930,96 L990,206 Z"/></clipPath>
+<path d="M260,206 L300,166 M271,206 L311,166 M282,206 L322,166 M293,206 L333,166 M304,206 L344,166 M315,206 L355,166 M326,206 L366,166 M337,206 L377,166 M348,206 L388,166 M359,206 L399,166 M370,206 L410,166 M381,206 L421,166 M392,206 L432,166 M403,206 L443,166 M414,206 L454,166 M425,206 L465,166 M436,206 L476,166 M447,206 L487,166 M458,206 L498,166 M469,206 L509,166 M480,206 L520,166 M491,206 L531,166 M502,206 L542,166 M513,206 L553,166 M524,206 L564,166 M535,206 L575,166 M546,206 L586,166 M557,206 L597,166 M568,206 L608,166 M579,206 L619,166 M590,206 L630,166 M601,206 L641,166 M612,206 L652,166 M623,206 L663,166 M634,206 L674,166 M645,206 L685,166 M656,206 L696,166 M667,206 L707,166 M678,206 L718,166 M689,206 L729,166 M700,206 L740,166 M711,206 L751,166 M722,206 L762,166 M733,206 L773,166 M744,206 L784,166 M755,206 L795,166 M766,206 L806,166 M777,206 L817,166 M788,206 L828,166 M799,206 L839,166 M810,206 L850,166 M821,206 L861,166 M832,206 L872,166 M843,206 L883,166 M854,206 L894,166 M865,206 L905,166 M876,206 L916,166 M887,206 L927,166 M898,206 L938,166 M909,206 L949,166 M920,206 L960,166 M931,206 L971,166 M942,206 L982,166 M953,206 L993,166 M964,206 L1004,166 M975,206 L1015,166 M986,206 L1026,166 M997,206 L1037,166" stroke="#ddd5c8" stroke-opacity=".09" clip-path="url(#hill)"/>
+<path d="M150,206 L250,206 L850,96 L930,96 L990,206 L1050,206" fill="none" stroke="#ddd5c8" stroke-opacity=".6" stroke-width="1.3" stroke-linejoin="round"/>
+<path d="M895,96 L895,52" stroke="#ddd5c8" stroke-opacity=".7" stroke-width="1.3"/>
+<path d="M895,52 L925,61 L895,70 Z" fill="#e8b071"/>
+<text x="933" y="65" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace" font-size="12" letter-spacing="1.5" fill="#ddd5c8" fill-opacity=".7">main</text>
+<g>
+  <g>
+    <circle r="20" fill="#1d1a16" stroke="#ddd5c8" stroke-width="1.4"/>
+    <path d="M-14,-8 L3,-3 L9,13 M3,-3 L14,-11 M-6,6 L-11,14" fill="none" stroke="#ddd5c8" stroke-opacity=".45" stroke-width="1.1"/>
+    <animateTransform attributeName="transform" type="rotate" values="0;1524.07;1516.07;0;0" keyTimes="0;.58;.66;.8;1" calcMode="spline" keySplines=".35 0 .65 1;.4 0 .6 1;.6 0 .95 .65;0 0 1 1" dur="10s" repeatCount="indefinite"/>
+  </g>
+  <animateMotion path="M279.84,180.2 L803.11,84.26" keyPoints="0;1;.985;0;0" keySplines=".35 0 .65 1;.4 0 .6 1;.6 0 .95 .65;0 0 1 1" keyTimes="0;.58;.66;.8;1" calcMode="spline" dur="10s" repeatCount="indefinite"/>
+</g>
+<g>
+  <path d="M0,0 L0,18 L4.5,14 L7.5,21 L10.5,19.8 L7.6,13 L13,13 Z" transform="rotate(104.39)" fill="#ddd5c8" stroke="#0c0b0a" stroke-width="1.2" stroke-linejoin="round"/>
+  <animateMotion path="M260.16,183.8 L783.44,87.87" keyPoints="0;1;1;1;0" keySplines=".35 0 .65 1;.4 0 .6 1;.6 0 .95 .65;.45 0 .55 1" keyTimes="0;.58;.66;.8;1" calcMode="spline" dur="10s" repeatCount="indefinite"/>
+</g>
+<text x="600" y="252" text-anchor="middle" font-family="'Times New Roman',Times,Georgia,serif" font-style="italic" font-size="23" fill="#ddd5c8">One must imagine Sisyphus happy.</text>
+<text x="601.5" y="281" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace" font-size="11.5" letter-spacing="3" fill="#ddd5c8" fill-opacity=".45">PUSHING TO MAIN SINCE 2017 · THANKS FOR SCROLLING</text>
+</svg>

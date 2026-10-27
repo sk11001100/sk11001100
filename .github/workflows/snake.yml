@@ -1,0 +1,32 @@
+name: snake
+
+# Eats the contribution graph and publishes the SVGs to the `output` branch.
+on:
+  schedule:
+    - cron: "0 */12 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: Platane/snk@v3
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          outputs: |
+            dist/snake-dark.svg?palette=github-dark&color_snake=#e8b071&color_dots=#161b22,#3b2d1f,#6e4f2e,#a8743e,#e8b071
+            dist/snake-light.svg?color_snake=#9a5b1e&color_dots=#ebedf0,#f1dcc0,#dcae78,#bb7e3e,#8a4f17
+
+      - uses: crazy-max/ghaction-github-pages@v4
+        with:
+          target_branch: output
+          build_dir: dist
+          commit_message: Feed the snake
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
