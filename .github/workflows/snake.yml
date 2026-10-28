@@ -25,12 +25,13 @@ jobs:
             dist/snake.svg?color_snake=#7a2a17&color_dots=#d8c296,#bf9f6a,#987046,#694829,#38250f
 
       - name: Print the snake on paper
-        run: node .github/snake/compose.mjs
+        # dist/ belongs to the snk container (root), so write to a folder of our own
+        run: node .github/snake/compose.mjs dist/snake.svg out
 
       - uses: crazy-max/ghaction-github-pages@v4
         with:
           target_branch: output
-          build_dir: dist
+          build_dir: out
           commit_message: Feed the snake
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
