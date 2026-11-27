@@ -1,0 +1,1124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lei Kai · Senior full-stack engineer</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000'/%3E%3Cpath d='M16 0v11' stroke='%23554c40' stroke-width='1.5'/%3E%3Ccircle cx='16' cy='14' r='4' fill='%23ffe2bd'/%3E%3Cpath d='M9 20h14l2 12H7z' fill='%23d8cfc2' opacity='.55'/%3E%3C/svg%3E">
+<meta name="description" content="Lei Kai, senior full-stack engineer. Ten lamps in the dark and a curtain of mist; the work is projected into it.">
+<style>
+@font-face{font-family:MSerif;src:url(assets/fonts/serif.woff2) format('woff2');font-display:swap}
+@font-face{font-family:MSerif;src:url(assets/fonts/serif-italic.woff2) format('woff2');font-style:italic;font-display:swap}
+@font-face{font-family:MMono;src:url(assets/fonts/mono-light.woff2) format('woff2');font-weight:300;font-display:swap}
+@font-face{font-family:MMono;src:url(assets/fonts/mono.woff2) format('woff2');font-weight:400;font-display:swap}
+:root{--ink:#ddd5c8;--soft:#a39b8f;--dim:#6d675e}
+html{background:#000;scroll-snap-type:y mandatory;scrollbar-width:none;overflow-y:scroll}
+html::-webkit-scrollbar{display:none}
+body{margin:0;background:#000;color:var(--ink);cursor:none;-webkit-font-smoothing:antialiased}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+a,button{cursor:none;color:inherit}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#ring{position:fixed;left:0;top:0;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;pointer-events:none;
+  border:1px solid rgba(255,244,228,.55);box-shadow:0 0 14px rgba(255,236,210,.18),inset 0 0 10px rgba(255,236,210,.12);
+  transition:width .35s,height .35s,margin .35s,opacity .4s,border-color .35s;opacity:0;z-index:9}
+#ring::after{content:"";position:absolute;left:50%;top:50%;width:3px;height:3px;margin:-1.5px;border-radius:50%;background:rgba(255,246,232,.85)}
+#ring.on{opacity:1}
+#ring.drag{width:18px;height:18px;margin:-9px 0 0 -9px;border-color:rgba(255,244,228,.8)}
+#ring.link,#ring.visit{width:54px;height:54px;margin:-27px 0 0 -27px;border-color:rgba(255,244,228,.85)}
+#ring i{position:absolute;left:50%;top:100%;margin-top:12px;transform:translateX(-50%);white-space:nowrap;font:400 11px/1 MMono,ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;font-style:normal;color:var(--ink);text-shadow:0 0 10px #000,0 0 4px #000;opacity:0;transition:opacity .3s}
+#ring.visit i{opacity:1}
+.mono{font:300 11px/1.6 MMono,ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase}
+.hud{position:fixed;z-index:5;color:var(--dim)}
+#name{left:28px;top:24px;color:var(--ink);opacity:.75;text-decoration:none}
+#idx{right:28px;top:24px;text-align:right}
+#idx b{color:var(--ink);font-weight:400}
+#walk{right:24px;bottom:22px;background:none;border:0;padding:6px;display:flex;gap:10px;align-items:center;color:var(--soft);transition:color .3s}
+#walk:hover{color:var(--ink)}
+#walk svg{width:22px;height:12px;fill:none;stroke:currentColor;stroke-width:1}
+#hint{left:0;right:0;bottom:26px;text-align:center;opacity:0;transition:opacity 1.6s;pointer-events:none}
+#hint.on{opacity:.8}
+main section{height:100vh;scroll-snap-align:start}
+.cap{position:fixed;left:50%;bottom:34px;transform:translate(-50%,8px);width:min(660px,calc(100% - 32px));text-align:center;z-index:4;
+  opacity:0;visibility:hidden;transition:opacity .9s,transform .9s,visibility 0s .9s;text-shadow:0 0 18px #000,0 0 6px #000}
+.cap.on{opacity:1;visibility:visible;transform:translate(-50%,0);transition:opacity 1.2s .35s,transform 1.2s .35s,visibility 0s}
+.cap .b{display:none}
+body.behind .cap .f{display:none}
+body.behind .cap .b{display:block}
+.cap .k{margin:0 0 12px;color:var(--soft)}
+.cap .k b{color:var(--ink);font-weight:400}
+.cap h2{margin:0;font:400 clamp(26px,3vw,36px)/1.1 MSerif,Georgia,serif;letter-spacing:-.01em}
+.cap h2 em{font-style:italic}
+.cap .r{margin:10px 0 0;color:var(--soft)}
+.cap .p{margin:12px auto 0;max-width:600px;font:400 15px/1.6 MSerif,Georgia,serif;color:var(--soft)}
+.cap .l{margin:14px 0 0;display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.cap .l a{text-decoration:none;color:var(--ink);border-bottom:1px solid rgba(221,213,200,.25);padding-bottom:3px;transition:border-color .3s}
+.cap .l a:hover{border-color:var(--ink)}
+.cap .l a.go{border:1px solid rgba(221,213,200,.4);border-radius:999px;padding:9px 18px 8px;background:rgba(0,0,0,.35);transition:border-color .3s,background .3s}
+.cap .l a.go:hover{border-color:var(--ink);background:rgba(221,213,200,.08)}
+.cap .mail{display:inline-block;margin-top:14px;font:400 clamp(20px,2.4vw,28px)/1.2 MSerif,Georgia,serif;color:var(--ink);text-decoration:none;border-bottom:1px solid rgba(221,213,200,.3);padding-bottom:4px}
+#fail{position:fixed;inset:0;display:none;place-items:center;color:var(--dim)}
+@media (pointer:coarse){body,a,button{cursor:auto}#ring{display:none}}
+@media (max-width:640px){#hint{display:none}.cap{bottom:64px}.cap .p{font-size:14px}#walk span{display:none}#idx span{display:none}}
+</style>
+</head>
+<body>
+<canvas id="c" aria-hidden="true"></canvas>
+<div id="ring"><i id="rl">Visit ↗</i></div>
+<a class="hud mono" id="name" href="#c0">Lei Kai</a>
+<div class="hud mono" id="idx"><b>01</b> / 08 <span>&nbsp;·&nbsp; Lei Kai</span></div>
+<button class="hud mono" id="walk" aria-pressed="false"><svg viewBox="0 0 22 12" aria-hidden="true"><path d="M2 6a9 4 0 1 0 9-4M8 0l3 2-3 2"/></svg><span>Walk behind the mist</span></button>
+<div class="hud mono" id="hint">Move through the mist &nbsp;·&nbsp; click a picture to open it &nbsp;·&nbsp; drag to walk around &nbsp;·&nbsp; scroll for the work</div>
+<div class="mono" id="fail">This page needs WebGL2</div>
+<main>
+  <section id="c0" aria-label="Lei Kai">
+    <div class="cap" data-ch="0">
+      <div class="f">
+        <h1 class="sr">Lei Kai, senior full-stack engineer &amp; architect</h1>
+        <p class="k mono">Senior full-stack engineer · <b>Since 2017</b></p>
+        <p class="p">Nine years of shipping software, end to end. First, four recent builds: an AI document chatbot, a 3D load planner, a luxury brand site and a food store. Then earlier work: a product built entirely alone, and forensic tools that hold up in court.</p>
+      </div>
+      <div class="b">
+        <p class="k mono">Behind the mist · <b>how I work</b></p>
+        <p class="p">Change little and land it right. Leave nothing behind. See in the dark before launch day. Earn every tool. Teach what I know.</p>
+      </div>
+    </div>
+  </section>
+  <section id="c1" aria-label="Counterhand">
+    <div class="cap" data-ch="1">
+      <div class="f">
+        <p class="k mono"><b>01</b> · 2026 · Counterhand · AI document chatbot</p>
+        <h2>Answers, with <em>the page they came from.</em></h2>
+        <p class="r mono">RAG · Next.js · PostgreSQL · Built solo</p>
+        <p class="p">A website chat assistant that answers customers from a company’s own handbooks, rate sheets and website, cites the exact page, says it doesn’t know instead of guessing, and hands the chat to a person.</p>
+        <p class="l mono"><a class="go" href="https://counterhand-demo.vercel.app" target="_blank" rel="noopener">Visit counterhand-demo.vercel.app ↗</a></p>
+      </div>
+      <div class="b">
+        <p class="k mono">Behind the mist · <b>hybrid search, honest answers</b></p>
+        <p class="p">Next.js · TypeScript · PostgreSQL · pgvector · Drizzle · Clerk · Vercel AI SDK · OpenAI · Vitest · Playwright</p>
+      </div>
+    </div>
+  </section>
+  <section id="c2" aria-label="Stowa">
+    <div class="cap" data-ch="2">
+      <div class="f">
+        <p class="k mono"><b>02</b> · 2026 · Stowa · 3D cargo load planner</p>
+        <h2>A packing list in, <em>a load plan out.</em></h2>
+        <p class="r mono">3D · Three.js · On-device AI · Built solo</p>
+        <p class="p">Reads PDF, Excel and photographed packing lists in the browser, then packs every box in 3D by drop order, weight and handling rules. Play the loading sequence, move a box by hand, print the load sheet.</p>
+        <p class="l mono"><a class="go" href="https://stowa.vercel.app" target="_blank" rel="noopener">Visit stowa.vercel.app ↗</a></p>
+      </div>
+      <div class="b">
+        <p class="k mono">Behind the mist · <b>everything in the browser</b></p>
+        <p class="p">Next.js · three.js · React Three Fiber · Web Workers · pdf.js · SheetJS · Tesseract.js · WebLLM · pdf-lib</p>
+      </div>
+    </div>
+  </section>
+  <section id="c3" aria-label="Marenholt">
+    <div class="cap" data-ch="3">
+      <div class="f">
+        <p class="k mono"><b>03</b> · 2026 · Marenholt · Luxury brand website</p>
+        <h2>Furniture <em>shaped by nature.</em></h2>
+        <p class="r mono">WebGL · Headless Shopify · Headless WordPress</p>
+        <p class="p">A 96-page site for a furniture maker: a photo that ripples like water, collections grouped by nature, an atelier archive and a private client page. Every effect is hand-made in CSS, SVG, Canvas or WebGL.</p>
+        <p class="l mono"><a class="go" href="https://furniture-marenholt.vercel.app" target="_blank" rel="noopener">Visit furniture-marenholt.vercel.app ↗</a></p>
+      </div>
+      <div class="b">
+        <p class="k mono">Behind the mist · <b>motion made by hand</b></p>
+        <p class="p">Next.js · React · TypeScript · WebGL · Canvas · SVG · Shopify Storefront API · WPGraphQL · Lenis</p>
+      </div>
+    </div>
+  </section>
+  <section id="c4" aria-label="DASH">
+    <div class="cap" data-ch="4">
+      <div class="f">
+        <p class="k mono"><b>04</b> · 2026 · DASH · Food store</p>
+        <h2>Late night? <em>Still cooking.</em></h2>
+        <p class="r mono">E-commerce · Subscriptions · Admin panel</p>
+        <p class="p">A food store with quick add, one-page checkout, live order tracking, a weekly box, a Friday drop with a countdown, and a site that turns to night at 10 PM. Every order lands on the kitchen board in the admin.</p>
+        <p class="l mono"><a class="go" href="https://dash-food-store.vercel.app" target="_blank" rel="noopener">Visit dash-food-store.vercel.app ↗</a></p>
+      </div>
+      <div class="b">
+        <p class="k mono">Behind the mist · <b>store and kitchen</b></p>
+        <p class="p">Next.js · React · TypeScript · Tailwind CSS · Motion · Zustand · View Transitions · Playwright</p>
+      </div>
+    </div>
+  </section>
+  <section id="c5" aria-label="Midinote">
+    <div class="cap" data-ch="5">
+      <div class="f">
+        <p class="k mono"><b>05</b> · 2019 – 2021 · Midinote</p>
+        <h2>Notes that think <em>in threads.</em></h2>
+        <p class="r mono">Full-Stack Software Engineer · Built solo</p>
+        <p class="p">A tag-based note-taking app where notes grow into a living mind map. I built the whole product alone: offline sync, data model, visualisation and the servers underneath.</p>
+        <p class="l mono"><a class="go" href="https://midinote.me" target="_blank" rel="noopener">Visit midinote.me ↗</a></p>
+      </div>
+      <div class="b">
+        <p class="k mono">Behind the mist · <b>built alone, end to end</b></p>
+        <p class="p">React · Redux · Angular · Node · Express · CouchDB · PouchDB · Nginx · AWS</p>
+      </div>
+    </div>
+  </section>
+  <section id="c6" aria-label="Evidence Locker">
+    <div class="cap" data-ch="6">
+      <div class="f">
+        <p class="k mono"><b>06</b> · 2021 – 2024 · Evidence Locker</p>
+        <h2>Proof that <em>can’t be touched.</em></h2>
+        <p class="r mono">Full-Stack Developer</p>
+        <p class="p">Built with digital-forensics experts for law enforcement and legal teams. Cloud data is acquired and preserved in a forensically sound way, so every byte holds up in court.</p>
+        <p class="l mono"><a class="go" href="https://www.evidencelocker.com" target="_blank" rel="noopener">Visit evidencelocker.com ↗</a></p>
+      </div>
+      <div class="b">
+        <p class="k mono">Behind the mist · <b>forensically sound by design</b></p>
+        <p class="p">React · React Native · Node · Express · Python · Django · PHP · Jest · Cypress · AWS</p>
+      </div>
+    </div>
+  </section>
+  <section id="c7" aria-label="Contact">
+    <div class="cap" data-ch="7">
+      <div class="f">
+        <p class="k mono">Open to <b>senior and lead roles</b></p>
+        <a class="mail" href="mailto:coblerpeach354@gmail.com">coblerpeach354@gmail.com</a>
+        <p class="l mono"><a href="https://t.me/kailei0325" target="_blank" rel="noopener">Telegram ↗</a><a href="https://github.com/sk11001100" target="_blank" rel="noopener">GitHub ↗</a></p>
+      </div>
+      <div class="b">
+        <p class="k mono">Behind the mist · <b>the tools</b></p>
+        <p class="p">TypeScript, React, Next.js, Node, Python, Django, FastAPI, PHP, Laravel, C#, PostgreSQL, MongoDB, Redis, AWS, Docker, Kubernetes.</p>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+'use strict';
+const Q = new URLSearchParams(location.search);
+const canvas = document.getElementById('c');
+const gl = canvas.getContext('webgl2', {antialias: false, alpha: false, depth: false, premultipliedAlpha: false, powerPreference: 'high-performance'});
+const FLOATS = gl && gl.getExtension('EXT_color_buffer_float');
+if (!gl || !FLOATS || Q.has('nogl')) { document.getElementById('fail').style.display = 'grid'; throw new Error('no webgl2 float targets'); }
+
+/* ------------------------------------------------------------------ world, in metres
+   Ten bare bulbs hang at TOP on cords that vanish into the dark; the mist forms under them and falls to the floor (y = 0).
+   Curtain simulation: a vertical slice x ∈ [-CX, CX], y ∈ [0, CY].
+   Floor simulation: a top-down layer x, z ∈ [-FR, FR].                                */
+const CX = 4.6, CY = 4.1, NX = 224, NY = 100, FR = 6.0, NF = 192, TOP = 3.9, W2 = 3.1;
+const SCR = [-2.24, .9, 4.48, 2.52];   // the picture's rectangle in the curtain: x, y, width, height (m)
+const HC = 2 * CX / NX, HF = 2 * FR / NF;
+const NL = 10, LP = 5.6;   // lamps, and the power of each
+const LX = Array.from({length: NL}, (_, i) => -W2 + (i + .5) * W2 * 2 / NL);
+
+const COMMON = `
+precision highp float; precision highp int; precision highp sampler3D;
+${['norefl','nofloor','nofine','novents','nobulbs','nostone'].filter(k => Q.has(k)).map(k => '#define ' + k.toUpperCase()).join(String.fromCharCode(10))}
+#define CX ${CX.toFixed(3)}
+#define CY ${CY.toFixed(3)}
+#define FR ${FR.toFixed(3)}
+#define TOP ${TOP.toFixed(3)}
+#define W2 ${W2.toFixed(3)}
+#define NL ${NL}
+#define LP ${LP.toFixed(2)}
+const vec4 SCR = vec4(${SCR.join(', ')});
+uniform float uTime;
+float ss(float a, float b, float x){ float t = clamp((x - a)/(b - a), 0., 1.); return t*t*(3. - 2.*t); }
+float hash12(vec2 p){ vec3 p3 = fract(vec3(p.xyx)*.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y)*p3.z); }
+`;
+
+function sh(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+    console.error(gl.getShaderInfoLog(s) + '\n' + src.split('\n').map((l, i) => (i + 1) + ': ' + l).join('\n'));
+    throw new Error('shader');
+  }
+  return s;
+}
+function prog(fs) {
+  const p = gl.createProgram();
+  gl.attachShader(p, sh(gl.VERTEX_SHADER, '#version 300 es\n' + COMMON + VS_FULL));
+  gl.attachShader(p, sh(gl.FRAGMENT_SHADER, '#version 300 es\n' + COMMON + fs));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) { console.error(gl.getProgramInfoLog(p)); throw new Error('link'); }
+  const u = {}, n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+  for (let i = 0; i < n; i++) { const info = gl.getActiveUniform(p, i); u[info.name.replace('[0]', '')] = gl.getUniformLocation(p, info.name); }
+  return {p, u};
+}
+
+/* ------------------------------------------------------------------ shaders: simulation */
+const VS_FULL = `out vec2 vUV; void main(){ vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2)); vUV = p; gl_Position = vec4(p*2. - 1., 0., 1.); }`;
+
+// semi-Lagrangian step (the first half of MacCormack): carry the field back along its own velocity
+const FS_ADV = `uniform sampler2D uSrc; uniform float uDt; uniform vec2 uScale; in vec2 vUV; out vec4 o;
+void main(){ vec2 v = texture(uSrc, vUV).xy; o = texture(uSrc, vUV - uDt*v*uScale); }`;
+
+// MacCormack correction on the density only, clamped to the cell it came from so it never overshoots: keeps the mist crisp
+const FS_MAC = `uniform sampler2D uSrc, uHat; uniform float uDt; uniform vec2 uScale, uTexel; in vec2 vUV; out vec4 o;
+void main(){
+  vec4 src = texture(uSrc, vUV); vec2 v = src.xy;
+  vec4 hat = texture(uHat, vUV), bar = texture(uHat, vUV + uDt*v*uScale);
+  vec2 p = (vUV - uDt*v*uScale)/uTexel - .5, i = (floor(p) + .5)*uTexel;
+  vec4 a = texture(uSrc, i), b = texture(uSrc, i + vec2(uTexel.x, 0.)), c = texture(uSrc, i + vec2(0., uTexel.y)), d = texture(uSrc, i + uTexel);
+  o = vec4(hat.xy, clamp(hat.z + .5*(src.z - bar.z), min(min(a.z, b.z), min(c.z, d.z)), max(max(a.z, b.z), max(c.z, d.z))), hat.w);
+}`;
+
+const FS_CURL = `uniform sampler2D uS; uniform vec2 uTexel; uniform float uH; in vec2 vUV; out vec4 o;
+void main(){
+  vec2 L = texture(uS, vUV - vec2(uTexel.x, 0.)).xy, R = texture(uS, vUV + vec2(uTexel.x, 0.)).xy;
+  vec2 B = texture(uS, vUV - vec2(0., uTexel.y)).xy, T = texture(uS, vUV + vec2(0., uTexel.y)).xy;
+  o = vec4(((R.y - L.y) - (T.x - B.x))/(2.*uH), 0., 0., 1.);
+}`;
+
+// shared bits for forces: vorticity confinement and a slow curl-noise breeze
+const FORCE_LIB = `uniform sampler2D uS, uCurl; uniform sampler3D uN; uniform vec2 uTexel; uniform float uDt, uH; uniform vec4 uCur; uniform vec2 uCurV;
+in vec2 vUV; out vec4 o;
+vec2 confine(float eps){
+  float c = texture(uCurl, vUV).r;
+  float l = abs(texture(uCurl, vUV - vec2(uTexel.x, 0.)).r), r = abs(texture(uCurl, vUV + vec2(uTexel.x, 0.)).r);
+  float b = abs(texture(uCurl, vUV - vec2(0., uTexel.y)).r), t = abs(texture(uCurl, vUV + vec2(0., uTexel.y)).r);
+  vec2 N = vec2(r - l, t - b); N /= length(N) + 1e-4;
+  return eps*vec2(N.y, -N.x)*c;
+}
+vec2 breeze(vec2 w, float f, float z){
+  vec3 q = vec3(w*f, uTime*.035 + z); const float e = .02;
+  float n0 = texture(uN, q).r, nx = texture(uN, q + vec3(e, 0., 0.)).r, ny = texture(uN, q + vec3(0., e, 0.)).r;
+  return vec2(ny - n0, n0 - nx)/e*f;
+}
+`;
+
+// the curtain: nine vents between the lamps breathe out heavy mist; the jets merge into one sheet that sinks, curls at its edges
+// and drains into the floor layer. w carries the age of the mist, so a picture can belong to the mist that was lit with it
+const FS_FORCE_C = FORCE_LIB + `uniform float uSrcAmt;
+void main(){
+  vec4 s = texture(uS, vUV); vec2 v = s.xy; float d = s.z;
+  vec3 avg = (texture(uS, vUV - vec2(uTexel.x, 0.)).xyz + texture(uS, vUV + vec2(uTexel.x, 0.)).xyz + texture(uS, vUV - vec2(0., uTexel.y)).xyz + texture(uS, vUV + vec2(0., uTexel.y)).xyz)*.25;
+  v = mix(v, avg.xy, .04); d = mix(d, avg.z, .025);
+  vec2 w = vec2((vUV.x*2. - 1.)*CX, vUV.y*CY);
+  float side = (texture(uS, vUV - vec2(uTexel.x, 0.)).z + texture(uS, vUV + vec2(uTexel.x, 0.)).z)*.5;
+  d += max(side - d, 0.)*.07*ss(.4, 1.6, w.y);
+  v += confine(.25)*uDt;
+  v += breeze(w, .32, 0.)*uDt*(.3 + .7*d)*.06;
+  v.y -= 1.6*d*uDt; 
+  v.x += sign(w.x)*ss(.9, 2.6, abs(w.x))*ss(TOP - .2, TOP - 1., w.y)*ss(.2, 1., w.y)*1.7*d*uDt;
+                                  // cold mist is heavier than the air around it
+  v *= exp(-.35*uDt);
+  v.x *= exp(-uDt*.9*ss(.5, 1.4, w.y));
+  // each jet fans out sideways as it leaves its vent, so neighbours meet a hand's width below
+  float jet = 0., fan = 0.;
+  for (int i = 0; i < 9; i++){ float e = (w.x + W2 - float(i + 1)*W2*.2)/.17, g = exp(-e*e); jet += g; fan += e*g; }
+  float edge = ss(W2 - .2, W2 - .5, abs(w.x));
+  float sy = ss(TOP - .34, TOP - .16, w.y)*ss(TOP - .03, TOP - .1, w.y);
+  float k = min(jet, 1.)*sy*min(1., uDt*14.)*step(.001, uSrcAmt);
+  float amt = (.78 + .3*(texture(uN, vec3(w.x*.21, uTime*.03, .61)).g - .5) + .12*min(jet, 1.))*uSrcAmt;
+  d = mix(d, amt, k); v = mix(v, vec2(fan*.28*edge, -1.05), k);
+  float age = mix(min(s.w + uDt, 60.), 0., min(k*3., 1.));
+  d *= exp(-uDt*1.15*ss(.5, .02, w.y));              // what reaches the floor becomes the floor layer
+  d *= exp(-uDt*(.035 + 2.5*ss(CX - .7, CX, abs(w.x))));
+  float m = ss(uCur.z, uCur.z*.5, length(w - uCur.xy))*uCur.w;   // the hand
+  v = mix(v, uCurV, m); d *= 1. - m*.35;
+  o = vec4(v, max(d, 0.), age);
+}`;
+
+// the floor layer: shallow heavy gas. It spreads under its own weight, rolls, thins and evaporates before the dark edge
+const FS_FORCE_F = FORCE_LIB + `uniform sampler2D uC; uniform float uGlowIn;
+void main(){
+  vec4 s = texture(uS, vUV), L = texture(uS, vUV - vec2(uTexel.x, 0.)), R = texture(uS, vUV + vec2(uTexel.x, 0.));
+  vec4 B = texture(uS, vUV - vec2(0., uTexel.y)), T = texture(uS, vUV + vec2(0., uTexel.y));
+  vec2 v = s.xy; float h = s.z;
+  vec2 w = (vUV*2. - 1.)*FR;
+  float div = ((R.x - L.x) + (T.y - B.y))/(2.*uH);
+  v -= 1.3*vec2(R.z - L.z, T.z - B.z)/(2.*uH)*uDt;
+  v = mix(v, (L.xy + R.xy + B.xy + T.xy)*.25, .03);
+  h = max(h - h*div*uDt, 0.);
+  h = mix(h, (L.z + R.z + B.z + T.z)*.25, .05);
+  v += confine(.2)*uDt;
+  v += breeze(w, .22, .5)*uDt*.05;
+  // the foot of the curtain pours in
+  vec4 c = texture(uC, vec2(w.x*(.5/CX) + .5, .18/CY));
+  float zs = exp(-w.y*w.y*9.)*step(abs(w.x), CX);
+  float inflow = c.z*zs;
+  h += inflow*.85*uDt;
+  v += vec2(c.x*.8, clamp(w.y/.22, -1., 1.)*(.5 + abs(c.y))*2.6)*inflow*uDt;
+  v *= exp(-uDt*(.28 + 1.4*ss(.22, 0., h)));
+  float r = length(w);
+  h *= exp(-uDt*(.09 + .3*ss(1.8, 4.2, r) + 1.1*ss(3.9, 5.9, r)));
+  float m = ss(uCur.z, uCur.z*.35, length(w - uCur.xy))*uCur.w;   // the hand sweeps the floor
+  vec2 away = (w - uCur.xy)/(length(w - uCur.xy) + .05);
+  v = mix(v, uCurV + away*1.1, m*min(1., uDt*14.));
+  h *= 1. - m*min(1., uDt*5.);
+  float dye = s.w*exp(-uDt*.45) + inflow*uGlowIn*uDt*2.5;   // light of a picture that crashed into the floor
+  o = vec4(v, clamp(h, 0., 1.3), clamp(dye, 0., 2.));
+}`;
+
+const HAND_LIB = `uniform vec4 uCur; uniform vec2 uCurV; uniform vec2 uTexel; uniform float uH; in vec2 vUV; out vec4 o;
+float solid(vec2 uv){ vec2 w = vec2((uv.x*2. - 1.)*CX, uv.y*CY); return step(length(w - uCur.xy), uCur.z*.8)*uCur.w; }
+`;
+const FS_DIV = HAND_LIB + `uniform sampler2D uS;
+void main(){
+  vec2 dx = vec2(uTexel.x, 0.), dy = vec2(0., uTexel.y);
+  vec2 C = texture(uS, vUV).xy, L = texture(uS, vUV - dx).xy, R = texture(uS, vUV + dx).xy, B = texture(uS, vUV - dy).xy, T = texture(uS, vUV + dy).xy;
+  if (vUV.y - uTexel.y < 0.) B.y = -C.y;
+  if (vUV.y + uTexel.y > 1.) T.y = -C.y;
+  if (solid(vUV - dx) > .5) L = uCurV; if (solid(vUV + dx) > .5) R = uCurV;
+  if (solid(vUV - dy) > .5) B = uCurV; if (solid(vUV + dy) > .5) T = uCurV;
+  o = vec4(((R.x - L.x) + (T.y - B.y))/(2.*uH), 0., 0., 1.);
+}`;
+const FS_JAC = HAND_LIB + `uniform sampler2D uP, uDiv;
+void main(){
+  vec2 dx = vec2(uTexel.x, 0.), dy = vec2(0., uTexel.y);
+  float C = texture(uP, vUV).r, L = texture(uP, vUV - dx).r, R = texture(uP, vUV + dx).r, B = texture(uP, vUV - dy).r, T = texture(uP, vUV + dy).r;
+  if (vUV.x - uTexel.x < 0.) L = 0.; if (vUV.x + uTexel.x > 1.) R = 0.;     // open to the dark at the sides
+  if (vUV.y - uTexel.y < 0.) B = C; if (vUV.y + uTexel.y > 1.) T = C;       // floor and ceiling are walls
+  if (solid(vUV - dx) > .5) L = C; if (solid(vUV + dx) > .5) R = C;
+  if (solid(vUV - dy) > .5) B = C; if (solid(vUV + dy) > .5) T = C;
+  // screened: pressure only reaches ~0.2 m, because a real sheet of mist can also give way in depth
+  o = vec4((L + R + B + T - uH*uH*texture(uDiv, vUV).r)/(4. + uH*uH/.04), 0., 0., 1.);
+}`;
+const FS_GRAD = HAND_LIB + `uniform sampler2D uS, uP;
+void main(){
+  vec2 dx = vec2(uTexel.x, 0.), dy = vec2(0., uTexel.y);
+  vec4 s = texture(uS, vUV);
+  float L = texture(uP, vUV - dx).r, R = texture(uP, vUV + dx).r, B = texture(uP, vUV - dy).r, T = texture(uP, vUV + dy).r;
+  vec2 v = s.xy - vec2(R - L, T - B)/(2.*uH);
+  if (vUV.y - uTexel.y < 0. || vUV.y + uTexel.y > 1.) v.y = 0.;
+  vec2 w = vec2((vUV.x*2. - 1.)*CX, vUV.y*CY);
+  v = mix(v, uCurV, ss(uCur.z, uCur.z*.6, length(w - uCur.xy))*uCur.w);
+  o = vec4(v, s.zw);
+}`;
+
+/* ------------------------------------------------------------------ shaders: rendering */
+const RAY_LIB = `uniform mat4 uInvVP; uniform vec3 uCam; uniform vec4 uLamp[NL];
+vec3 rayDir(vec2 uv){ vec4 a = uInvVP*vec4(uv*2. - 1., 1., 1.); return normalize(a.xyz/a.w - uCam); }
+vec2 box(vec3 ro, vec3 rd, vec3 lo, vec3 hi){
+  vec3 ird = 1./(rd + sign(rd)*1e-6 + vec3(equal(rd, vec3(0.)))*1e-6);
+  vec3 a = (lo - ro)*ird, b = (hi - ro)*ird, mn = min(a, b), mx = max(a, b);
+  return vec2(max(max(mn.x, mn.y), max(mn.z, 0.)), min(min(mx.x, mx.y), mx.z));
+}
+float hg(float c, float g){ float g2 = g*g, x = 1. + g2 - 2.*g*c; return (1. - g2)/(12.566*x*sqrt(x)); }
+`;
+const PIC_LIB = `uniform sampler2D uImgN, uImgO, uBakN, uBakO; uniform float uSince, uDrop, uBack, uGain;
+vec3 still(sampler2D F, sampler2D B, vec2 uv){
+  float m = ss(0., .02, uv.x)*ss(1., .98, uv.x)*ss(0., .035, uv.y)*ss(1., .965, uv.y);
+  if (m <= 0.) return vec3(0.);
+  vec3 c = vec3(0.);
+  if (uBack < .999) c = texture(F, vec2(uv.x, 1. - uv.y)).rgb;
+  if (uBack > .001) c = mix(c, texture(B, vec2(1. - uv.x, 1. - uv.y)).rgb, uBack);
+  return c*c*m;
+}
+// the new picture and the old one where a ray crosses the plane of the curtain
+void pictureAt(vec3 p, out vec3 pn, out vec3 po){
+  vec2 uv = (p.xy - SCR.xy)/SCR.zw;
+  pn = still(uImgN, uBakN, uv)*uGain*(1. + .5*uBack);
+  po = uSince < 1e3 ? still(uImgO, uBakO, uv + vec2(0., uDrop/SCR.w))*uGain*ss(.1, 1.2, p.y) : vec3(0.);
+}
+`;
+
+// Light from the ten lamps, baked once a frame onto the two simulation grids, so the march reads it in one look-up.
+// Mist between a point and a lamp is measured along four upward slopes; each lamp reads the slope that points at it.
+// x: single scattering with its phase toward the camera; y, z: the softer, nearly even light of the higher orders.
+const LIGHT_LIB = RAY_LIB + `uniform sampler2D uS; in vec2 vUV; out vec4 o;
+const vec4 SL = vec4(-1.2, -.4, .4, 1.2);
+vec4 depthUp(vec2 uv){
+  vec4 tau = vec4(0.);
+  float rise = max(TOP - uv.y*CY, 0.);
+  for (int j = 0; j < 4; j++){
+    vec2 d = vec2(SL[j], 1.)*rise, b = uv + d*vec2(.5/CX, 1./CY);
+    float acc = 0.;
+    for (int k = 0; k < 12; k++) acc += texture(uS, mix(uv, b, (float(k) + .5)/12.)).z;
+    tau[j] = acc*length(d)/12.;
+  }
+  return tau*.55;
+}
+vec3 lampsAt(vec3 p, vec4 tau4){
+  vec3 rd = normalize(p - uCam);
+  float s1 = 0., s2 = 0., s3 = 0.;
+  for (int j = 0; j < NL; j++){
+    vec3 dv = p - uLamp[j].xyz; float d2 = dot(dv, dv); vec3 ld = dv*inversesqrt(d2);
+    float cone = ss(-.1, .6, -ld.y);
+    float f = clamp((-dv.x/max(-dv.y, .05) + 1.2)/.8, 0., 3.);
+    float t = dot(tau4, max(1. - abs(f - vec4(0., 1., 2., 3.)), 0.));
+    float E = uLamp[j].w*cone/(d2 + .5);
+    s1 += E*hg(dot(rd, ld), .5)*exp(-t); s2 += E*exp(-t*.28); s3 += E*exp(-t*.07);
+  }
+  return vec3(s1, s2, s3);
+}
+`;
+const FS_LIGHT = LIGHT_LIB + `void main(){
+  o = vec4(lampsAt(vec3((vUV.x*2. - 1.)*CX, vUV.y*CY, 0.), depthUp(vUV)), 1.);
+}`;
+// the floor layer, a little above the stone; near the foot of the curtain its light has come through the curtain
+const FS_LIGHTF = LIGHT_LIB + `void main(){
+  vec3 p = vec3((vUV.x*2. - 1.)*FR, .28, (vUV.y*2. - 1.)*FR);
+  float near = exp(-p.z*p.z*3.5)*step(abs(p.x), CX);
+  vec4 tau = near > .02 ? depthUp(vec2(p.x*(.5/CX) + .5, .3/CY))*near : vec4(0.);
+  o = vec4(lampsAt(p, tau), 1.);
+}`;
+
+const FS_VOL = RAY_LIB + PIC_LIB + `uniform sampler2D uC, uL, uF, uLF; uniform sampler3D uN; uniform vec4 uCurL; uniform float uFrame; uniform vec2 uRes;
+uniform vec3 uGlowCol;
+in vec2 vUV; layout(location = 0) out vec4 o; layout(location = 1) out vec4 o2;
+const vec3 LCOL = vec3(1., .87, .72);
+const float SIG = 3.4, ALB = .96;
+
+// curtain: the simulated slice, given thickness that grows as it falls, a slow sway, and two octaves of drifting detail
+#ifdef NOFINE
+#define NOFINEB true
+#else
+#define NOFINEB false
+#endif
+float densC(vec3 p, out vec4 L, bool fine, out float age){
+  L = vec4(0.); age = 0.;
+  vec2 uv = vec2(p.x*(.5/CX) + .5, p.y/CY);
+  vec4 s = textureLod(uC, uv, 0.);
+  if (s.z < .004) return 0.;
+  age = s.w;
+  float fall = ss(TOP, .1, p.y);
+  float hw = .08 + .36*fall;
+  float zc = (.025 + .13*fall)*sin(p.x*1.25 + p.y*.8 + uTime*.33) + .06*fall*sin(p.x*2.9 - uTime*.47);
+  float zz = (p.z - zc)/hw, prof = exp(-zz*zz*1.4);
+  if (prof < .015) return 0.;
+  vec3 a = texture(uN, vec3(p.x, p.y + uTime*.42, p.z)*.21 - vec3(s.xy, 0.)*.03).rgb;
+  vec3 b = fine && !NOFINEB ? texture(uN, vec3(p.x, p.y + uTime*.75, p.z*1.4)*.78 - vec3(s.xy, 0.)*.06 + a*.2).rgb : vec3(.5);
+  float base = s.z*prof;
+  float v = base*(.2 + 1.55*(a.r*.62 + a.g*.38));
+  // thin parts break up into wisps; a little less where the picture is, so it reads whole
+  vec2 sc = abs(p.xy - SCR.xy - SCR.zw*.5) - SCR.zw*.5;
+  float inPic = ss(.35, -.15, max(sc.x, sc.y));
+  v -= (1. - b.g*.65 - b.b*.35)*.42*(1. - .55*inPic)*(1. - ss(0., 1.1, v));
+  v += .1*inPic*base;
+  L = textureLod(uL, uv, 0.);
+  return max(v, 0.);
+}
+
+// floor layer: the simulated depth stands up as a rolling blanket; detail is carried along the flow (two-phase flow map)
+float densF(vec3 p, out float self, out vec2 vel, out float dye, out vec3 Lf){
+  self = 0.; vel = vec2(0.); dye = 0.; Lf = vec3(0.);
+  vec2 fuv = p.xz*(.5/FR) + .5;
+  vec4 s = textureLod(uF, fuv, 0.);
+  float h = s.z;
+  if (h < .006) return 0.;
+  float H = .09 + .5*sqrt(h), y = p.y/H;
+  if (y > 1.8) return 0.;
+  vel = s.xy; dye = s.w;
+  float ph = fract(uTime*.4), ph2 = fract(ph + .5), wb = abs(ph*2. - 1.);
+  vec3 fl = vec3(s.x, 0., s.y)*2.5*.3;
+  vec3 q = vec3(p.x, p.y*1.9 - uTime*.05, p.z)*.3;
+  vec3 a = mix(texture(uN, q - fl*ph).rgb, texture(uN, q - fl*ph2 + .37).rgb, wb);
+  float n = a.r*.6 + a.g*.4;
+  float prof = ss(1.4, .15, y + (n - .5)*1.35 + (a.b - .5)*.35);
+  float fm = 1. - ss(3.3, 5.8, length(p.xz));
+  self = (1. - ss(0., 1.3, y))*h*1.6;
+  Lf = textureLod(uLF, fuv, 0.).xyz;
+  return h*prof*(.15 + 2.3*n*n)*fm*1.5;
+}
+
+// the picture is projected into the mist from the front: it lights the mist where there is mist, and nothing where there is none.
+// When the channel changes, the old picture stays with the mist that carried it and falls away; the new one is lit in the new mist.
+// the curtain is thin, so one look-up where the ray crosses it serves every step through it
+void pictures(vec3 ro, vec3 rd, vec2 span, out vec3 pn, out vec3 po){
+  vec3 p = ro + rd*clamp(abs(rd.z) > 1e-4 ? -ro.z/rd.z : (span.x + span.y)*.5, span.x, span.y);
+  pictureAt(p, pn, po);
+}
+// how much of the picture a parcel of mist carries: it saturates early, so the picture reads evenly through the sheet
+float carry(float dens){ return min(dens*2.4, 1.25); }
+vec3 lit(vec3 pn, vec3 po, float age, float dens){
+  return mix(po, pn, ss(uSince + .3, uSince - .3, age))*carry(dens);
+}
+
+// baked lamp light, plus the faint light the cursor carries and a trace of ambient
+vec3 shade(vec3 L, vec3 p){
+  vec3 dc = p - uCurL.xyz;
+  return (L.x + L.y*.055 + L.z*.045)*LCOL + uCurL.w/(dot(dc, dc)*6. + .08)*vec3(1., .96, .9) + vec3(.0015, .0018, .0024);
+}
+
+void main(){
+  vec3 ro = uCam, rd = rayDir(vUV);
+  float tF = rd.y < 0. ? -ro.y/rd.y : 1e9;
+  vec2 A = box(ro, rd, vec3(-CX, 0., -.62), vec3(CX, CY, .62));
+  vec2 B = box(ro, rd, vec3(-5.8, 0., -5.8), vec3(5.8, .95, 5.8));
+  A.y = min(A.y, tF); B.y = min(B.y, tF);
+  bool ha = A.x < A.y, hb = B.x < B.y;
+  // up to two spans to march; if they overlap, march them as one
+  vec2 s1 = vec2(0.), s2 = vec2(0.);
+  if (ha && hb && A.x < B.y && B.x < A.y) s1 = vec2(min(A.x, B.x), max(A.y, B.y));
+  else if (ha && hb) { s1 = A.x < B.x ? A : B; s2 = A.x < B.x ? B : A; }
+  else if (ha) s1 = A; else if (hb) s1 = B;
+  const int N = 34;
+  int n1 = s2.y > s2.x ? N/2 : N;
+  float j = fract(52.9829189*fract(dot(gl_FragCoord.xy, vec2(.06711056, .00583715))) + uFrame*.61803);
+  vec3 col = vec3(0.); float T = 1.; vec2 W = vec2(0.);
+  for (int i = 0; i < N; i++){
+    bool first = i < n1;
+    vec2 sp = first ? s1 : s2; float cnt = float(first ? n1 : N - n1), k = float(first ? i : i - n1);
+    float dt = (sp.y - sp.x)/cnt;
+    if (dt <= 0.) continue;
+    vec3 p = ro + rd*(sp.x + (k + j)*dt);
+    vec4 Lc; float age; float dc = densC(p, Lc, true, age);
+    float self = 0.; vec2 fv; float dye = 0.; float df = 0.; vec3 Lf = vec3(0.);
+    #ifndef NOFLOOR
+    df = densF(p, self, fv, dye, Lf);
+    #endif
+    float d = dc + df;
+    if (d < .002) continue;
+    // the floor layer shades itself: light has come down through the mist above each point
+    vec3 Ls = (dc*Lc.xyz + df*Lf*vec3(exp(-self), exp(-self*.28), exp(-self*.07)))/d;
+    float sig = d*SIG, tr = exp(-sig*dt);
+    if (dc > .002){ float w = T*(1. - tr)*carry(dc)*(dc/d), f = ss(uSince + .3, uSince - .3, age); W += w*vec2(f, 1. - f); }
+    col += T*(shade(Ls, p)*ALB + uGlowCol*(dye*df/d))*(1. - tr);
+    T *= tr;
+    if (T < .01) break;
+  }
+  // blurred mirror of the curtain in the polished floor
+  #ifndef NOREFL
+  if (tF < 1e8 && T > .06){
+    vec3 P = ro + rd*tF;
+    float fm = 1. - ss(2.6, 5.7, length(P.xz));
+    if (fm > 0.){
+      vec2 jj = vec2(hash12(gl_FragCoord.xy + uFrame), hash12(gl_FragCoord.yx*1.37 + uFrame)) - .5;
+      vec3 r2 = reflect(rd, normalize(vec3(jj.x*.06, 1., jj.y*.06)));
+      vec2 R = box(P, r2, vec3(-CX, 0., -.62), vec3(CX, CY, .62));
+      if (R.x < R.y){
+        vec3 rn, ro2, rf = rd*vec3(1., -1., 1.); pictures(P, rf, box(P, rf, vec3(-CX, 0., -.62), vec3(CX, CY, .62)), rn, ro2);   // unjittered, so the mirrored picture does not sparkle
+        vec3 rc = vec3(0.); float rt = 1.; float dt = (R.y - R.x)/7.;
+        for (int i = 0; i < 7; i++){
+          vec3 p = P + r2*(R.x + (float(i) + j)*dt);
+          vec4 Lc; float age; float dc = densC(p, Lc, false, age);
+          if (dc < .002) continue;
+          float tr = exp(-dc*SIG*dt);
+          rc += rt*(shade(Lc.xyz, p)*ALB + lit(rn, ro2, age, dc)*.4)*(1. - tr); rt *= tr;
+          if (rt < .03) break;
+        }
+        float cv = clamp(-rd.y, 0., 1.), F = .04 + .96*pow(1. - cv, 5.);
+        col += T*rc*F*fm*.9;
+      }
+    }
+  }
+  #endif
+  #ifndef NOSTONE
+  if (tF < 1e8 && T > .01){
+    // dark polished stone, lit from the lamps above, fading to nothing at the rim
+    vec3 P = ro + rd*tF, V3 = -rd;
+    float fm = 1. - ss(2.6, 5.7, length(P.xz));
+    if (fm > 0.){
+      float st = texture(uN, vec3(P.xz*.07, .5)).r, st2 = texture(uN, vec3(P.xz*.6, .21)).g;
+      vec3 alb = vec3(.03, .029, .027)*(.75 + .5*st)*(.9 + .2*st2);
+      float a = .19 + .08*st2, a2 = a*a*a*a;
+      float c = 0.;
+      for (int j = 0; j < NL; j++){
+        vec3 Lv = uLamp[j].xyz - P; float d2 = dot(Lv, Lv); Lv *= inversesqrt(d2);
+        float E = uLamp[j].w*ss(-.1, .6, Lv.y)/(d2 + .5)*Lv.y;
+        vec3 H = normalize(Lv + V3); float nh = max(H.y, 0.), vh = max(dot(V3, H), 0.);
+        float q = nh*nh*(a2 - 1.) + 1., D = a2/(3.1416*q*q);
+        float f1 = 1. - vh, f2 = f1*f1, F = .04 + .96*f2*f2*f1;
+        float G = 1./(4.*max(Lv.y, .05)*max(V3.y, .05));
+        c += E*(D*F*G);
+        col += T*E*alb/3.1416*LCOL*fm;
+      }
+      col += T*c*LCOL*fm;
+    }
+  }
+  #endif
+  o = vec4(col, T); o2 = vec4(W, 0., 1.);
+}`;
+
+// a little history evens out the noise of the march
+const FS_RESOLVE = `uniform sampler2D uCur, uHist, uCur2, uHist2; uniform float uBlend; in vec2 vUV; layout(location = 0) out vec4 o; layout(location = 1) out vec4 o2;
+void main(){ o = mix(texture(uHist, vUV), texture(uCur, vUV), uBlend); o2 = mix(texture(uHist2, vUV), texture(uCur2, vUV), uBlend); }`;
+
+const FS_PRESENT = RAY_LIB + PIC_LIB + `uniform sampler2D uV, uW; uniform sampler3D uN; uniform float uExp; uniform vec2 uRes; uniform int uDbg; uniform sampler2D uDbgT;
+in vec2 vUV; out vec4 o;
+const vec3 LCOL = vec3(1., .87, .72);
+vec3 aces(vec3 x){ return clamp(x*(2.51*x + .03)/(x*(2.43*x + .59) + .14), 0., 1.); }
+void main(){
+  vec3 ro = uCam, rd = rayDir(vUV);
+  vec3 c = texture(uV, vUV).rgb;
+  // the picture, sharp, lit in as much mist as the ray passed through
+  if (abs(rd.z) > 1e-3){
+    vec2 Wn = texture(uW, vUV).xy;
+    vec3 pn, po; pictureAt(ro + rd*(-ro.z/rd.z), pn, po); c += pn*Wn.x + po*Wn.y;
+  }
+  // only rays passing near the row of lamps need the bulbs and the vents, and then only the nearest few
+  float pix = 2.2/uRes.y;                                  // about one pixel, in radians
+  int k = 0, b0 = 0, b1 = NL - 1, v0 = 0, v1 = NL - 2;
+  bool near = true;
+  if (abs(rd.z) > .25){
+    float t0 = -ro.z/rd.z, xz = ro.x + rd.x*t0, yz = ro.y + rd.y*t0;
+    near = t0 > 0. && yz > TOP - 1.2 && yz < TOP + 2.4 && abs(xz) < W2 + 1.2;
+    k = int(floor((xz + W2)/(W2*.2)));
+    b0 = clamp(k - 1, 0, NL - 1); b1 = clamp(k + 1, 0, NL - 1); v0 = clamp(k - 2, 0, NL - 2); v1 = clamp(k + 1, 0, NL - 2);
+  }
+  if (near){
+    // the bulbs, each on a thin cord that climbs out of its own light into the dark
+    #ifndef NOBULBS
+    for (int i = b0; i <= b1; i++){
+      vec3 lp = uLamp[i].xyz, v = lp - ro;
+      float g = uLamp[i].w/LP;
+      float tc = dot(v, rd); if (tc <= 0.) continue;
+      float a = sqrt(max(dot(v, v) - tc*tc, 0.))/tc;
+      // closest approach of the view ray to the vertical line through the bulb
+      vec2 o2 = ro.xz - lp.xz; float tl = -dot(o2, rd.xz)/dot(rd.xz, rd.xz);
+      float dl = length(o2 + rd.xz*tl), yl = ro.y + rd.y*tl - lp.y;
+      float wd = mix(.0035, .012, ss(.075, .05, yl));          // the socket is a little thicker than the cord
+      float pw = pix*tl;
+      float cov = clamp(wd/max(pw, 1e-4), .3, 1.)*ss(pw + wd, wd*.5, dl)*ss(.025, .04, yl)*ss(1.8, .3, yl);
+      c = mix(c, LCOL*(.3*g*exp(-yl*6.) + .0008*g), cov);
+      float glass = ss(.032, .022, a*tc);
+      c += LCOL*g*((.00004/(a*a + .000005)*exp(-a*40.) + .018*exp(-a*80.))*ss(.9, .25, a*tc) + glass*9.);
+    }
+    #endif
+    // the vents between the bulbs: small dark nozzles on thin pipes, caught at the edges by the bulbs either side
+    #ifndef NOVENTS
+    for (int i = v0; i <= v1; i++){
+      vec3 vp = vec3(-W2 + float(i + 1)*W2*.2, TOP, 0.);
+      vec2 o2 = ro.xz - vp.xz; float tl = -dot(o2, rd.xz)/dot(rd.xz, rd.xz);
+      float dl = length(o2 + rd.xz*tl), yl = ro.y + rd.y*tl - vp.y;
+      float noz = ss(.07, .055, yl);
+      float wd = mix(.0045, .021, noz), pw = pix*tl;
+      float cov = clamp(wd/max(pw, 1e-4), .3, 1.)*ss(pw + wd, wd*.5, dl)*ss(-.045, -.035, yl)*ss(2.2, .4, yl);
+      float g = .5*(uLamp[i].w + uLamp[i + 1].w)/LP;
+      float rim = ss(.25, 1., dl/wd);
+      vec3 vc = LCOL*(.003 + g*mix(.12*exp(-max(yl, 0.)*3.), .03 + .22*rim, noz));
+      c = mix(c, vc, cov);
+    }
+    #endif
+  }
+  if (uDbg == 1) c = texture(uDbgT, vUV).zzz;
+  if (uDbg == 2) c = vec3(texture(uDbgT, vUV).xy*.5 + .5, 0.);
+  c = aces(c*uExp);
+  c = pow(c, vec3(1./2.2));
+  c += (hash12(gl_FragCoord.xy + fract(uTime)*91.) - .5)/180.;
+  o = vec4(c, 1.);
+}`;
+
+/* ------------------------------------------------------------------ programs & targets */
+const P = {adv: prog(FS_ADV), mac: prog(FS_MAC), curl: prog(FS_CURL), forceC: prog(FS_FORCE_C), forceF: prog(FS_FORCE_F),
+  div: prog(FS_DIV), jac: prog(FS_JAC), grad: prog(FS_GRAD), light: prog(FS_LIGHT), lightF: prog(FS_LIGHTF), vol: prog(FS_VOL), resolve: prog(FS_RESOLVE), present: prog(FS_PRESENT)};
+const EMPTY = gl.createVertexArray();
+const H4 = {ifmt: gl.RGBA16F, fmt: gl.RGBA, type: gl.HALF_FLOAT}, H1 = {ifmt: gl.R16F, fmt: gl.RED, type: gl.HALF_FLOAT};
+function tex(w, h, o) {
+  const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texImage2D(gl.TEXTURE_2D, 0, o.ifmt, w, h, 0, o.fmt, o.type, null);
+  return t;
+}
+function target(w, h, o, a = 1) {
+  const t = tex(w, h, o), f = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, f); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0);
+  gl.viewport(0, 0, w, h); gl.clearColor(0, 0, 0, a); gl.clear(gl.COLOR_BUFFER_BIT);
+  return {t, f, w, h};
+}
+function target2(w, h) {
+  const t = tex(w, h, H4), t2 = tex(w, h, H4), f = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, f);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, t2, 0);
+  gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
+  gl.viewport(0, 0, w, h); gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT);
+  return {t, t2, f, w, h};
+}
+function drop(r) { if (r) { gl.deleteTexture(r.t); if (r.t2) gl.deleteTexture(r.t2); gl.deleteFramebuffer(r.f); } }
+const C = {s: [0, 1, 2].map(() => target(NX, NY, H4)), curl: target(NX, NY, H1), div: target(NX, NY, H1), p: [target(NX, NY, H1), target(NX, NY, H1)], light: target(NX, NY, H4)};
+const F = {s: [0, 1, 2].map(() => target(NF, NF, H4, 0)), curl: target(NF, NF, H1), light: target(NF, NF, H4)};
+const RT = {};
+
+function use(pr, U) {
+  gl.useProgram(pr.p);
+  for (const k in U) {
+    const l = pr.u[k]; if (l == null) continue;
+    const v = U[k];
+    if (typeof v === 'number') gl.uniform1f(l, v);
+    else if (v.i !== undefined) gl.uniform1i(l, v.i);
+    else if (v.v4) gl.uniform4fv(l, v.v4);
+    else if (v.v2) gl.uniform2fv(l, v.v2);
+    else if (v.length === 16) gl.uniformMatrix4fv(l, false, v);
+    else if (v.length === 2) gl.uniform2fv(l, v);
+    else if (v.length === 3) gl.uniform3fv(l, v);
+    else if (v.length === 4) gl.uniform4fv(l, v);
+  }
+}
+function pass(pr, tgt, U, texs) {
+  if (tgt) { gl.bindFramebuffer(gl.FRAMEBUFFER, tgt.f); gl.viewport(0, 0, tgt.w, tgt.h); }
+  else { gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.viewport(0, 0, canvas.width, canvas.height); }
+  use(pr, Object.assign({uTime: S.time}, U));
+  let unit = 0;
+  for (const k in texs) {
+    const l = pr.u[k]; if (l == null) continue;
+    gl.activeTexture(gl.TEXTURE0 + unit);
+    if (texs[k] === NOISE) gl.bindTexture(gl.TEXTURE_3D, NOISE.t); else gl.bindTexture(gl.TEXTURE_2D, texs[k]);
+    gl.uniform1i(l, unit++);
+  }
+  gl.bindVertexArray(EMPTY); gl.drawArrays(gl.TRIANGLES, 0, 3);
+}
+
+/* ------------------------------------------------------------------ 3D noise: an 8×8 atlas of 64² slices */
+const NOISE = {t: null};
+NOISE.p = new Promise((res, rej) => {
+  const im = new Image();
+  im.onload = () => {
+    const cv = document.createElement('canvas'); cv.width = cv.height = 512;
+    const cx = cv.getContext('2d', {willReadFrequently: true}); cx.drawImage(im, 0, 0);
+    const src = cx.getImageData(0, 0, 512, 512).data, n = 64, out = new Uint8Array(n * n * n * 4);
+    for (let z = 0; z < n; z++) for (let y = 0; y < n; y++) {
+      const sy = (z >> 3) * n + y, sx = (z & 7) * n;
+      out.set(src.subarray((sy * 512 + sx) * 4, (sy * 512 + sx + n) * 4), ((z * n + y) * n) * 4);
+    }
+    const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_3D, t);
+    gl.texImage3D(gl.TEXTURE_3D, 0, gl.RGBA8, n, n, n, 0, gl.RGBA, gl.UNSIGNED_BYTE, out);
+    gl.generateMipmap(gl.TEXTURE_3D);
+    gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR); gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    for (const w of [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T, gl.TEXTURE_WRAP_R]) gl.texParameteri(gl.TEXTURE_3D, w, gl.REPEAT);
+    NOISE.t = t; res();
+  };
+  im.onerror = rej; im.src = 'assets/noise3d.png';
+});
+
+/* ------------------------------------------------------------------ camera */
+function persp(fovy, asp, n, f) { const t = 1 / Math.tan(fovy / 2), m = new Float32Array(16); m[0] = t / asp; m[5] = t; m[10] = (f + n) / (n - f); m[11] = -1; m[14] = 2 * f * n / (n - f); return m; }
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], mul = (a, s) => [a[0] * s, a[1] * s, a[2] * s];
+const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const norm = a => mul(a, 1 / Math.hypot(...a));
+function look(e, t) {
+  const f = norm(sub(t, e)), r = norm(cross(f, [0, 1, 0])), u = cross(r, f);
+  return new Float32Array([r[0], u[0], -f[0], 0, r[1], u[1], -f[1], 0, r[2], u[2], -f[2], 0, -dot(r, e), -dot(u, e), dot(f, e), 1]);
+}
+function mm(a, b) { const o = new Float32Array(16); for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { let s = 0; for (let k = 0; k < 4; k++) s += a[k * 4 + j] * b[i * 4 + k]; o[i * 4 + j] = s; } return o; }
+function inv(m) {
+  const a = m, o = new Float32Array(16);
+  const b00 = a[0] * a[5] - a[1] * a[4], b01 = a[0] * a[6] - a[2] * a[4], b02 = a[0] * a[7] - a[3] * a[4], b03 = a[1] * a[6] - a[2] * a[5], b04 = a[1] * a[7] - a[3] * a[5], b05 = a[2] * a[7] - a[3] * a[6];
+  const b06 = a[8] * a[13] - a[9] * a[12], b07 = a[8] * a[14] - a[10] * a[12], b08 = a[8] * a[15] - a[11] * a[12], b09 = a[9] * a[14] - a[10] * a[13], b10 = a[9] * a[15] - a[11] * a[13], b11 = a[10] * a[15] - a[11] * a[14];
+  const d = 1 / (b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06);
+  o[0] = (a[5] * b11 - a[6] * b10 + a[7] * b09) * d; o[1] = (a[2] * b10 - a[1] * b11 - a[3] * b09) * d; o[2] = (a[13] * b05 - a[14] * b04 + a[15] * b03) * d; o[3] = (a[10] * b04 - a[9] * b05 - a[11] * b03) * d;
+  o[4] = (a[6] * b08 - a[4] * b11 - a[7] * b07) * d; o[5] = (a[0] * b11 - a[2] * b08 + a[3] * b07) * d; o[6] = (a[14] * b02 - a[12] * b05 - a[15] * b01) * d; o[7] = (a[8] * b05 - a[10] * b02 + a[11] * b01) * d;
+  o[8] = (a[4] * b10 - a[5] * b08 + a[7] * b06) * d; o[9] = (a[1] * b08 - a[0] * b10 - a[3] * b06) * d; o[10] = (a[12] * b04 - a[13] * b02 + a[15] * b00) * d; o[11] = (a[9] * b02 - a[8] * b04 - a[11] * b00) * d;
+  o[12] = (a[5] * b07 - a[4] * b09 - a[6] * b06) * d; o[13] = (a[0] * b09 - a[1] * b07 + a[2] * b06) * d; o[14] = (a[13] * b01 - a[12] * b03 - a[14] * b00) * d; o[15] = (a[8] * b03 - a[9] * b01 + a[10] * b00) * d;
+  return o;
+}
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x)), lerp = (a, b, t) => a + (b - a) * t;
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+
+const S = {time: 0, frame: 0, yaw: +Q.get('yaw') || 0, yawV: 0, yawTo: null, ch: -1, vi: 0, vT: 0, lv: 1, q: +Q.get('q') || .5, fixedQ: Q.has('q'), fpsAcc: 0, fpsN: 0,
+  mouse: null, drag: null, cur: null, curV: [0, 0, 0], moved: 0, blend: 1, ci: 0, fi: 0};
+const CAM = {};
+function camera() {
+  const asp = canvas.width / canvas.height, fov = 40 * Math.PI / 180;
+  const hfov = 2 * Math.atan(Math.tan(fov / 2) * asp);
+  const dist = Math.max(9.9, 3.95 / Math.tan(hfov / 2)), pitch = .135;
+  const tgt = [0, asp < 1 ? .75 : 1.8, 0];   // on a tall screen the curtain sits higher, above the words
+  const e = [tgt[0] + dist * Math.sin(S.yaw) * Math.cos(pitch), tgt[1] + dist * Math.sin(pitch), tgt[2] + dist * Math.cos(S.yaw) * Math.cos(pitch)];
+  const VP = mm(persp(fov, asp, .1, 80), look(e, tgt));
+  CAM.e = e; CAM.VP = VP; CAM.inv = inv(VP);
+}
+function ray(px, py) {
+  const x = px / innerWidth * 2 - 1, y = 1 - py / innerHeight * 2, m = CAM.inv;
+  const v = [m[0] * x + m[4] * y + m[8] + m[12], m[1] * x + m[5] * y + m[9] + m[13], m[2] * x + m[6] * y + m[10] + m[14], m[3] * x + m[7] * y + m[11] + m[15]];
+  return norm(sub([v[0] / v[3], v[1] / v[3], v[2] / v[3]], CAM.e));
+}
+// where the cursor meets the mist: the curtain's plane, or the floor in front of it
+function cursorWorld(px, py) {
+  const ro = CAM.e, rd = ray(px, py);
+  const tc = Math.abs(rd[2]) > 1e-4 ? -ro[2] / rd[2] : 1e9, tf = rd[1] < -1e-4 ? -ro[1] / rd[1] : 1e9;
+  const pc = [ro[0] + rd[0] * tc, ro[1] + rd[1] * tc, 0];
+  if (tc > 0 && tc < tf && pc[1] <= CY && Math.abs(pc[0]) < CX) return {p: pc, on: 'curtain'};
+  if (tf < 1e8) { const pf = [ro[0] + rd[0] * tf, 0, ro[2] + rd[2] * tf]; if (Math.hypot(pf[0], pf[2]) < FR) return {p: pf, on: 'floor'}; }
+  return null;
+}
+
+/* ------------------------------------------------------------------ input */
+const ring = document.getElementById('ring'), hint = document.getElementById('hint');
+if (Q.has('noring')) ring.style.display = 'none';
+if (Q.has('clean')) document.querySelectorAll('.hud,.cap,#ring').forEach(e => e.style.display = 'none');
+addEventListener('pointermove', e => {
+  S.mouse = [e.clientX, e.clientY];
+  S.overUI = !!(e.target.closest && e.target.closest('a,button'));
+  ring.classList.toggle('link', S.overUI);
+  ring.style.transform = `translate(${e.clientX}px,${e.clientY}px)`; ring.classList.add('on');
+  if (S.drag) {
+    const dx = e.clientX - S.drag.x; S.drag.x = e.clientX;
+    if (Math.abs(e.clientX - S.drag.x0) > 4) S.drag.moved = true;
+    if (S.drag.moved) { S.yawV = -dx * .0042; S.yaw += S.yawV; S.yawTo = null; }
+  }
+  if (S.time > 3) S.moved += Math.hypot(e.movementX || 0, e.movementY || 0);
+});
+addEventListener('pointerdown', e => { if (e.target.closest('a,button')) return; S.drag = {x: e.clientX, x0: e.clientX, moved: false}; ring.classList.add('drag'); });
+const walkBtn = document.getElementById('walk');
+walkBtn.addEventListener('click', () => { const k = Math.round(S.yaw / Math.PI); S.yawTo = (k % 2 === 0 ? k + 1 : k - 1) * Math.PI; S.yawV = 0; });
+addEventListener('keydown', e => {
+  const k = {ArrowDown: 1, PageDown: 1, ArrowUp: -1, PageUp: -1}[e.key];
+  if (k) { e.preventDefault(); scrollTo({top: clamp(chFromScroll() + k, 0, LAST) * innerHeight, behavior: 'smooth'}); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') walkBtn.click();
+});
+addEventListener('pointerup', e => {
+  // a click (not a drag) on the picture opens what it shows
+  if (S.drag && !S.drag.moved && !e.target.closest('a,button') && picAt(e.clientX, e.clientY)) { const u = linkOf(S.ch); if (u.startsWith('mailto:')) location.href = u; else open(u, '_blank', 'noopener'); }
+  S.drag = null; ring.classList.remove('drag');
+});
+addEventListener('pointerleave', () => { S.mouse = null; ring.classList.remove('on'); });
+document.addEventListener('mouseleave', () => { S.mouse = null; ring.classList.remove('on'); });
+if (Q.has('cur')) { const [x, y] = Q.get('cur').split(',').map(Number); S.fakeCur = [x, y]; }
+
+/* ------------------------------------------------------------------ resize */
+function resize() {
+  const dpr = Math.min(devicePixelRatio || 1, 1.5);
+  canvas.width = Math.max(2, Math.round(innerWidth * dpr)); canvas.height = Math.max(2, Math.round(innerHeight * dpr));
+  volTargets();
+}
+function volTargets() {
+  const w = Math.max(2, Math.round(canvas.width * S.q)), h = Math.max(2, Math.round(canvas.height * S.q));
+  if (RT.w === w && RT.h === h) return;
+  drop(RT.cur); if (RT.hist) RT.hist.forEach(drop);
+  RT.w = w; RT.h = h; RT.cur = target2(w, h); RT.hist = [target2(w, h), target2(w, h)]; RT.hi = 0; S.blend = 1;
+}
+
+/* ------------------------------------------------------------------ simulation steps */
+const CT = [1 / NX, 1 / NY], CS = [1 / (2 * CX), 1 / CY], FT = [1 / NF, 1 / NF], FSC = [1 / (2 * FR), 1 / (2 * FR)];
+function stepCurtain(dt, hand, srcAmt) {
+  let [a, b, c] = C.s;
+  const H = {uCur: hand.c, uCurV: hand.cv, uTexel: CT, uH: HC};
+  pass(P.adv, b, {uDt: dt, uScale: CS}, {uSrc: a.t});
+  pass(P.mac, c, {uDt: dt, uScale: CS, uTexel: CT}, {uSrc: a.t, uHat: b.t});
+  pass(P.curl, C.curl, {uTexel: CT, uH: HC}, {uS: c.t});
+  pass(P.forceC, a, Object.assign({uDt: dt, uSrcAmt: srcAmt}, H), {uS: c.t, uCurl: C.curl.t, uN: NOISE});
+  if (Q.has('nop')) { C.s = [a, b, c]; return; }
+  pass(P.div, C.div, H, {uS: a.t});
+  for (let i = 0; i < 24; i++) pass(P.jac, C.p[(i + 1) & 1], H, {uP: C.p[i & 1].t, uDiv: C.div.t});
+  pass(P.grad, b, H, {uS: a.t, uP: C.p[0].t});
+  C.s = [b, a, c];
+}
+function stepFloor(dt, hand) {
+  const [a, b, c] = F.s;
+  pass(P.adv, b, {uDt: dt, uScale: FSC}, {uSrc: a.t});
+  pass(P.mac, c, {uDt: dt, uScale: FSC, uTexel: FT}, {uSrc: a.t, uHat: b.t});
+  pass(P.curl, F.curl, {uTexel: FT, uH: HF}, {uS: c.t});
+  pass(P.forceF, a, {uDt: dt, uTexel: FT, uH: HF, uCur: hand.f, uCurV: hand.fv, uGlowIn: SHOW.glowIn || 0}, {uS: c.t, uCurl: F.curl.t, uC: C.s[0].t, uN: NOISE});
+}
+const NOHAND = {c: [0, 0, 1, 0], cv: [0, 0], f: [0, 0, 1, 0], fv: [0, 0]};
+
+/* ------------------------------------------------------------------ the lamps come on one by one, then the mist starts to gather */
+const INTRO = Q.has('warm') ? 0 : 1, HOLD = Q.has('hold');   // ?hold: frames advance only through __tick(n), for recording
+const ORDER = [4, 7, 1, 5, 9, 2, 6, 0, 8, 3];   // they come on out of order, like old filaments warming up
+function lampGlow(i, t) { const k = ORDER.indexOf(i); return smooth(.3 + k * .13, .55 + k * .13, t); }
+function sourceAt(t) { return smooth(1., 2.2, t); }
+
+/* ------------------------------------------------------------------ frame */
+let last = 0;
+function frame(now) {
+  const dt = Math.min(.05, Math.max(.001, (now - last) / 1000)); last = now;
+  S.time += dt; S.frame++;
+  const t = INTRO ? S.time : 99;
+  if (S.yawTo !== null) { S.yaw += (S.yawTo - S.yaw) * Math.min(1, dt * 1.6); if (Math.abs(S.yawTo - S.yaw) < .002) S.yawTo = null; }
+  else if (!S.drag) { S.yawV *= Math.exp(-dt * 4); S.yaw += S.yawV * dt * 60 * .5; }
+  const behind = Math.cos(S.yaw) < 0;
+  if (behind !== S.behind) { S.behind = behind; document.body.classList.toggle('behind', behind); walkBtn.setAttribute('aria-pressed', behind); walkBtn.lastChild.textContent = behind ? 'Walk back to the front' : 'Walk behind the mist'; }
+  camera();
+
+  // the hand: where the cursor is in the world, and how fast it moves there
+  if (Q.has('curmove')) S.fakeCur = [.5 + .2 * Math.sin(S.time * 1.3), .42 + .05 * Math.sin(S.time * 3.1)];
+  const m = S.fakeCur ? [S.fakeCur[0] * innerWidth, S.fakeCur[1] * innerHeight] : S.mouse;
+  const cw = m && !(S.drag && S.drag.moved) && !S.overUI ? cursorWorld(m[0], m[1]) : null;
+  const hand = {c: [0, 0, 1, 0], cv: [0, 0], f: [0, 0, 1, 0], fv: [0, 0]};
+  let curL = [0, -9, 0, 0];
+  if (cw) {
+    const p = cw.p, pr = S.cur || p;
+    const v = [(p[0] - pr[0]) / dt, (p[1] - pr[1]) / dt, (p[2] - pr[2]) / dt].map(x => clamp(x, -7, 7));
+    S.curV = S.curV.map((x, i) => lerp(x, v[i], .5));
+    S.cur = p;
+    if (cw.on === 'curtain') {
+      hand.c = [p[0], p[1], .3, 1]; hand.cv = [S.curV[0], S.curV[1]];
+      if (p[1] < .7) { hand.f = [p[0], 0, .45, 1 - p[1] / .7]; hand.fv = [S.curV[0], 0]; }
+      curL = [p[0], p[1], .12, .035];
+    } else {
+      hand.f = [p[0], p[2], .55, 1]; hand.fv = [S.curV[0], S.curV[2]];
+      curL = [p[0], .25, p[2], .03];
+    }
+  } else S.cur = null;
+  const onPic = !!(m && !(S.drag && S.drag.moved) && !S.overUI && picAt(m[0], m[1]));
+  if (onPic !== S.onPic) {
+    S.onPic = onPic; ring.classList.toggle('visit', onPic); canvas.style.cursor = '';
+    if (onPic) document.getElementById('rl').textContent = S.ch === LAST ? 'Write ↗' : 'Visit ↗';
+  }
+
+  const sdt = Math.min(dt, 1 / 30);
+  stepCurtain(sdt, hand, sourceAt(t));
+  for (let k = 0, n = Math.ceil(sdt * 60 - .01); k < n; k++) stepFloor(sdt / n, hand);
+
+  // lamps, each filament with a faint flicker of its own
+  // the lamps dim a little once a picture is lit
+  S.lvTo = S.ch > 0 ? .42 : .58; S.lvC = S.lvC === undefined ? S.lvTo : lerp(S.lvC, S.lvTo, Math.min(1, dt * 1.5));
+  S.lv = lerp(1, S.lvC, smooth(3.2, 5.5, t));
+  const lamps = []; for (let i = 0; i < NL; i++) lamps.push(LX[i], TOP, 0, LP * S.lv * lampGlow(i, t) * (1 + .025 * Math.sin(S.time * (5.1 + i * 1.7) + i * 2.3) * Math.sin(S.time * (2.3 + i * .9))));
+  const RU = {uInvVP: CAM.inv, uCam: CAM.e, uLamp: {v4: lamps}};
+  pass(P.light, C.light, RU, {uS: C.s[0].t});
+  pass(P.lightF, F.light, RU, {uS: C.s[0].t});
+
+  const PU = pictureUniforms(), PT = {uImgN: SHOW.fN, uImgO: SHOW.fO, uBakN: SHOW.bN, uBakO: SHOW.bO};
+  pass(P.vol, RT.cur, Object.assign({uCurL: curL, uFrame: S.frame % 64, uRes: [RT.w, RT.h]}, RU, PU),
+    {uC: C.s[0].t, uL: C.light.t, uF: F.s[0].t, uLF: F.light.t, uN: NOISE, uImgN: SHOW.fN, uImgO: SHOW.fO, uBakN: SHOW.bN, uBakO: SHOW.bO});
+  const moving = Math.abs(S.yawV) > .0005 || (S.drag && S.drag.moved);
+  const hi = RT.hi, ho = 1 - hi;
+  pass(P.resolve, RT.hist[ho], {uBlend: moving ? 1 : S.blend}, {uCur: RT.cur.t, uHist: RT.hist[hi].t, uCur2: RT.cur.t2, uHist2: RT.hist[hi].t2});
+  RT.hi = ho; S.blend = .32;
+
+  const dbg = Q.get('dbg');
+  pass(P.present, null, Object.assign({uExp: +Q.get('exp') || .9, uRes: [canvas.width, canvas.height],
+    uDbg: {i: dbg === 'c' || dbg === 'f' ? 1 : dbg === 'cv' || dbg === 'fv' ? 2 : 0}}, RU, PU),
+    Object.assign({uV: RT.hist[ho].t, uW: RT.hist[ho].t2, uN: NOISE, uDbgT: dbg && dbg[0] === 'f' ? F.s[0].t : C.s[0].t}, PT));
+
+  if (S.time > 5.5 && !S.hinted) { S.hinted = true; hint.classList.add('on'); }
+  if ((S.moved > 900 || S.ch > 0) && S.hinted && !S.hintOff) { S.hintOff = true; hint.classList.remove('on'); }
+
+  // quality: march the mist at a smaller size when frames run long, larger when there is room
+  if (S.time > 3 && !S.fixedQ && !document.hidden) {
+    S.fpsAcc += dt; S.fpsN++;
+    if (S.fpsN >= 90) {
+      const ms = S.fpsAcc / S.fpsN * 1000;
+      const q = ms > 18.2 ? Math.max(.28, S.q - (ms > 26 ? .1 : .05)) : (ms < 15 && S.q < .62 && !S.capped ? Math.min(.62, S.q + .04) : S.q);
+      if (ms > 18.2 && q < S.q) S.capped = S.tuned;
+      if (q !== S.q) { S.tuned = true; S.q = q; volTargets(); }
+      S.fpsAcc = 0; S.fpsN = 0;
+    }
+  }
+  if (Q.has('fps')) { S.fT = (S.fT || 0) + dt; S.fC = (S.fC || 0) + 1; if (S.fT > 1) { document.title = (S.fC / S.fT).toFixed(1) + ' fps q' + S.q.toFixed(2); S.fT = 0; S.fC = 0; } }
+  if (!HOLD) requestAnimationFrame(frame);
+}
+
+// debugging: read a few texels of a simulation target
+window.__peek = (name, n = 6, fy = .5) => {
+  const t = {c: C.s[0], f: F.s[0], fc: F.curl, cl: C.light}[name]; gl.bindFramebuffer(gl.FRAMEBUFFER, t.f);
+  const out = [], buf = new Float32Array(4);
+  for (let i = 0; i < n; i++) { const x = Math.floor(t.w * (i + .5) / n), y = Math.floor(t.h * fy); gl.readPixels(x, y, 1, 1, gl.RGBA, gl.FLOAT, buf); out.push([...buf].map(v => +v.toFixed(3))); }
+  return JSON.stringify(out);
+};
+window.__steps = (k, floorOnly) => { for (let i = 0; i < k; i++) { if (!floorOnly) stepCurtain(1 / 30, NOHAND, 1); stepFloor(1 / 60, NOHAND); } };
+/* ------------------------------------------------------------------ what the mist shows */
+const NAVS = ['Lei Kai', 'Counterhand', 'Stowa', 'Marenholt', 'DASH', 'Midinote', 'Evidence Locker', 'Contact'], LAST = NAVS.length - 1;
+const SHOTS = ['counterhand', 'stowa', 'marenholt', 'dash', 'midinote', 'evidencelocker'];
+const BACKS = [
+  {t: 'How I work', rules: [['Change little.', 'Land it right.'], ['Leave nothing behind.', 'No dead code, no mystery config.'], ['See in the dark.', 'Logs, metrics and alerts before launch day.'],
+    ['Earn every tool.', 'Learn it deeply. Use it where it pays.'], ['Teach what I know.', 'Reviews that teach, standards that outlive me.']]},
+  {t: 'Hybrid search, honest answers', rows: [[['PDF · Word · web crawl', 'documents in']], [['Full-text · BM25', 'the words'], ['pgvector', 'the meaning']], [['Rank fusion', 'one list, every answer cited']],
+    [['Chat widget', 'one line on any site'], ['Clerk', 'each company sealed off']], [['Human handoff', 'the team replies in the chat']]], foot: '96 unit tests · 15 of 15 on the accuracy set · the cost of every AI call logged'},
+  {t: 'Everything in the browser', rows: [[['pdf.js · SheetJS', 'PDF and Excel'], ['Tesseract', 'scans and photos']], [['WebLLM · WebGPU', 'optional on-device AI']], [['3D packer', '16 strategies, in a worker']],
+    [['three.js · R3F', 'turn, play, drag a box']], [['pdf-lib', 'the 5-page load sheet'], ['Share link', 'the whole plan in the URL']]], foot: '116 units packed in half a second · 87 unit tests · no server, no keys'},
+  {t: 'Motion made by hand', rows: [[['WebGL shader', 'the water ripple']], [['Canvas · SVG', 'wave edges, the drawn logo']], [['Next.js', 'every page built ahead']],
+    [['Shopify', 'cart and checkout'], ['WordPress', 'journal and careers']], [['Sample data', 'runs with nothing connected']]], foot: 'One animation library · reduced motion respected · checked on all 96 pages'},
+  {t: 'Store and kitchen', rows: [[['Store', 'quick add, one-page checkout']], [['Weekly Box', 'subscriptions'], ['Friday Drop', 'countdown and waitlist']], [['Prices', 'recalculated on the server']],
+    [['Admin', 'kitchen board, live orders']], [['AVIF · WebP', 'sized for every screen']]], foot: 'Next.js · React · Motion · Zustand · 20 end-to-end checks'},
+  {t: 'Built alone, end to end', rows: [[['React · Redux', 'web client'], ['Angular', 'second client']], [['PouchDB', 'offline, on the device']], [['CouchDB', 'two-way sync']],
+    [['Node · Express', 'API']], [['Nginx · AWS', 'the servers underneath']]], foot: 'Data model, sync, mind-map visualisation, servers: one engineer'},
+  {t: 'Forensically sound by design', rows: [[['Phone reports', 'Cellebrite'], ['Workspace exports', 'Slack'], ['Cloud accounts', 'acquired']], [['Python · Django', 'acquisition and parsing']],
+    [['SHA-256 · custody', 'sealed on arrival']], [['Node · Express', 'API'], ['AWS', 'encrypted storage']], [['React · React Native', 'search, tag, produce']]], foot: 'Tested with Jest and Cypress · built with forensics experts'},
+  {t: 'The tools', tools: [['Frontend', 'TypeScript · React · Next.js · Redux · React Native · Angular · Vue'], ['Backend', 'Node.js · Python · Django · FastAPI · PHP · Laravel · C#'],
+    ['Data', 'PostgreSQL · MySQL · MongoDB · Redis · CouchDB'], ['Cloud', 'AWS · Docker · Kubernetes · Kafka · CI/CD'], ['AI', 'LLMs · RAG pipelines · inference services']]}
+];
+const LINKS = [null, 'https://counterhand-demo.vercel.app', 'https://stowa.vercel.app', 'https://furniture-marenholt.vercel.app', 'https://dash-food-store.vercel.app',
+  'https://midinote.me', 'https://www.evidencelocker.com', 'mailto:coblerpeach354@gmail.com'];
+function linkOf(ch) { return LINKS[ch]; }
+// is this point of the screen on the picture (front or back) of a chapter that links somewhere?
+function picAt(px, py) {
+  const w = S.ready && linkOf(S.ch) ? cursorWorld(px, py) : null;
+  if (!w || w.on !== 'curtain') return false;
+  const u = (w.p[0] * (Math.cos(S.yaw) < 0 ? -1 : 1) - SCR[0]) / SCR[2], v = (w.p[1] - SCR[1]) / SCR[3];
+  return u > 0 && u < 1 && v > 0 && v < 1;
+}
+const IMG = {};
+const TW = 1024, TH = 576, TS = 1600 / 1024;
+const SERIF = 'MSerif, Georgia, serif', MONO = 'MMono, ui-monospace, monospace';
+function card() { const cv = document.createElement('canvas'); cv.width = TW * TS; cv.height = TH * TS; const g = cv.getContext('2d'); g.scale(TS, TS); g.fillStyle = '#000'; g.fillRect(0, 0, TW, TH); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; return [cv, g]; }
+function spaced(g, text, x, y, sp) { const w = [...text].reduce((a, ch) => a + g.measureText(ch).width + sp, -sp); let cx = x - w / 2; g.textAlign = 'left'; for (const ch of text) { g.fillText(ch, cx, y); cx += g.measureText(ch).width + sp; } g.textAlign = 'center'; }
+function drawFront(ch) {
+  const [cv, g] = card();
+  if (ch === 0) {
+    g.font = `400 250px ${SERIF}`; g.fillText('Lei Kai', TW / 2, TH * .5);
+  } else if (ch >= 1 && ch <= SHOTS.length) {
+    const im = IMG[SHOTS[ch - 1]]; if (im) { const k = Math.min(TW / im.width, TH / im.height), w = im.width * k, h = im.height * k; g.drawImage(im, (TW - w) / 2, (TH - h) / 2, w, h); }
+  } else {
+    g.font = `italic 400 176px ${SERIF}`; g.fillText('Write to me.', TW / 2, TH * .5);
+  }
+  return cv;
+}
+function drawBack(ch) {
+  const [cv, g] = card(), B = BACKS[ch];
+  g.font = `300 15px ${MONO}`; g.globalAlpha = .7; spaced(g, 'BEHIND THE MIST', TW / 2, 54, 6); g.globalAlpha = 1;
+  g.font = `italic 400 56px ${SERIF}`; g.fillText(B.t, TW / 2, 110);
+  if (B.rules) B.rules.forEach(([a, b], i) => {
+    const y = 196 + i * 72; g.font = `400 40px ${SERIF}`; g.fillText(a, TW / 2, y); g.font = `300 15px ${MONO}`; g.globalAlpha = .7; spaced(g, b.toUpperCase(), TW / 2, y + 28, 2.5); g.globalAlpha = 1;
+  });
+  if (B.rows) {
+    const n = B.rows.length, top = 168, gap = (TH - 92 - top) / n;
+    g.strokeStyle = '#fff'; g.lineWidth = 3;
+    B.rows.forEach((row, r) => {
+      const y = top + gap * (r + .5), cw = Math.min(290, (TW - 140 - (row.length - 1) * 28) / row.length), ch2 = Math.min(64, gap - 16);
+      const x0 = TW / 2 - (row.length * cw + (row.length - 1) * 28) / 2;
+      if (r < n - 1) { g.beginPath(); g.moveTo(TW / 2, y + ch2 / 2); g.lineTo(TW / 2, y + gap - ch2 / 2); g.stroke(); }
+      row.forEach(([a, b], i) => {
+        const x = x0 + i * (cw + 28); g.strokeRect(x, y - ch2 / 2, cw, ch2);
+        g.font = `400 ${ch2 < 56 ? 24 : 27}px ${SERIF}`; g.fillText(a, x + cw / 2, y - ch2 * .15);
+        g.font = `400 ${ch2 < 56 ? 13 : 15}px ${MONO}`; g.globalAlpha = .8; g.fillText(b, x + cw / 2, y + ch2 / 2 - 11); g.globalAlpha = 1;
+      });
+    });
+    g.font = `300 15px ${MONO}`; g.globalAlpha = .75; g.fillText(B.foot, TW / 2, TH - 48); g.globalAlpha = 1;
+  }
+  if (B.tools) B.tools.forEach(([a, b], i) => {
+    const y = 190 + i * 70; g.font = `300 15px ${MONO}`; g.globalAlpha = .7; spaced(g, a.toUpperCase(), TW / 2, y - 16, 5); g.globalAlpha = 1;
+    g.font = `400 25px ${SERIF}`; g.fillText(b, TW / 2, y + 14);
+  });
+  return cv;
+}
+const TEXC = new Map();
+function texOf(key, draw) {
+  if (TEXC.has(key)) return TEXC.get(key);
+  const cv = draw(), t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE, cv);
+  gl.generateMipmap(gl.TEXTURE_2D);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  // its average colour, for the glow it leaves in the floor when it falls
+  const one = document.createElement('canvas'); one.width = one.height = 1; const og = one.getContext('2d', {willReadFrequently: true}); og.drawImage(cv, 0, 0, 1, 1);
+  const px = og.getImageData(0, 0, 1, 1).data;
+  t.avg = [0, 1, 2].map(i => Math.pow(px[i] / 255, 2.2));
+  TEXC.set(key, t); return t;
+}
+const BLACK = texOf('black', () => { const c = document.createElement('canvas'); c.width = c.height = 2; const g = c.getContext('2d'); g.fillRect(0, 0, 2, 2); return c; });
+const SHOW = {fN: BLACK, bN: BLACK, fO: BLACK, bO: BLACK, ts: -1e9, key: '', glowIn: 0, glowCol: [0, 0, 0]};
+const fallBy = t => 1.15 * t + .16 * t * t;   // how far the mist has fallen t seconds after it left the vents (roughly)
+function showChapter(ch) {
+  const key = '' + ch;
+  if (key === SHOW.key) return;
+  SHOW.key = key;
+  SHOW.fO = SHOW.fN; SHOW.bO = SHOW.bN; SHOW.ts = S.time;
+  SHOW.glowCol = SHOW.fO.avg ? SHOW.fO.avg.map(c => .03 + c * .9) : [0, 0, 0];
+  SHOW.fN = texOf('f' + key, () => drawFront(ch)); SHOW.bN = texOf('b' + ch, () => drawBack(ch));
+}
+function pictureUniforms() {
+  const since = S.time - SHOW.ts, live = since < 9, drop = fallBy(since);
+  SHOW.glowIn = live ? smooth(.9, 1.4, drop) * (1 - smooth(3.3, 3.9, drop)) : 0;
+  return {uSince: live ? since : 1e4, uDrop: drop, uBack: smooth(.25, -.25, Math.cos(S.yaw)), uGain: 1.6 * smooth(1.2, 2.8, S.time), uGlowCol: SHOW.glowCol};
+}
+
+/* ------------------------------------------------------------------ chapters */
+const caps = [...document.querySelectorAll('.cap')], idx = document.getElementById('idx');
+function chFromScroll() { return clamp(Math.round(scrollY / innerHeight), 0, LAST); }
+function setChapter(ch) {
+  if (ch === S.ch) return;
+  S.ch = ch;
+  caps.forEach(c => c.classList.toggle('on', +c.dataset.ch === ch));
+  idx.innerHTML = `<b>${String(ch + 1).padStart(2, '0')}</b> / ${String(NAVS.length).padStart(2, '0')} <span>&nbsp;·&nbsp; ${NAVS[ch]}</span>`;
+  showChapter(ch);
+}
+addEventListener('scroll', () => { if (S.ready) setChapter(chFromScroll()); }, {passive: true});
+
+/* ------------------------------------------------------------------ start */
+const loadImg = (k, src) => new Promise(res => { const im = new Image(); im.onload = () => { IMG[k] = im; res(); }; im.onerror = res; im.src = src; });
+Promise.all([NOISE.p, ...SHOTS.map(k => loadImg(k, `assets/shots/${k}.webp`)),
+  document.fonts ? Promise.all([`400 40px MSerif`, `italic 400 40px MSerif`, `300 20px MMono`].map(f => document.fonts.load(f))).catch(() => 0) : 0]).then(() => {
+  resize(); addEventListener('resize', resize);
+  if (Q.has('ch')) scrollTo(0, (+Q.get('ch') | 0) * innerHeight);
+  S.ready = true; setChapter(Q.has('ch') ? clamp(+Q.get('ch') | 0, 0, LAST) : chFromScroll());
+  if (Q.has('since')) SHOW.ts = -1e9;
+  camera();
+  // ?warm=N runs N seconds of mist before the first frame (for stills)
+  const warm = +Q.get('warm') || 0;
+  for (let i = 0; i < warm * 30; i++) { S.time += 1 / 30; stepCurtain(1 / 30, NOHAND, 1); stepFloor(1 / 60, NOHAND); stepFloor(1 / 60, NOHAND); }
+  if (HOLD) { last = 0; window.__tick = n => { for (let i = 0; i < n; i++) frame(last + 1000 / 30); return S.time; }; }
+  else requestAnimationFrame(t => { last = t; requestAnimationFrame(frame); });
+});
+</script>
+</body>
+</html>
